@@ -1,0 +1,7 @@
+.settings/
+.settings/
+bin/
+.settings/
+.project
+.classpath
+Chatty.ucls
