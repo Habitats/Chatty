@@ -7,13 +7,15 @@ import java.awt.event.MouseListener;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import funWithSockets.FunWithSockets;
+
+import chatty.Chatty;
+
 
 public class MenuButton extends JLabel {
 
 	private Color color = Color.DARK_GRAY;
 
-	public MenuButton(final String text, int buttonWidth, final FeedListener feedListener, final FunWithSockets main) {
+	public MenuButton(final String text, int buttonWidth, final FeedListener feedListener, final Chatty main) {
 		setBackground(color);
 		// font color
 		setForeground(Color.white);

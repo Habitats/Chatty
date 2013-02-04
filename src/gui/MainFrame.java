@@ -1,6 +1,5 @@
 package gui;
 
-import funWithSockets.FunWithSockets;
 import gui.GBC.Align;
 
 import java.awt.Color;
@@ -16,6 +15,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
+import chatty.Chatty;
+
+
 import network.NetworkHandler;
 
 public class MainFrame extends JPanel {
@@ -23,9 +25,9 @@ public class MainFrame extends JPanel {
 	private InputWindow inputWindow;
 	private int frameWidth = 400;
 	private int frameHeight = 350;
-	private FunWithSockets main;
+	private Chatty main;
 
-	public MainFrame(FunWithSockets main) {
+	public MainFrame(Chatty main) {
 		JFrame frame = new JFrame();
 		this.main = main;
 		setBackground(Color.black);
