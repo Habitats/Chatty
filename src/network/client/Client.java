@@ -1,6 +1,6 @@
 package network.client;
 
-import gui.FeedListener;
+import gui.EventListener;
 import gui.MainFrame;
 
 import java.io.BufferedReader;
@@ -8,57 +8,55 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Scanner;
 
+import chatty.Config;
+
 import network.NetworkHandler;
 import network.ProgramState;
-import network.ServerListener;
 
-public class Client extends ProgramState implements Runnable, ServerListener {
+public class Client extends ProgramState implements Runnable {
 
-	private FeedListener feedListener;
+	private EventListener eventListener;
 	private String name;
 	private PrintWriter out;
 	private NetworkHandler networkHandler;
 	private String hostname;
+	private Socket echoSocket;
+	private BufferedReader in;
 
-	public Client(int port, String hostname, FeedListener feedListener, String name, NetworkHandler networkHandler) throws IOException {
-		this.feedListener = feedListener;
+	public Client(int port, String hostname, EventListener feedListener, String name, NetworkHandler networkHandler) throws IOException {
 		this.name = name;
 		this.hostname = hostname;
-		this.networkHandler = networkHandler;
+
+		setEventListener(feedListener);
+		setNetworkHandler(networkHandler);
 
 		super.port = port;
 	}
 
 	private Socket setUpConnection(int port, String hostname) {
 		Socket socket = null;
-		System.out.println("Connecting to " + hostname + " on " + port);
+		getEventListener().sendStatusToOwnFeed("Connecting to " + hostname + " on " + port + "...");
 		try {
 			socket = new Socket(hostname, port);
-			feedListener.sendMessageToFeed("Connected!");
+			getEventListener().sendStatusToOwnFeed("Connected!");
 			return socket;
 		} catch (UnknownHostException e) {
-			feedListener.sendMessageToFeed("don't know about host: " + hostname);
+			getEventListener().sendStatusToOwnFeed("Unknown host: " + hostname + "!");
 		} catch (IOException e) {
-			feedListener.sendMessageToFeed("Connection failed.");
+			getEventListener().sendStatusToOwnFeed("Connection failed.");
 		}
 		return null;
-	}
-
-	@Override
-	public void onMessage(String msg) {
-		// feedListener.sendMessageToFeed(msg);
-		out.println(msg);
 	}
 
 	@Override
 	public void run() {
 		setClient(true);
 		setServer(false);
-		feedListener.sendMessageToFeed("Starting client...");
-		Socket echoSocket = null;
+		getEventListener().sendStatusToOwnFeed("Starting client...");
 
 		// String hostname = "78.91.48.1";
 
@@ -68,31 +66,27 @@ public class Client extends ProgramState implements Runnable, ServerListener {
 		if (echoSocket == null)
 			return;
 
-		BufferedReader in = null;
+		in = null;
 
 		try {
 			out = new PrintWriter(echoSocket.getOutputStream(), true);
 			in = new BufferedReader(new InputStreamReader(echoSocket.getInputStream()));
 
 			String fromServer;
-			String fromUser = "";
 
 			setRunning(true);
 			// this loop constantly checks for changes a on the socket
 			while ((fromServer = in.readLine()) != null && isRunning()) {
-				if (fromUser.length() > 0) {
-					out.println(fromUser);
-					fromUser = "";
-				}
-				feedListener.sendMessageToFeed(fromServer);
+				// send message from SERVER to own FEED
+				getEventListener().sendNormalMessageToOwnFeed(fromServer);
 			}
-
-			out.close();
-			in.close();
-			echoSocket.close();
+		} catch (SocketException e) {
+			getEventListener().sendErrorToOwnFeed("Connection lost!");
+			return;
 		} catch (IOException e) {
-			feedListener.sendMessageToFeed("CLIENT CRASHED");
+			getEventListener().sendStatusToOwnFeed("CLIENT CRASHED");
 			e.printStackTrace();
+		} finally {
 			kill();
 		}
 	}
@@ -101,7 +95,34 @@ public class Client extends ProgramState implements Runnable, ServerListener {
 		return out;
 	}
 
+	@Override
 	public void kill() {
+		// cleanup
+		try {
+			if (echoSocket != null)
+				echoSocket.close();
+			out.close();
+			in.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		getNetworkHandler().lostConnection();
 		setRunning(false);
+	}
+
+	public NetworkHandler getNetworkHandler() {
+		return networkHandler;
+	}
+
+	public void setNetworkHandler(NetworkHandler networkHandler) {
+		this.networkHandler = networkHandler;
+	}
+
+	public EventListener getEventListener() {
+		return eventListener;
+	}
+
+	public void setEventListener(EventListener eventListener) {
+		this.eventListener = eventListener;
 	}
 }

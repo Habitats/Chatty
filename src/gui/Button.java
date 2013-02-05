@@ -7,9 +7,11 @@ import java.util.ArrayList;
 
 import javax.swing.JLabel;
 
+import network.NetworkListener;
+
 import chatty.Config;
 
-public abstract class Button extends JLabel {
+public abstract class Button extends JLabel implements NetworkListener {
 
 	private boolean active = false;
 	protected String text;
@@ -48,4 +50,26 @@ public abstract class Button extends JLabel {
 	ButtonMouseListener getButtonMouseListener() {
 		return buttonMouseListener;
 	}
+
+	@Override
+	public void startServer() {
+		System.out.println("BUNCH OF DICKS");
+	}
+
+	@Override
+	public void startClient(String name) {
+	}
+
+	@Override
+	public void onCrash() {
+	}
+
+	@Override
+	public void lostConnection() {
+	}
+
+	@Override
+	public void serverDisconnect() {
+	}
+
 }

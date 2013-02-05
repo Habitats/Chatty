@@ -5,21 +5,12 @@ import gui.MenuButton.Type;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-
 import chatty.Chatty;
 import chatty.Config;
-
-import network.NetworkHandler;
 
 public class MainFrame extends JPanel {
 	private FeedWindow feedWindow;
@@ -73,16 +64,20 @@ public class MainFrame extends JPanel {
 		return feedWindow;
 	}
 
-	public void sendMessageToFeed(String msg) {
+	public void sendMessageToSelf(String msg) {
+		feedWindow.sendStatusToOwnFeed(msg);
+	}
+
+	public void sendMessageToAll(String msg) {
 		// TODO: send SELF messages to SERVER, TEMPORARY WORKAROUND
-		if (main.getNetworkHandler().getProgramState().isServer()) {
-			feedWindow.sendMessageToFeed(msg);
-			System.out.println(main.getNetworkHandler().getServer() == null);
-			if (main.getNetworkHandler().isRunning())
-				main.getNetworkHandler().getServer().broadcastMessageToClients(msg);
-		}
-		Object asd = main.getNetworkHandler().getProgramState();
+
+		// if CLIENT, send to SERVER only
 		if (main.getNetworkHandler().getProgramState().isClient())
-			main.getNetworkHandler().getClient().getOutputStream().println(msg);
+			main.getNetworkHandler().getClient().getOutputStream().println(Config.NAME_USER + ": " + msg);
+
+		// if SERVER, send to all CLIENTS and SELF
+		else if (main.getNetworkHandler().getProgramState().isServer()) {
+			main.getNetworkHandler().getServer().broadcastServerMessage(msg);
+		}
 	}
 }

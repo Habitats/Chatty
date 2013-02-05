@@ -1,15 +1,9 @@
 package chatty;
 
-import gui.FeedListener;
+import gui.EventListener;
 import gui.MainFrame;
 
-import java.io.IOException;
-import java.util.Scanner;
-
 import network.NetworkHandler;
-import network.NetworkListener;
-import network.client.Client;
-import network.server.Server;
 
 public class Chatty {
 	private NetworkHandler networkHandler;
@@ -23,8 +17,8 @@ public class Chatty {
 		String hostname = Config.DEFAULT_HOST;
 
 		MainFrame gui = new MainFrame(this);
-		FeedListener feedListener = gui.getFeedWindow();
-		networkHandler = new NetworkHandler(port, hostname, gui);
+		EventListener eventListener = gui.getFeedWindow();
+		networkHandler = new NetworkHandler(port, hostname, eventListener);
 	}
 
 	public NetworkHandler getNetworkHandler() {

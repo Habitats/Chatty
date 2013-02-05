@@ -12,5 +12,6 @@ public class Options extends JPanel {
 
 	public Options() {
 		
+		
 	}
 }

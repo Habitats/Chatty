@@ -1,13 +1,8 @@
 package gui;
 
-import gui.MenuButton.Type;
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import chatty.Chatty;
@@ -33,7 +28,7 @@ public class MenuButton extends Button {
 	private Color color = Color.DARK_GRAY;
 	protected Type type;
 
-	public MenuButton(final Type TYPE, int buttonWidth, final FeedListener feedListener, final Chatty main) {
+	public MenuButton(final Type TYPE, int buttonWidth, final EventListener feedListener, final Chatty main) {
 		setBackground(color);
 		// font color
 		setForeground(Color.white);
@@ -41,7 +36,7 @@ public class MenuButton extends Button {
 		setPreferredSize(new Dimension(buttonWidth, 30));
 		setOpaque(true);
 		setHorizontalAlignment(SwingConstants.CENTER);
-
+		
 		addMouseListener(new ButtonMouseListener(this) {
 
 			@Override
@@ -53,13 +48,20 @@ public class MenuButton extends Button {
 						setActive(true);
 					} else if (TYPE == Type.CLIENT && !main.getNetworkHandler().isRunning()) {
 						color = Color.red;
-						setActive(true);
 						main.getNetworkHandler().startClient("bob");
-
+						setActive(true);
 					}
-				} else
+				} else {
 					main.getNetworkHandler().shutDown();
+					setActive(false);
+				}
 			}
 		});
 	}
+
+	public void onCrash() {
+		setActive(false);
+	}
+
+
 }

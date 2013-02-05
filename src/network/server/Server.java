@@ -1,52 +1,49 @@
 package network.server;
 
-import gui.FeedListener;
+import gui.EventListener;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.sql.Date;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Scanner;
-import java.util.Stack;
-
-import chatty.Config;
 
 import network.NetworkHandler;
 import network.ProgramState;
-import network.client.Client;
 
 public class Server extends ProgramState implements Runnable {
 
-	private ArrayList<PrintWriter> outputStreams = new ArrayList<PrintWriter>();
-
 	private NetworkHandler networkHandler;
-	private FeedListener feedListener;
+	private EventListener eventListener;
+
+	private ArrayList<ClientConnection> clientConnections = new ArrayList<ClientConnection>();
 
 	private boolean listening = true;
 
-	public Server(int port, FeedListener feedListener, NetworkHandler networkHandler) throws IOException {
-		this.networkHandler = networkHandler;
-		this.feedListener = feedListener;
+	private ServerSocket serverSocket;
+
+	private Socket clientSocket;
+
+	public Server(int port, EventListener eventListener, NetworkHandler networkHandler) throws IOException {
+		setNetworkHandler(networkHandler);
+		setEventListener(eventListener);
 
 		super.port = port;
+	}
+
+	public EventListener getEventListener() {
+		return eventListener;
 	}
 
 	private ServerSocket setUpServer(int port) {
 		ServerSocket serverSocket = null;
 		try {
 			serverSocket = new ServerSocket(port);
-			feedListener.sendMessageToFeed("Running server on " + port + "!");
+			getEventListener().sendStatusToOwnFeed("Running server on " + port + "!");
 			return serverSocket;
 		} catch (Exception e) {
-			feedListener.sendMessageToFeed("Failed to setup server on port " + port + " failed. Exiting...");
+			getEventListener().sendStatusToOwnFeed("Failed to setup server on port " + port + " failed. Exiting...");
 			return null;
 		}
 	}
@@ -54,64 +51,110 @@ public class Server extends ProgramState implements Runnable {
 	private Socket listenForIncomingConnections(ServerSocket serverSocket) {
 		Socket socket = null;
 		try {
-			feedListener.sendMessageToFeed("Listening for connections...");
+			getEventListener().sendStatusToOwnFeed("Listening for connections...");
 			socket = serverSocket.accept();
 			return socket;
+		} catch (SocketException e) {
+			getEventListener().sendStatusToOwnFeed("Server shutting down!");
+			return null;
+		} catch (NullPointerException e) {
+			getEventListener().sendErrorToOwnFeed("Server already running?");
+			return null;
 		} catch (IOException e) {
-			feedListener.sendMessageToFeed("ERROR. Server already running?");
+			getEventListener().sendErrorToOwnFeed("IO Error.");
 			return null;
 		}
 	}
 
 	@Override
 	public void run() {
+		getEventListener().sendStatusToOwnFeed("Starting server...");
+
+		// tries to open up a socket on PORT, returns if fail
+		if ((serverSocket = setUpServer(port)) == null)
+			return;
+
 		setServer(true);
 		setClient(false);
-		feedListener.sendMessageToFeed("Starting server...");
-		// tries to open up a server on the specified port
-		ServerSocket serverSocket = setUpServer(port);
+
 		// tries to initiate a connection to the client by accepting incoming
 		// connections
 		// the accept method listens for incoming connections
 		try {
 			while (listening) {
-				Socket clientSocket = listenForIncomingConnections(serverSocket);
+				clientSocket = listenForIncomingConnections(serverSocket);
+				if (clientSocket == null)
+					return;
 				connectWithClient(clientSocket);
-				feedListener.sendMessageToFeed(clientSocket.getRemoteSocketAddress().toString().split("[/:]")[1] + " connected!");
+				String clientIp = clientSocket.getRemoteSocketAddress().toString().split("[/:]")[1];
+				String localPort = clientSocket.getRemoteSocketAddress().toString().split("[/:]")[2];
+				getEventListener().sendStatusToOwnFeed(clientIp + " connected on local port " + localPort + "!");
 				setRunning(true);
 			}
-			serverSocket.close();
-		} catch (NullPointerException e) {
-			feedListener.sendMessageToFeed("CONFLICT! Another server already running?");
+			setRunning(false);
+			getEventListener().sendStatusToOwnFeed("Server shutting down!");
+		} finally {
 			kill();
-		} catch (IOException e) {
-			feedListener.sendMessageToFeed("Connection dropped. IO ERROR, see trace.");
-			kill();
-			e.printStackTrace();
-		}
-	}
-
-	public void broadcastMessageToClients(String msg) {
-		for (int i = 0; i < getOutputStreams().size(); i++) {
-			PrintWriter currentOut = getOutputStreams().get(i);
-			// if(client)
-			currentOut.println(msg);
 		}
 	}
 
 	private void connectWithClient(final Socket clientSocket) {
-		ServerConnection serverConnection = new ServerConnection(clientSocket, feedListener, this);
+		ServerConnection serverConnection = new ServerConnection(clientSocket, getEventListener(), this);
 		Thread clientThread = new Thread(serverConnection);
 		clientThread.start();
 	}
 
-	public ArrayList<PrintWriter> getOutputStreams() {
-		return outputStreams;
+	public NetworkHandler getNetworkHandler() {
+		return networkHandler;
+	}
+
+	// broadcasts message to ALL connected OUTPUT streams
+	// only SERVER should be calling this
+	public void broadcastMessageToClients(String msg) {
+		for (int i = 0; i < getClientConnections().size(); i++) {
+			PrintWriter currentOut = getClientConnections().get(i).getOutputStream();
+			// if(client)
+			currentOut.println(msg);
+		}
+	}
+	
+	public void broadcastMessageToAll(String msg){
+		eventListener.sendNormalMessageToOwnFeed(msg);
+		broadcastMessageToClients(msg);
+	}
+
+	public void broadcastServerMessage(String msg) {
+		broadcastMessageToAll("SERVER: " + msg);
+	}
+
+	public void broadcastStatusMessage(String msg) {
+		broadcastMessageToAll("STATUS: " + msg);
 	}
 
 	@Override
 	public void kill() {
 		setRunning(false);
+		getNetworkHandler().serverDisconnect();
 		listening = false;
+		try {
+			if (serverSocket != null)
+				serverSocket.close();
+			if (clientSocket != null)
+				clientSocket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void setEventListener(EventListener eventListener) {
+		this.eventListener = eventListener;
+	}
+
+	public void setNetworkHandler(NetworkHandler networkHandler) {
+		this.networkHandler = networkHandler;
+	}
+
+	public ArrayList<ClientConnection> getClientConnections() {
+		return clientConnections;
 	}
 }
