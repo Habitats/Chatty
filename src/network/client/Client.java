@@ -12,13 +12,13 @@ import java.net.UnknownHostException;
 import java.util.Scanner;
 
 import network.NetworkHandler;
+import network.ProgramState;
 import network.ServerListener;
 
-public class Client implements Runnable, ServerListener {
+public class Client extends ProgramState implements Runnable, ServerListener {
 
 	private FeedListener feedListener;
 	private String name;
-	private int port;
 	private PrintWriter out;
 	private NetworkHandler networkHandler;
 	private String hostname;
@@ -26,9 +26,10 @@ public class Client implements Runnable, ServerListener {
 	public Client(int port, String hostname, FeedListener feedListener, String name, NetworkHandler networkHandler) throws IOException {
 		this.feedListener = feedListener;
 		this.name = name;
-		this.port = port;
 		this.hostname = hostname;
 		this.networkHandler = networkHandler;
+
+		super.port = port;
 	}
 
 	private Socket setUpConnection(int port, String hostname) {
@@ -42,7 +43,6 @@ public class Client implements Runnable, ServerListener {
 			feedListener.sendMessageToFeed("don't know about host: " + hostname);
 		} catch (IOException e) {
 			feedListener.sendMessageToFeed("Connection failed.");
-			networkHandler.setRunning(false);
 		}
 		return null;
 	}
@@ -55,6 +55,8 @@ public class Client implements Runnable, ServerListener {
 
 	@Override
 	public void run() {
+		setClient(true);
+		setServer(false);
 		feedListener.sendMessageToFeed("Starting client...");
 		Socket echoSocket = null;
 
@@ -75,8 +77,9 @@ public class Client implements Runnable, ServerListener {
 			String fromServer;
 			String fromUser = "";
 
+			setRunning(true);
 			// this loop constantly checks for changes a on the socket
-			while ((fromServer = in.readLine()) != null) {
+			while ((fromServer = in.readLine()) != null && isRunning()) {
 				if (fromUser.length() > 0) {
 					out.println(fromUser);
 					fromUser = "";
@@ -88,13 +91,17 @@ public class Client implements Runnable, ServerListener {
 			in.close();
 			echoSocket.close();
 		} catch (IOException e) {
+			feedListener.sendMessageToFeed("CLIENT CRASHED");
 			e.printStackTrace();
+			kill();
 		}
-		System.out.println("END");
 	}
 
 	public PrintWriter getOutputStream() {
 		return out;
 	}
 
+	public void kill() {
+		setRunning(false);
+	}
 }

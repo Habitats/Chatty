@@ -11,11 +11,11 @@ public class NetworkHandler implements NetworkListener {
 
 	private MainFrame gui;
 	private int port;
-	private Server server;
-	private Client client;
-	private boolean isClient;
-	private boolean isRunning = false;
 	private String hostname;
+
+	private ProgramState programState;
+	private Server serverInstance;
+	private Client clientInstance;
 
 	public NetworkHandler(int port, String hostname, MainFrame gui) {
 		this.gui = gui;
@@ -26,12 +26,10 @@ public class NetworkHandler implements NetworkListener {
 	public void startServer() {
 		Thread serverThread;
 		try {
-			server = new Server(port, gui.getFeedWindow(), this);
-
-			serverThread = new Thread(server);
+			serverInstance = new Server(port, gui.getFeedWindow(), this);
+			programState = serverInstance;
+			serverThread = new Thread((Server) programState);
 			serverThread.start();
-			isClient = false;
-			isRunning = true;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -40,34 +38,35 @@ public class NetworkHandler implements NetworkListener {
 	public void startClient(String name) {
 		Thread clientThread;
 		try {
-			client = new Client(port, hostname, gui.getFeedWindow(), name, this);
-			clientThread = new Thread(client);
-			// server.clients.add(client);
+			clientInstance = new Client(port, hostname, gui.getFeedWindow(), name, this);
+			programState = clientInstance;
+			clientThread = new Thread((Client) programState);
 			clientThread.start();
-			isClient = true;
-			isRunning = true;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public Client getClient() {
-		return client;
+	public boolean isRunning() {
+		if (programState != null)
+			return programState.isRunning();
+		else
+			return false;
 	}
 
-	public boolean isClient() {
-		return isClient;
+	public ProgramState getProgramState() {
+		return programState;
+	}
+
+	public void shutDown() {
+		programState.kill();
 	}
 
 	public Server getServer() {
-		return server;
+		return serverInstance;
 	}
 
-	public boolean isRunning() {
-		return isRunning;
-	}
-
-	public void setRunning(boolean value) {
-		this.isRunning = value;
+	public Client getClient() {
+		return clientInstance;
 	}
 }

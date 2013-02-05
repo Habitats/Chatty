@@ -12,7 +12,7 @@ import javax.swing.SwingConstants;
 
 import chatty.Chatty;
 
-public class MenuButton extends JLabel {
+public class MenuButton extends Button {
 
 	public enum Type {
 		OPTIONS("options"), //
@@ -42,39 +42,23 @@ public class MenuButton extends JLabel {
 		setOpaque(true);
 		setHorizontalAlignment(SwingConstants.CENTER);
 
-		addMouseListener(new MouseListener() {
-
-			boolean clicked = false;
-
-			@Override
-			public void mouseReleased(MouseEvent arg0) {
-				setBackground(Color.gray);
-			}
-
-			@Override
-			public void mousePressed(MouseEvent arg0) {
-				setBackground(Color.blue);
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-				setBackground(color);
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-				setBackground(Color.gray);
-			}
+		addMouseListener(new ButtonMouseListener(this) {
 
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				if (TYPE == Type.SERVER && !main.getNetworkHandler().isRunning()) {
-					color = Color.red;
-					main.getNetworkHandler().startServer();
-				} else if (TYPE == Type.CLIENT && !main.getNetworkHandler().isRunning()) {
-					color = Color.red;
-					main.getNetworkHandler().startClient("bob");
-				}
+				if (!super.button.isActive()) {
+					if (TYPE == Type.SERVER && !main.getNetworkHandler().isRunning()) {
+						color = Color.red;
+						main.getNetworkHandler().startServer();
+						setActive(true);
+					} else if (TYPE == Type.CLIENT && !main.getNetworkHandler().isRunning()) {
+						color = Color.red;
+						setActive(true);
+						main.getNetworkHandler().startClient("bob");
+
+					}
+				} else
+					main.getNetworkHandler().shutDown();
 			}
 		});
 	}

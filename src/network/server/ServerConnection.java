@@ -26,7 +26,8 @@ public class ServerConnection implements Runnable {
 	@Override
 	public void run() {
 		String fromUser;
-		String fromServer;
+		String fromServer = "";
+		String welcomeMsg = "Welcome Human, I'm a server!";
 
 		out = null;
 		BufferedReader in = null;
@@ -36,15 +37,10 @@ public class ServerConnection implements Runnable {
 			server.getOutputStreams().add(out);
 			in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
-			// write to the socket
-			out.println("Welcome Human, I'm a server!");
-			fromServer = "this should only appear once";
+			// welcome message to new client
+			out.println(welcomeMsg);
 
 			while ((fromUser = in.readLine()) != null) {
-				if (fromServer.length() > 0) {
-					out.println(fromServer);
-					fromServer = "";
-				}
 				// send message to SERVER (self)
 				feedListener.sendMessageToFeed(fromUser);
 				server.broadcastMessageToClients(fromUser);

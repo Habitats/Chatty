@@ -75,11 +75,14 @@ public class MainFrame extends JPanel {
 
 	public void sendMessageToFeed(String msg) {
 		// TODO: send SELF messages to SERVER, TEMPORARY WORKAROUND
-		if (!main.getNetworkHandler().isClient()) {
+		if (main.getNetworkHandler().getProgramState().isServer()) {
 			feedWindow.sendMessageToFeed(msg);
-			main.getNetworkHandler().getServer().broadcastMessageToClients(msg);
+			System.out.println(main.getNetworkHandler().getServer() == null);
+			if (main.getNetworkHandler().isRunning())
+				main.getNetworkHandler().getServer().broadcastMessageToClients(msg);
 		}
-		if (main.getNetworkHandler().isClient())
+		Object asd = main.getNetworkHandler().getProgramState();
+		if (main.getNetworkHandler().getProgramState().isClient())
 			main.getNetworkHandler().getClient().getOutputStream().println(msg);
 	}
 }

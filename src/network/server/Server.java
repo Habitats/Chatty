@@ -20,21 +20,23 @@ import java.util.Stack;
 import chatty.Config;
 
 import network.NetworkHandler;
+import network.ProgramState;
 import network.client.Client;
 
-public class Server implements Runnable {
-	private FeedListener feedListener;
-	private int port;
-	private boolean listening = true;
-	private ArrayList<Client> clients = new ArrayList<Client>();
+public class Server extends ProgramState implements Runnable {
+
 	private ArrayList<PrintWriter> outputStreams = new ArrayList<PrintWriter>();
-	private boolean running = false;
+
 	private NetworkHandler networkHandler;
+	private FeedListener feedListener;
+
+	private boolean listening = true;
 
 	public Server(int port, FeedListener feedListener, NetworkHandler networkHandler) throws IOException {
 		this.networkHandler = networkHandler;
 		this.feedListener = feedListener;
-		this.port = port;
+
+		super.port = port;
 	}
 
 	private ServerSocket setUpServer(int port) {
@@ -45,7 +47,6 @@ public class Server implements Runnable {
 			return serverSocket;
 		} catch (Exception e) {
 			feedListener.sendMessageToFeed("Failed to setup server on port " + port + " failed. Exiting...");
-			networkHandler.setRunning(false);
 			return null;
 		}
 	}
@@ -58,13 +59,14 @@ public class Server implements Runnable {
 			return socket;
 		} catch (IOException e) {
 			feedListener.sendMessageToFeed("ERROR. Server already running?");
-			networkHandler.setRunning(false);
 			return null;
 		}
 	}
 
 	@Override
 	public void run() {
+		setServer(true);
+		setClient(false);
 		feedListener.sendMessageToFeed("Starting server...");
 		// tries to open up a server on the specified port
 		ServerSocket serverSocket = setUpServer(port);
@@ -76,13 +78,16 @@ public class Server implements Runnable {
 				Socket clientSocket = listenForIncomingConnections(serverSocket);
 				connectWithClient(clientSocket);
 				feedListener.sendMessageToFeed(clientSocket.getRemoteSocketAddress().toString().split("[/:]")[1] + " connected!");
-				running = true;
+				setRunning(true);
 			}
 			serverSocket.close();
-		} catch (IOException | NullPointerException e) {
+		} catch (NullPointerException e) {
 			feedListener.sendMessageToFeed("CONFLICT! Another server already running?");
-			networkHandler.setRunning(false);
-			return;
+			kill();
+		} catch (IOException e) {
+			feedListener.sendMessageToFeed("Connection dropped. IO ERROR, see trace.");
+			kill();
+			e.printStackTrace();
 		}
 	}
 
@@ -104,7 +109,9 @@ public class Server implements Runnable {
 		return outputStreams;
 	}
 
-	public boolean isRunning() {
-		return running;
+	@Override
+	public void kill() {
+		setRunning(false);
+		listening = false;
 	}
 }
