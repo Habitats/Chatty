@@ -1,1 +1,4 @@
-basic socket communication
+Chatty
+
+Chatty is a basic server/client chat program with support for "unlimited" users.It's very lightweight and should run on most systems. 
+
