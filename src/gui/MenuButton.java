@@ -1,5 +1,7 @@
 package gui;
 
+import gui.MenuButton.Type;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.MouseEvent;
@@ -10,22 +12,38 @@ import javax.swing.SwingConstants;
 
 import chatty.Chatty;
 
-
 public class MenuButton extends JLabel {
 
-	private Color color = Color.DARK_GRAY;
+	public enum Type {
+		OPTIONS("options"), //
+		SERVER("server"), //
+		CLIENT("client");
 
-	public MenuButton(final String text, int buttonWidth, final FeedListener feedListener, final Chatty main) {
+		String text;
+
+		Type(String text) {
+			this.text = text;
+		}
+
+		String getText() {
+			return text;
+		}
+	}
+
+	private Color color = Color.DARK_GRAY;
+	protected Type type;
+
+	public MenuButton(final Type TYPE, int buttonWidth, final FeedListener feedListener, final Chatty main) {
 		setBackground(color);
 		// font color
 		setForeground(Color.white);
-		setText(text);
+		setText(TYPE.text);
 		setPreferredSize(new Dimension(buttonWidth, 30));
 		setOpaque(true);
 		setHorizontalAlignment(SwingConstants.CENTER);
 
 		addMouseListener(new MouseListener() {
-			
+
 			boolean clicked = false;
 
 			@Override
@@ -50,14 +68,12 @@ public class MenuButton extends JLabel {
 
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				feedListener.sendMessageToFeed(text + " clicked");
-				if (!clicked) {
-					clicked = true;
+				if (TYPE == Type.SERVER && !main.getNetworkHandler().isRunning()) {
 					color = Color.red;
-					if (text.equals("server"))
-						main.getNetworkHandler().startServer();
-					else
-						main.getNetworkHandler().startClient("bob");
+					main.getNetworkHandler().startServer();
+				} else if (TYPE == Type.CLIENT && !main.getNetworkHandler().isRunning()) {
+					color = Color.red;
+					main.getNetworkHandler().startClient("bob");
 				}
 			}
 		});

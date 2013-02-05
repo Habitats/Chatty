@@ -14,8 +14,11 @@ public class InputWindow extends JTextField {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				mainFrame.sendMessageToFeed(arg0.getActionCommand());
-				setText("");
+				String msg = arg0.getActionCommand();
+				if (msg.length() > 0) {
+					mainFrame.sendMessageToFeed(arg0.getActionCommand());
+					setText("");
+				}
 			}
 		});
 	}

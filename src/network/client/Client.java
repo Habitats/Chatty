@@ -11,22 +11,27 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Scanner;
 
+import network.NetworkHandler;
 import network.ServerListener;
 
 public class Client implements Runnable, ServerListener {
 
-	FeedListener feedListener;
-	String name;
+	private FeedListener feedListener;
+	private String name;
 	private int port;
 	private PrintWriter out;
+	private NetworkHandler networkHandler;
+	private String hostname;
 
-	public Client(int port, FeedListener feedListener, String name) throws IOException {
+	public Client(int port, String hostname, FeedListener feedListener, String name, NetworkHandler networkHandler) throws IOException {
 		this.feedListener = feedListener;
 		this.name = name;
 		this.port = port;
+		this.hostname = hostname;
+		this.networkHandler = networkHandler;
 	}
 
-	private Socket setUpConnection(String hostname, int port) {
+	private Socket setUpConnection(int port, String hostname) {
 		Socket socket = null;
 		System.out.println("Connecting to " + hostname + " on " + port);
 		try {
@@ -37,14 +42,14 @@ public class Client implements Runnable, ServerListener {
 			feedListener.sendMessageToFeed("don't know about host: " + hostname);
 		} catch (IOException e) {
 			feedListener.sendMessageToFeed("Connection failed.");
-			e.printStackTrace();
+			networkHandler.setRunning(false);
 		}
 		return null;
 	}
 
 	@Override
 	public void onMessage(String msg) {
-		feedListener.sendMessageToFeed(msg);
+		// feedListener.sendMessageToFeed(msg);
 		out.println(msg);
 	}
 
@@ -54,9 +59,12 @@ public class Client implements Runnable, ServerListener {
 		Socket echoSocket = null;
 
 		// String hostname = "78.91.48.1";
-		String hostname = "localhost";
 
-		echoSocket = setUpConnection(hostname, port);
+		echoSocket = setUpConnection(port, hostname);
+
+		// return if connection went to hell or w/e
+		if (echoSocket == null)
+			return;
 
 		BufferedReader in = null;
 
@@ -65,12 +73,11 @@ public class Client implements Runnable, ServerListener {
 			in = new BufferedReader(new InputStreamReader(echoSocket.getInputStream()));
 
 			String fromServer;
-			String fromUser = "Hello Server!";
+			String fromUser = "";
 
 			// this loop constantly checks for changes a on the socket
 			while ((fromServer = in.readLine()) != null) {
 				if (fromUser.length() > 0) {
-					System.out.println("Client: " + fromUser);
 					out.println(fromUser);
 					fromUser = "";
 				}
@@ -89,4 +96,5 @@ public class Client implements Runnable, ServerListener {
 	public PrintWriter getOutputStream() {
 		return out;
 	}
+
 }

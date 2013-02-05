@@ -17,19 +17,20 @@ import java.util.Queue;
 import java.util.Scanner;
 import java.util.Stack;
 
+import network.NetworkHandler;
 import network.client.Client;
-
-
-
 
 public class Server implements Runnable {
 	private FeedListener feedListener;
 	private int port;
 	private boolean listening = true;
-	ArrayList<Client> clients = new ArrayList<Client>();
-	ArrayList<PrintWriter> outputStreams = new ArrayList<PrintWriter>();
+	private ArrayList<Client> clients = new ArrayList<Client>();
+	private ArrayList<PrintWriter> outputStreams = new ArrayList<PrintWriter>();
+	private boolean running = false;
+	private NetworkHandler networkHandler;
 
-	public Server(int port, FeedListener feedListener) throws IOException {
+	public Server(int port, FeedListener feedListener, NetworkHandler networkHandler) throws IOException {
+		this.networkHandler = networkHandler;
 		this.feedListener = feedListener;
 		this.port = port;
 	}
@@ -42,6 +43,7 @@ public class Server implements Runnable {
 			return serverSocket;
 		} catch (Exception e) {
 			System.out.println("Connection on port " + port + " failed. Exiting...");
+			networkHandler.setRunning(false);
 			return null;
 		}
 	}
@@ -49,12 +51,12 @@ public class Server implements Runnable {
 	private Socket listenForIncomingConnections(ServerSocket serverSocket) {
 		Socket socket = null;
 		try {
-			System.out.println("Listening for connections...");
+			feedListener.sendMessageToFeed("Listening for connections...");
 			socket = serverSocket.accept();
-			System.out.println("Connected!");
 			return socket;
 		} catch (IOException e) {
-			e.printStackTrace();
+			feedListener.sendMessageToFeed("ERROR. Server already running?");
+			networkHandler.setRunning(false);
 			return null;
 		}
 	}
@@ -67,20 +69,40 @@ public class Server implements Runnable {
 		// tries to initiate a connection to the client by accepting incoming
 		// connections
 		// the accept method listens for incoming connections
-		while (listening) {
-			Socket clientSocket = listenForIncomingConnections(serverSocket);
-			connectWithClient(clientSocket);
-		}
 		try {
+			while (listening) {
+				Socket clientSocket = listenForIncomingConnections(serverSocket);
+				connectWithClient(clientSocket);
+				feedListener.sendMessageToFeed("Adding client!");
+				running = true;
+			}
 			serverSocket.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (IOException | NullPointerException e) {
+			feedListener.sendMessageToFeed("CONFLICT! Another server already running?");
+			networkHandler.setRunning(false);
+			return;
+		}
+	}
+
+	public void broadcastMessageToClients(String msg) {
+		for (int i = 0; i < getOutputStreams().size(); i++) {
+			PrintWriter currentOut = getOutputStreams().get(i);
+			// if(client)
+			currentOut.println(msg);
 		}
 	}
 
 	private void connectWithClient(final Socket clientSocket) {
-		ServerConnection serverConnection = new ServerConnection(clientSocket, feedListener, outputStreams);
+		ServerConnection serverConnection = new ServerConnection(clientSocket, feedListener, this);
 		Thread clientThread = new Thread(serverConnection);
 		clientThread.start();
+	}
+
+	public ArrayList<PrintWriter> getOutputStreams() {
+		return outputStreams;
+	}
+
+	public boolean isRunning() {
+		return running;
 	}
 }

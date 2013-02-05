@@ -1,6 +1,7 @@
 package gui;
 
 import gui.GBC.Align;
+import gui.MenuButton.Type;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -16,7 +17,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 import chatty.Chatty;
-
+import chatty.Config;
 
 import network.NetworkHandler;
 
@@ -29,27 +30,34 @@ public class MainFrame extends JPanel {
 
 	public MainFrame(Chatty main) {
 		JFrame frame = new JFrame();
+
 		this.main = main;
 		setBackground(Color.black);
 
 		// no effect
 		// frame.setSize(new Dimension(frameWidth, frameHeight));
 
+		int menuSize = 3;
+
 		setLayout(new GridBagLayout());
 
 		feedWindow = new FeedWindow(new Dimension(frameWidth, 200));
 		inputWindow = new InputWindow(new Dimension(frameWidth, 20), this);
 
-		MenuButton clientButton = new MenuButton("client", frameWidth / 2, feedWindow, main);
-		MenuButton serverButton = new MenuButton("server", frameWidth / 2, feedWindow, main);
+		MenuButton clientButton = new MenuButton(Type.CLIENT, frameWidth / menuSize, feedWindow, main);
+		MenuButton serverButton = new MenuButton(Type.SERVER, frameWidth / menuSize, feedWindow, main);
+		MenuButton options = new MenuButton(Type.OPTIONS, frameWidth / menuSize, feedWindow, main);
 
-		add(new JScrollPane(feedWindow), new GBC(0, 2, Align.LEFT).setSpan(2, 5));
-		add(inputWindow, new GBC(0, 8, Align.MID).setSpan(2, 2));
+		add(new JScrollPane(feedWindow), new GBC(0, 2, Align.LEFT).setSpan(menuSize, 5));
+		add(inputWindow, new GBC(0, 8, Align.MID).setSpan(menuSize, 2));
 
 		add(clientButton, new GBC(0, 0, Align.LEFT).setSpan(1, 1));
 		add(serverButton, new GBC(1, 0, Align.RIGHT).setSpan(1, 1));
+		add(options, new GBC(2, 0, Align.RIGHT).setSpan(1, 1));
 
 		frame.getContentPane().add(this);
+		frame.setTitle(Config.CHATTY_VER);
+		// frame.setUndecorated(true);
 		frame.pack();
 
 		frame.setLocationRelativeTo(frame.getRootPane());
@@ -57,6 +65,7 @@ public class MainFrame extends JPanel {
 
 		frame.addKeyListener(new MyKeyListener());
 
+		frame.setResizable(false);
 		frame.setVisible(true);
 	}
 
@@ -65,7 +74,12 @@ public class MainFrame extends JPanel {
 	}
 
 	public void sendMessageToFeed(String msg) {
-		feedWindow.sendMessageToFeed(msg);
-		main.getNetworkHandler().getClient().getOutputStream().println(msg);
+		// TODO: send SELF messages to SERVER, TEMPORARY WORKAROUND
+		if (!main.getNetworkHandler().isClient()) {
+			feedWindow.sendMessageToFeed(msg);
+			main.getNetworkHandler().getServer().broadcastMessageToClients(msg);
+		}
+		if (main.getNetworkHandler().isClient())
+			main.getNetworkHandler().getClient().getOutputStream().println(msg);
 	}
 }

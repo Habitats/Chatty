@@ -15,12 +15,12 @@ public class ServerConnection implements Runnable {
 	private Socket clientSocket;
 	private FeedListener feedListener;
 	private PrintWriter out;
-	private ArrayList<PrintWriter> outputStreams;
+	private Server server;
 
-	public ServerConnection(Socket clientSocket, FeedListener feedListener, ArrayList<PrintWriter> outputStreams) {
+	public ServerConnection(Socket clientSocket, FeedListener feedListener, Server server) {
 		this.clientSocket = clientSocket;
 		this.feedListener = feedListener;
-		this.outputStreams = outputStreams;
+		this.server = server;
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class ServerConnection implements Runnable {
 
 		try {
 			out = new PrintWriter(clientSocket.getOutputStream(), true);
-			outputStreams.add(out);
+			server.getOutputStreams().add(out);
 			in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
 			// write to the socket
@@ -45,12 +45,9 @@ public class ServerConnection implements Runnable {
 					out.println(fromServer);
 					fromServer = "";
 				}
+				// send message to SERVER (self)
 				feedListener.sendMessageToFeed(fromUser);
-				for (int i = 0; i < outputStreams.size(); i++) {
-					PrintWriter currentOut = outputStreams.get(i);
-//					if(client)
-					currentOut.println(fromUser);
-				}
+				server.broadcastMessageToClients(fromUser);
 			}
 
 			out.close();

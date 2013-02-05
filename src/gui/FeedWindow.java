@@ -13,6 +13,7 @@ public class FeedWindow extends JTextPane implements FeedListener {
 		setFocusable(false);
 		setText("Chatty v0.0...");
 
+		// auto scroll
 		DefaultCaret caret = (DefaultCaret) getCaret();
 		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 	}
@@ -21,11 +22,5 @@ public class FeedWindow extends JTextPane implements FeedListener {
 	public void sendMessageToFeed(String msg) {
 		if (msg.length() > 0)
 			setText(getText() + "\n" + msg);
-	}
-
-	@Override
-	public void sendMessageToServer(String msg) {
-		// TODO Auto-generated method stub
-
 	}
 }
