@@ -17,6 +17,8 @@ import java.util.Queue;
 import java.util.Scanner;
 import java.util.Stack;
 
+import chatty.Config;
+
 import network.NetworkHandler;
 import network.client.Client;
 
@@ -39,10 +41,10 @@ public class Server implements Runnable {
 		ServerSocket serverSocket = null;
 		try {
 			serverSocket = new ServerSocket(port);
-			System.out.println("Connected on port " + port);
+			feedListener.sendMessageToFeed("Running server on " + port + "!");
 			return serverSocket;
 		} catch (Exception e) {
-			System.out.println("Connection on port " + port + " failed. Exiting...");
+			feedListener.sendMessageToFeed("Failed to setup server on port " + port + " failed. Exiting...");
 			networkHandler.setRunning(false);
 			return null;
 		}
@@ -73,7 +75,7 @@ public class Server implements Runnable {
 			while (listening) {
 				Socket clientSocket = listenForIncomingConnections(serverSocket);
 				connectWithClient(clientSocket);
-				feedListener.sendMessageToFeed("Adding client!");
+				feedListener.sendMessageToFeed(clientSocket.getRemoteSocketAddress().toString().split("[/:]")[1] + " connected!");
 				running = true;
 			}
 			serverSocket.close();

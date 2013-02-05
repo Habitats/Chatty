@@ -19,8 +19,8 @@ public class Chatty {
 	}
 
 	private void run() {
-		int port = 7701;
-		String hostname = "localhost";
+		int port = Config.DEFAULT_PORT;
+		String hostname = Config.DEFAULT_HOST;
 
 		MainFrame gui = new MainFrame(this);
 		FeedListener feedListener = gui.getFeedWindow();
