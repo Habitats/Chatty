@@ -1,18 +1,18 @@
 package network;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import chatty.Config;
 
 import network.client.Client;
+import network.client.ClientEvent;
 import network.server.Server;
+import network.server.ServerEvent;
 
-import gui.EventListener;
 import gui.MainFrame;
 
-public class NetworkHandler implements NetworkListener {
+public class NetworkHandler {
 
 	private MainFrame gui;
 	private int port;
@@ -21,14 +21,17 @@ public class NetworkHandler implements NetworkListener {
 	private ProgramState programState;
 	private Server serverInstance;
 	private Client clientInstance;
-	private EventListener eventListener;
+
+	// store all listeners
+	private ArrayList<NetworkListener> networkListeners = new ArrayList<NetworkListener>();
+	// store all events for loggins purposes
+	private ArrayList<NetworkEvent> networkEvents = new ArrayList<NetworkEvent>();
 
 	public NetworkHandler(int port, String hostname) {
 		this.port = port;
 		this.hostname = hostname;
 	}
 
-	@Override
 	public void startServer() {
 		startServer(Config.DEFAULT_PORT);
 	}
@@ -43,11 +46,12 @@ public class NetworkHandler implements NetworkListener {
 	public void startServer(int port) {
 		Thread serverThread;
 		try {
-			serverInstance = new Server(port, getEventListener(), this);
+			serverInstance = new Server(port, this);
 			programState = serverInstance;
 			serverThread = new Thread((Server) programState);
 			serverThread.start();
 		} catch (IOException e) {
+			programState = null;
 			e.printStackTrace();
 		}
 	}
@@ -60,29 +64,95 @@ public class NetworkHandler implements NetworkListener {
 		startClient(hostname, Config.DEFAULT_PORT);
 	}
 
-	@Override
 	public void startClient(String hostname, int port) {
 		Thread clientThread;
 		try {
-			clientInstance = new Client(port, hostname, getEventListener(), this);
+			clientInstance = new Client(port, hostname, this);
 			programState = clientInstance;
 			clientThread = new Thread((Client) programState);
 			clientThread.start();
 		} catch (IOException e) {
+			programState = null;
 			e.printStackTrace();
 		}
 	}
 
-	@Override
-	public void onCrash() {
+	public void addNetworkListener(NetworkListener listener) {
+		networkListeners.add(listener);
 	}
 
-	@Override
-	public void lostConnection() {
+	public void fireServerEvent(ServerEvent event) {
+		networkEvents.add(event);
+		for (NetworkListener listener : networkListeners) {
+			switch (event.getEvent()) {
+			case START:
+				if (event.getMsg() == null)
+					event.setMsg("Starting server...");
+				listener.serverStart(event);
+				break;
+			case CLIENT_DROPPED:
+				if (event.getMsg() == null)
+					event.setMsg("Client connection dropped!");
+				listener.serverStart(event);
+				break;
+			case SHUTDOWN:
+				if (event.getMsg() == null)
+					event.setMsg("Server shutting down!");
+				listener.serverShutDown(event);
+				break;
+			case CLIENT_CONNECT:
+				if (event.getMsg() == null)
+					event.setMsg("Client connected!");
+				listener.clientDropped(event);
+				break;
+			case CRASH:
+				if (event.getMsg() == null)
+					event.setMsg("Server crashed!");
+				listener.serverCrashed(event);
+				break;
+			case STATUS:
+				listener.serverStatus(event);
+				break;
+			default:
+				break;
+			}
+		}
 	}
 
-	@Override
-	public void serverDisconnect() {
+	public void fireClientEvent(ClientEvent event) {
+		networkEvents.add(event);
+		for (NetworkListener listener : networkListeners) {
+			switch (event.getEvent()) {
+			case START:
+				if (event.getMsg() == null)
+					event.setMsg("Client starting...");
+				listener.clientStart(event);
+				break;
+			case CONNECT:
+				if (event.getMsg() == null)
+					event.setMsg("Client connected!");
+				listener.clientStart(event);
+				break;
+			case SHUTDOWN:
+				if (event.getMsg() == null)
+					event.setMsg("Client shutting down!");
+				listener.clientShutDown(event);
+				break;
+			case CRASH:
+				if (event.getMsg() == null)
+					event.setMsg("Client crashed!");
+				listener.clientCrashed(event);
+				break;
+			case STATUS:
+				listener.clientStatus(event);
+				break;
+			case MESSAGE:
+				listener.clientMessage(event);
+				break;
+			default:
+				break;
+			}
+		}
 	}
 
 	public boolean isRunning() {
@@ -107,13 +177,4 @@ public class NetworkHandler implements NetworkListener {
 	public Client getClient() {
 		return clientInstance;
 	}
-
-	public EventListener getEventListener() {
-		return eventListener;
-	}
-
-	public void setEventListener(EventListener eventListener) {
-		this.eventListener = eventListener;
-	}
-
 }

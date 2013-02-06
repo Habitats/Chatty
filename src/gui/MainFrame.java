@@ -36,9 +36,14 @@ public class MainFrame extends JPanel {
 		feedWindow = new FeedWindow(new Dimension(frameWidth, 200));
 		inputWindow = new InputWindow(new Dimension(frameWidth, 20), this);
 
-		MenuButton clientButton = new MenuButton(Type.CLIENT, frameWidth / menuSize, feedWindow, main);
-		MenuButton serverButton = new MenuButton(Type.SERVER, frameWidth / menuSize, feedWindow, main);
-		MenuButton options = new MenuButton(Type.OPTIONS, frameWidth / menuSize, feedWindow, main);
+		MenuButton clientButton = new MenuButton(Type.CLIENT, frameWidth / menuSize,  main);
+		MenuButton serverButton = new MenuButton(Type.SERVER, frameWidth / menuSize, main);
+		MenuButton options = new MenuButton(Type.OPTIONS, frameWidth / menuSize, main);
+
+		getController().getNetworkHandler().addNetworkListener(clientButton);
+		getController().getNetworkHandler().addNetworkListener(serverButton);
+		getController().getNetworkHandler().addNetworkListener(feedWindow);
+	
 
 		add(new JScrollPane(feedWindow), new GBC(0, 2, Align.LEFT).setSpan(menuSize, 5));
 		add(inputWindow, new GBC(0, 8, Align.MID).setSpan(menuSize, 2));
@@ -55,17 +60,20 @@ public class MainFrame extends JPanel {
 		frame.setLocationRelativeTo(frame.getRootPane());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		frame.addKeyListener(new MyKeyListener());
+		addKeyListener(new MyKeyListener());
 
 		frame.setResizable(false);
 		frame.setVisible(true);
+
+		// sets focus to TEXT FIELD
+		inputWindow.requestFocus();
 	}
 
 	public FeedWindow getFeedWindow() {
 		return feedWindow;
 	}
 
-	public Controller getController(){
+	public Controller getController() {
 		return main.getController();
 	}
 

@@ -37,25 +37,25 @@ public class GBC extends GridBagConstraints {
 	 * VERTICAL = fill vertically
 	 * BOTH = guess
 	 * */
-	public GBC setFill(int fill) {
+	public GBC setFill(int fill) { // NO_UCD (use private)
 		this.fill = fill;
 		return this;
 	}
 
 	// this one's complicated, check docs lol
-	public GBC setWeight(double weightx, double weighty) {
+	public GBC setWeight(double weightx, double weighty) { // NO_UCD (unused code)
 		this.weightx = weightx;
 		this.weighty = weighty;
 		return this;
 	}
 
 	// internal padding
-	public GBC setInsets(int top, int left, int bottom, int right) {
+	public GBC setInsets(int top, int left, int bottom, int right) { // NO_UCD (use private)
 		this.insets = new Insets(top, left, bottom, right);
 		return this;
 	}
 
-	public GBC setIpad(int ipadx, int ipady) {
+	public GBC setIpad(int ipadx, int ipady) { // NO_UCD (unused code)
 		this.ipadx = ipadx;
 		this.ipady = ipady;
 		return this;

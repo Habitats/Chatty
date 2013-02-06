@@ -1,8 +1,5 @@
 package network.client;
 
-import gui.EventListener;
-import gui.MainFrame;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,26 +7,21 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.Scanner;
-
-import chatty.Config;
-
 import network.NetworkHandler;
 import network.ProgramState;
+import network.client.ClientEvent.Event;
 
 public class Client extends ProgramState implements Runnable {
 
-	private EventListener eventListener;
 	private PrintWriter out;
 	private NetworkHandler networkHandler;
 	private String hostname;
 	private Socket echoSocket;
 	private BufferedReader in;
 
-	public Client(int port, String hostname, EventListener feedListener, NetworkHandler networkHandler) throws IOException {
+	public Client(int port, String hostname, NetworkHandler networkHandler) throws IOException {
 		this.hostname = hostname;
 
-		setEventListener(feedListener);
 		setNetworkHandler(networkHandler);
 
 		super.port = port;
@@ -37,24 +29,24 @@ public class Client extends ProgramState implements Runnable {
 
 	private Socket setUpConnection(int port, String hostname) {
 		Socket socket = null;
-		getEventListener().sendStatusToOwnFeed("Connecting to " + hostname + " on " + port + "...");
+		getNetworkHandler().fireClientEvent(new ClientEvent(Event.STATUS, "Connecting to " + hostname + " on " + port + "..."));
 		try {
 			socket = new Socket(hostname, port);
-			getEventListener().sendStatusToOwnFeed("Connected!");
+			getNetworkHandler().fireClientEvent(new ClientEvent(Event.CONNECT));
 			return socket;
 		} catch (UnknownHostException e) {
-			getEventListener().sendStatusToOwnFeed("Unknown host: " + hostname + "!");
+			getNetworkHandler().fireClientEvent(new ClientEvent(Event.SHUTDOWN, e, "Unknown host: " + hostname + "!"));
 		} catch (IOException e) {
-			getEventListener().sendStatusToOwnFeed("Connection failed.");
+			getNetworkHandler().fireClientEvent(new ClientEvent(Event.SHUTDOWN, e, "Connection failed."));
 		}
 		return null;
 	}
 
 	@Override
 	public void run() {
+		getNetworkHandler().fireClientEvent(new ClientEvent(Event.START));
 		setClient(true);
 		setServer(false);
-		getEventListener().sendStatusToOwnFeed("Starting client...");
 
 		// String hostname = "78.91.48.1";
 
@@ -74,16 +66,15 @@ public class Client extends ProgramState implements Runnable {
 
 			setRunning(true);
 			// this loop constantly checks for changes a on the socket
-			while (isRunning() && (fromServer = in.readLine()) != null ) {
+			while (isRunning() && (fromServer = in.readLine()) != null) {
 				// send message from SERVER to own FEED
-				getEventListener().sendNormalMessageToOwnFeed(fromServer);
+				getNetworkHandler().fireClientEvent(new ClientEvent(Event.MESSAGE, fromServer));
 			}
 		} catch (SocketException e) {
-			getEventListener().sendErrorToOwnFeed("Connection lost!");
+			getNetworkHandler().fireClientEvent(new ClientEvent(Event.DISCONNECT, e));
 			return;
 		} catch (IOException e) {
-			getEventListener().sendStatusToOwnFeed("CLIENT CRASHED");
-			e.printStackTrace();
+			getNetworkHandler().fireClientEvent(new ClientEvent(Event.CRASH, e));
 		} finally {
 			kill();
 		}
@@ -95,6 +86,7 @@ public class Client extends ProgramState implements Runnable {
 
 	@Override
 	public void kill() {
+		getNetworkHandler().fireClientEvent(new ClientEvent(Event.SHUTDOWN));
 		// cleanup
 		try {
 			if (echoSocket != null)
@@ -104,7 +96,6 @@ public class Client extends ProgramState implements Runnable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		getNetworkHandler().lostConnection();
 		setRunning(false);
 	}
 
@@ -114,13 +105,5 @@ public class Client extends ProgramState implements Runnable {
 
 	public void setNetworkHandler(NetworkHandler networkHandler) {
 		this.networkHandler = networkHandler;
-	}
-
-	public EventListener getEventListener() {
-		return eventListener;
-	}
-
-	public void setEventListener(EventListener eventListener) {
-		this.eventListener = eventListener;
 	}
 }

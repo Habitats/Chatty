@@ -1,14 +1,11 @@
 package network;
 
-import java.util.ArrayList;
-
 public abstract class ProgramState {
 	private boolean running = false;
 	protected int port;
 	private boolean client = false;
 	private boolean server = false;
-
-	private ArrayList<Object> observers = new ArrayList<Object>();
+	private boolean online;
 
 	public abstract void kill();
 

@@ -1,6 +1,5 @@
 package chatty;
 
-import gui.EventListener;
 import gui.MainFrame;
 
 import network.NetworkHandler;
@@ -14,17 +13,10 @@ public class Chatty {
 	}
 
 	private void run() {
-		int port = Config.DEFAULT_PORT;
-		String hostname = Config.DEFAULT_HOST;
 
+		controller = new Controller();
 		MainFrame gui = new MainFrame(this);
-		networkHandler = new NetworkHandler(port, hostname);
-
-		controller = new Controller(networkHandler, gui);
-	}
-
-	public NetworkHandler getNetworkHandler() {
-		return networkHandler;
+		controller.addGui(gui);
 	}
 
 	public Controller getController() {

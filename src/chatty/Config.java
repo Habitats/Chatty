@@ -5,6 +5,7 @@ import java.awt.Color;
 public class Config {
 	// general settings
 	public static final String CHATTY_VER = "Chatty v0.2 - Work in progress";
+	public static final String APPLICATION_NAME = "Chatty";
 	public static final int DEFAULT_PORT = 7702;
 	// public static final String DEFAULT_HOST = "shoopdawhoop.myftp.org";
 	public static final String DEFAULT_HOST = "localhost";

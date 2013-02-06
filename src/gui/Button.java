@@ -1,24 +1,23 @@
 package gui;
 
+import gui.MenuButton.Type;
+
 import java.awt.Dimension;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.util.ArrayList;
 
 import javax.swing.JLabel;
 
 import network.NetworkListener;
+import network.client.ClientEvent;
+import network.server.ServerEvent;
 
 import chatty.Config;
 
 public class Button extends JLabel implements NetworkListener {
 
 	private boolean active = false;
-	protected String text;
 	protected Dimension dim;
-	protected ButtonMouseListener buttonMouseListener = new ButtonMouseListener(this);
-	private boolean toggleButton;
-	private ArrayList<Button> toggleButtonGroup;
+	private ButtonMouseListener buttonMouseListener = new ButtonMouseListener(this);
+	private Type type;
 
 	public Button() {
 		setPreferredSize(dim);
@@ -31,7 +30,7 @@ public class Button extends JLabel implements NetworkListener {
 	}
 
 	public Button(String text, Dimension dim) {
-		setText(this.text = text);
+		setText(text);
 		init();
 	}
 
@@ -39,12 +38,24 @@ public class Button extends JLabel implements NetworkListener {
 		addMouseListener(buttonMouseListener);
 	}
 
-	public boolean isActive() {
+	protected boolean isActive() {
 		return active;
 	}
 
-	public void setActive(boolean active) {
+	protected void setType(Type type) {
+		this.type = type;
+	}
+
+	protected Type getType() {
+		return type;
+	}
+
+	protected void setActive(boolean active) {
 		this.active = active;
+		if (active)
+			setBackground(Config.BUTTON_COLOR_ACTIVE);
+		else
+			setBackground(Config.BUTTON_COLOR_DEFAULT);
 	}
 
 	ButtonMouseListener getButtonMouseListener() {
@@ -52,30 +63,46 @@ public class Button extends JLabel implements NetworkListener {
 	}
 
 	@Override
-	public void startServer() {
-		System.out.println("BUNCH OF DICKS");
+	public void serverStart(ServerEvent event) {
 	}
 
 	@Override
-	public void startClient(String hostname, int port) {
+	public void serverShutDown(ServerEvent event) {
 	}
 
 	@Override
-	public void onCrash() {
+	public void clientDropped(ServerEvent event) {
 	}
 
 	@Override
-	public void lostConnection() {
+	public void serverCrashed(ServerEvent event) {
 	}
 
 	@Override
-	public void serverDisconnect() {
+	public void clientStart(ClientEvent event) {
 	}
 
 	@Override
-	public void startClient() {
-		// TODO Auto-generated method stub
-
+	public void clientShutDown(ClientEvent event) {
 	}
 
+	@Override
+	public void clientCrashed(ClientEvent event) {
+	}
+
+	@Override
+	public void clientConnect(ClientEvent event) {
+	}
+
+	@Override
+	public void serverStatus(ServerEvent event) {
+	}
+
+	@Override
+	public void clientStatus(ClientEvent event) {
+	}
+
+	@Override
+	public void clientMessage(ClientEvent event) {
+	}
 }

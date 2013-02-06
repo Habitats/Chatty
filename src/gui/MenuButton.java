@@ -5,6 +5,9 @@ import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 import javax.swing.SwingConstants;
 
+import network.client.ClientEvent;
+import network.server.ServerEvent;
+
 import chatty.Chatty;
 
 public class MenuButton extends Button {
@@ -14,54 +17,65 @@ public class MenuButton extends Button {
 		SERVER("server"), //
 		CLIENT("client");
 
-		String text;
+		private String text;
 
 		Type(String text) {
 			this.text = text;
 		}
 
-		String getText() {
+		public String getText() {
 			return text;
 		}
 	}
 
 	private Color color = Color.DARK_GRAY;
-	protected Type type;
 
-	public MenuButton(final Type TYPE, int buttonWidth, final EventListener feedListener, final Chatty main) {
+	public MenuButton(final Type type, int buttonWidth, final Chatty main) {
 		setBackground(color);
 		// font color
 		setForeground(Color.white);
-		setText(TYPE.text);
+		setText(type.getText());
+		setType(type);
 		setPreferredSize(new Dimension(buttonWidth, 30));
 		setOpaque(true);
 		setHorizontalAlignment(SwingConstants.CENTER);
-		
+
 		addMouseListener(new ButtonMouseListener(this) {
 
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				if (!super.button.isActive()) {
-					if (TYPE == Type.SERVER && !main.getNetworkHandler().isRunning()) {
-						color = Color.red;
-						main.getNetworkHandler().startServer();
-						setActive(true);
-					} else if (TYPE == Type.CLIENT && !main.getNetworkHandler().isRunning()) {
-						color = Color.red;
-						main.getNetworkHandler().startClient();
-						setActive(true);
+					if (type == Type.SERVER && !main.getController().getNetworkHandler().isRunning()) {
+						main.getController().getNetworkHandler().startServer();
+					} else if (type == Type.CLIENT && !main.getController().getNetworkHandler().isRunning()) {
+						main.getController().getNetworkHandler().startClient();
 					}
 				} else {
-					main.getNetworkHandler().shutDown();
-					setActive(false);
+					main.getController().getNetworkHandler().shutDown();
 				}
 			}
 		});
 	}
 
-	public void onCrash() {
+	@Override
+	public void serverStart(ServerEvent event) {
+		if (getType() == Type.SERVER)
+			setActive(true);
+	}
+
+	@Override
+	public void serverShutDown(ServerEvent event) {
 		setActive(false);
 	}
 
+	@Override
+	public void clientStart(ClientEvent event) {
+		if (getType() == Type.CLIENT)
+			setActive(true);
+	}
 
+	@Override
+	public void clientShutDown(ClientEvent event) {
+		setActive(false);
+	}
 }

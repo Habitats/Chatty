@@ -6,53 +6,37 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JTextField;
 
-import chatty.Config;
+import network.client.ClientEvent;
+import network.client.ClientEvent.Event;
+
+import chatty.ChatCommand;
+import chatty.ChatEvent;
 
 public class InputWindow extends JTextField {
 
 	ChatCommand cmd;
+	private final MainFrame mainFrame;
 
 	public InputWindow(Dimension dim, final MainFrame mainFrame) {
+		this.mainFrame = mainFrame;
 		setPreferredSize(dim);
-		addActionListener(new ActionListener() {
+		addActionListener(new myInputListener());
 
-			@Override
-			public void actionPerformed(ActionEvent ae) {
-				String msg = ae.getActionCommand();
-				// if message is empty, do nothing
-				if (msg.length() > 0) {
-					// check if it's a CHAT COMMAND
-					if (msg.startsWith("/") && ((cmd = ChatCommand.getCmd(msg.split(" ")[0])) != null)) {
-						String[] msgArr = msg.split(" ");
+	}
 
-						if (cmd == ChatCommand.CHANGE_NICK) {
-							Config.NAME_USER = msgArr[0];
-							mainFrame.getController().sendMessageToSelf("NICK changed to " + msgArr[0]);
-						} else if (cmd == ChatCommand.CONNECT) {
-							int port = Config.DEFAULT_PORT;
-							if (msgArr.length == 3)
-								try {
-									port = Integer.parseInt(msgArr[2]);
-									mainFrame.getController().getNetworkHandler().startClient(msgArr[1], port);
-								} catch (NumberFormatException e) {
-									mainFrame.getController().sendMessageToSelf("Invalid port or format.");
-									return;
-								}
-						} else if (cmd == ChatCommand.LISTEN_PORT) {
-							try {
-								int port = Integer.parseInt(msgArr[1]);
-								mainFrame.getController().getNetworkHandler().restartServer(port);
-							} catch (NumberFormatException e) {
-								mainFrame.getController().sendMessageToSelf("Invalid port or format.");
-							}
-						} else if (cmd == ChatCommand.QUIT)
-							System.exit(0);
+	private class myInputListener implements ActionListener {
 
-					} else
-						mainFrame.getController().sendMessageToAll(msg);
-					setText("");
-				}
+		@Override
+		public void actionPerformed(ActionEvent ae) {
+			ChatEvent chatEvent = new ChatEvent(ae.getActionCommand());
+			if (chatEvent.getMsgArr().length > 0) {
+				if (chatEvent.isCommand()) {
+					chatEvent.executeCommand();
+					mainFrame.getController().getNetworkHandler().fireClientEvent(new ClientEvent(Event.STATUS, chatEvent.getReturnMsg()));
+				} else
+					mainFrame.getController().sendMessageToAll(chatEvent.getRaw());
+				setText("");
 			}
-		});
+		}
 	}
 }

@@ -5,8 +5,8 @@ import java.net.Socket;
 
 public class ClientConnection {
 	
-	PrintWriter outputStream;
-	Socket clientSocket;
+	private PrintWriter outputStream;
+	private Socket clientSocket;
 
 	public ClientConnection(PrintWriter outputStream,Socket clientSocket){
 		this.outputStream = outputStream;

@@ -10,19 +10,24 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 
+import network.NetworkListener;
+import network.client.ClientEvent;
+import network.server.ServerEvent;
+
 import chatty.Config;
 
-public class FeedWindow extends JTextPane implements EventListener {
+public class FeedWindow extends JTextPane implements NetworkListener {
 
 	public FeedWindow(Dimension dim) {
 		setPreferredSize(dim);
 
-		setText("Welcome to  " +  Config.CHATTY_VER + " (excuse the name), a lightweight, easy to use, chat client!");
+		setText("Welcome to  " + Config.CHATTY_VER + " (excuse the name), a lightweight, easy to use, chat client!");
 		// auto scroll
 		DefaultCaret caret = (DefaultCaret) getCaret();
 		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+		setEditable(false);
 
-//		initStyles();
+		// initStyles();
 	}
 
 	private void initStyles() {
@@ -51,18 +56,72 @@ public class FeedWindow extends JTextPane implements EventListener {
 			setText(getText() + "\n" + msg);
 	}
 
-	@Override
-	public void sendStatusToOwnFeed(String msg) {
+	private void sendStatusToOwnFeed(String msg) {
 		appendText("STATUS: " + msg);
 	}
 
-	@Override
-	public void sendNormalMessageToOwnFeed(String msg) {
+	private void sendNormalMessageToOwnFeed(String msg) {
 		appendText(msg);
 	}
 
-	@Override
-	public void sendErrorToOwnFeed(String msg) {
+	private void sendErrorToOwnFeed(String msg) {
 		appendText("ERROR: " + msg);
+	}
+
+	// network stuff
+
+	@Override
+	public void serverStart(ServerEvent event) {
+		sendStatusToOwnFeed(event.getMsg());
+	}
+
+	@Override
+	public void serverShutDown(ServerEvent event) {
+		sendStatusToOwnFeed(event.getMsg());
+	}
+
+	@Override
+	public void clientDropped(ServerEvent event) {
+		sendErrorToOwnFeed(event.getMsg());
+	}
+
+	@Override
+	public void serverCrashed(ServerEvent event) {
+		sendErrorToOwnFeed(event.getMsg());
+	}
+
+	@Override
+	public void serverStatus(ServerEvent event) {
+		sendStatusToOwnFeed(event.getMsg());
+	}
+
+	@Override
+	public void clientStart(ClientEvent event) {
+		sendStatusToOwnFeed(event.getMsg());
+	}
+
+	@Override
+	public void clientShutDown(ClientEvent event) {
+		sendStatusToOwnFeed(event.getMsg());
+	}
+
+	@Override
+	public void clientCrashed(ClientEvent event) {
+		sendErrorToOwnFeed(event.getMsg());
+	}
+
+	@Override
+	public void clientConnect(ClientEvent event) {
+		sendStatusToOwnFeed(event.getMsg());
+	}
+
+	@Override
+	public void clientStatus(ClientEvent event) {
+		sendStatusToOwnFeed(event.getMsg());
+	}
+
+	@Override
+	public void clientMessage(ClientEvent event) {
+		sendNormalMessageToOwnFeed(event.getMsg());
 	}
 }
