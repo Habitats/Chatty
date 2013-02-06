@@ -23,17 +23,27 @@ public class NetworkHandler implements NetworkListener {
 	private Client clientInstance;
 	private EventListener eventListener;
 
-	public NetworkHandler(int port, String hostname, EventListener eventListener) {
+	public NetworkHandler(int port, String hostname) {
 		this.port = port;
 		this.hostname = hostname;
-		this.eventListener = eventListener;
 	}
 
 	@Override
 	public void startServer() {
+		startServer(Config.DEFAULT_PORT);
+	}
+
+	public void restartServer(int port) {
+		if (port == 0)
+			port = Config.DEFAULT_PORT;
+		getServer().kill();
+		startServer(port);
+	}
+
+	public void startServer(int port) {
 		Thread serverThread;
 		try {
-			serverInstance = new Server(port, eventListener, this);
+			serverInstance = new Server(port, getEventListener(), this);
 			programState = serverInstance;
 			serverThread = new Thread((Server) programState);
 			serverThread.start();
@@ -42,11 +52,19 @@ public class NetworkHandler implements NetworkListener {
 		}
 	}
 
+	public void startClient() {
+		startClient(Config.DEFAULT_HOST, Config.DEFAULT_PORT);
+	}
+
+	public void startClient(String hostname) {
+		startClient(hostname, Config.DEFAULT_PORT);
+	}
+
 	@Override
-	public void startClient(String name) {
+	public void startClient(String hostname, int port) {
 		Thread clientThread;
 		try {
-			clientInstance = new Client(port, hostname, eventListener, name, this);
+			clientInstance = new Client(port, hostname, getEventListener(), this);
 			programState = clientInstance;
 			clientThread = new Thread((Client) programState);
 			clientThread.start();
@@ -89,4 +107,13 @@ public class NetworkHandler implements NetworkListener {
 	public Client getClient() {
 		return clientInstance;
 	}
+
+	public EventListener getEventListener() {
+		return eventListener;
+	}
+
+	public void setEventListener(EventListener eventListener) {
+		this.eventListener = eventListener;
+	}
+
 }

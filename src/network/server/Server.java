@@ -134,7 +134,6 @@ public class Server extends ProgramState implements Runnable {
 	@Override
 	public void kill() {
 		setRunning(false);
-		getNetworkHandler().serverDisconnect();
 		listening = false;
 		try {
 			if (serverSocket != null)

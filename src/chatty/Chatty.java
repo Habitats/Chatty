@@ -7,6 +7,7 @@ import network.NetworkHandler;
 
 public class Chatty {
 	private NetworkHandler networkHandler;
+	private Controller controller;
 
 	public static void main(String[] args) {
 		new Chatty().run();
@@ -17,11 +18,16 @@ public class Chatty {
 		String hostname = Config.DEFAULT_HOST;
 
 		MainFrame gui = new MainFrame(this);
-		EventListener eventListener = gui.getFeedWindow();
-		networkHandler = new NetworkHandler(port, hostname, eventListener);
+		networkHandler = new NetworkHandler(port, hostname);
+
+		controller = new Controller(networkHandler, gui);
 	}
 
 	public NetworkHandler getNetworkHandler() {
 		return networkHandler;
+	}
+
+	public Controller getController() {
+		return controller;
 	}
 }

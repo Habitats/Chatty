@@ -20,15 +20,13 @@ import network.ProgramState;
 public class Client extends ProgramState implements Runnable {
 
 	private EventListener eventListener;
-	private String name;
 	private PrintWriter out;
 	private NetworkHandler networkHandler;
 	private String hostname;
 	private Socket echoSocket;
 	private BufferedReader in;
 
-	public Client(int port, String hostname, EventListener feedListener, String name, NetworkHandler networkHandler) throws IOException {
-		this.name = name;
+	public Client(int port, String hostname, EventListener feedListener, NetworkHandler networkHandler) throws IOException {
 		this.hostname = hostname;
 
 		setEventListener(feedListener);
@@ -76,7 +74,7 @@ public class Client extends ProgramState implements Runnable {
 
 			setRunning(true);
 			// this loop constantly checks for changes a on the socket
-			while ((fromServer = in.readLine()) != null && isRunning()) {
+			while (isRunning() && (fromServer = in.readLine()) != null ) {
 				// send message from SERVER to own FEED
 				getEventListener().sendNormalMessageToOwnFeed(fromServer);
 			}

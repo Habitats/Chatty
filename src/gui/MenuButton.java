@@ -48,7 +48,7 @@ public class MenuButton extends Button {
 						setActive(true);
 					} else if (TYPE == Type.CLIENT && !main.getNetworkHandler().isRunning()) {
 						color = Color.red;
-						main.getNetworkHandler().startClient("bob");
+						main.getNetworkHandler().startClient();
 						setActive(true);
 					}
 				} else {

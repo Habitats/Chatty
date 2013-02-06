@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import chatty.Chatty;
 import chatty.Config;
+import chatty.Controller;
 
 public class MainFrame extends JPanel {
 	private FeedWindow feedWindow;
@@ -21,8 +22,8 @@ public class MainFrame extends JPanel {
 
 	public MainFrame(Chatty main) {
 		JFrame frame = new JFrame();
-
 		this.main = main;
+
 		setBackground(Color.black);
 
 		// no effect
@@ -64,20 +65,8 @@ public class MainFrame extends JPanel {
 		return feedWindow;
 	}
 
-	public void sendMessageToSelf(String msg) {
-		feedWindow.sendStatusToOwnFeed(msg);
+	public Controller getController(){
+		return main.getController();
 	}
 
-	public void sendMessageToAll(String msg) {
-		// TODO: send SELF messages to SERVER, TEMPORARY WORKAROUND
-
-		// if CLIENT, send to SERVER only
-		if (main.getNetworkHandler().getProgramState().isClient())
-			main.getNetworkHandler().getClient().getOutputStream().println(Config.NAME_USER + ": " + msg);
-
-		// if SERVER, send to all CLIENTS and SELF
-		else if (main.getNetworkHandler().getProgramState().isServer()) {
-			main.getNetworkHandler().getServer().broadcastServerMessage(msg);
-		}
-	}
 }

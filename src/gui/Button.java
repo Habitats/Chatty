@@ -11,7 +11,7 @@ import network.NetworkListener;
 
 import chatty.Config;
 
-public abstract class Button extends JLabel implements NetworkListener {
+public class Button extends JLabel implements NetworkListener {
 
 	private boolean active = false;
 	protected String text;
@@ -57,7 +57,7 @@ public abstract class Button extends JLabel implements NetworkListener {
 	}
 
 	@Override
-	public void startClient(String name) {
+	public void startClient(String hostname, int port) {
 	}
 
 	@Override
@@ -70,6 +70,12 @@ public abstract class Button extends JLabel implements NetworkListener {
 
 	@Override
 	public void serverDisconnect() {
+	}
+
+	@Override
+	public void startClient() {
+		// TODO Auto-generated method stub
+
 	}
 
 }

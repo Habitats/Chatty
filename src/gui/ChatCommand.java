@@ -1,11 +1,13 @@
 package gui;
 
 public enum ChatCommand {
-	CHANGE_NICK("!nick"), //
-	DISCONNECT("!disconnect"), //
-	PRIV_MSG("!query"), //
-	QUIT("!quit"), //
-	HELP("!help"), //
+	CHANGE_NICK("/nick"), //
+	DISCONNECT("/disconnect"), //
+	PRIV_MSG("/query"), //
+	QUIT("/quit"), //
+	HELP("/help"), //
+	CONNECT("/connect"),//
+	LISTEN_PORT("/port"),//
 	;
 	private String cmdAsString;
 
