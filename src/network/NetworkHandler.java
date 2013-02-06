@@ -10,13 +10,8 @@ import network.client.ClientEvent;
 import network.server.Server;
 import network.server.ServerEvent;
 
-import gui.MainFrame;
-
 public class NetworkHandler {
 
-	private MainFrame gui;
-	private int port;
-	private String hostname;
 
 	private ProgramState programState;
 	private Server serverInstance;
@@ -26,11 +21,6 @@ public class NetworkHandler {
 	private ArrayList<NetworkListener> networkListeners = new ArrayList<NetworkListener>();
 	// store all events for loggins purposes
 	private ArrayList<NetworkEvent> networkEvents = new ArrayList<NetworkEvent>();
-
-	public NetworkHandler(int port, String hostname) {
-		this.port = port;
-		this.hostname = hostname;
-	}
 
 	public void startServer() {
 		startServer(Config.DEFAULT_PORT);
@@ -43,7 +33,7 @@ public class NetworkHandler {
 		startServer(port);
 	}
 
-	public void startServer(int port) {
+	private void startServer(int port) {
 		Thread serverThread;
 		try {
 			serverInstance = new Server(port, this);
@@ -64,7 +54,7 @@ public class NetworkHandler {
 		startClient(hostname, Config.DEFAULT_PORT);
 	}
 
-	public void startClient(String hostname, int port) {
+	private void startClient(String hostname, int port) {
 		Thread clientThread;
 		try {
 			clientInstance = new Client(port, hostname, this);

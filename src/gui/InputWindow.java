@@ -9,12 +9,10 @@ import javax.swing.JTextField;
 import network.client.ClientEvent;
 import network.client.ClientEvent.Event;
 
-import chatty.ChatCommand;
 import chatty.ChatEvent;
 
 public class InputWindow extends JTextField {
 
-	ChatCommand cmd;
 	private final MainFrame mainFrame;
 
 	public InputWindow(Dimension dim, final MainFrame mainFrame) {

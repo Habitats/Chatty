@@ -1,21 +1,13 @@
 package chatty;
 
-import gui.MainFrame;
 import network.NetworkHandler;
-import network.client.ClientEvent;
-import network.client.ClientEvent.Event;
 
 public class Controller {
 
 	private final NetworkHandler networkHandler;
-	private MainFrame gui;
 
 	public Controller() {
-		networkHandler = new NetworkHandler(Config.DEFAULT_PORT, Config.DEFAULT_HOST);
-	}
-
-	public void sendMessageToSelf(String msg) {
-		getNetworkHandler().fireClientEvent(new ClientEvent(Event.STATUS, msg));
+		networkHandler = new NetworkHandler();
 	}
 
 	public void sendMessageToAll(String msg) {
@@ -34,9 +26,5 @@ public class Controller {
 	public NetworkHandler getNetworkHandler() {
 		return networkHandler;
 
-	}
-
-	public void addGui(MainFrame gui) {
-		this.gui = gui;
 	}
 }

@@ -92,7 +92,7 @@ public class Server extends ProgramState implements Runnable {
 		clientThread.start();
 	}
 
-	public NetworkHandler getNetworkHandler() {
+	synchronized public NetworkHandler getNetworkHandler() {
 		return networkHandler;
 	}
 
@@ -106,17 +106,13 @@ public class Server extends ProgramState implements Runnable {
 		}
 	}
 
-	public void broadcastMessageToAll(String msg) {
+	private void broadcastMessageToAll(String msg) {
 		getNetworkHandler().fireServerEvent(new ServerEvent(Event.MESSAGE, msg));
 		broadcastMessageToClients(msg);
 	}
 
 	public void broadcastServerMessage(String msg) {
 		broadcastMessageToAll("SERVER: " + msg);
-	}
-
-	public void broadcastStatusMessage(String msg) {
-		broadcastMessageToAll("STATUS: " + msg);
 	}
 
 	@Override

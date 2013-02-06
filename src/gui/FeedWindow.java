@@ -43,15 +43,7 @@ public class FeedWindow extends JTextPane implements NetworkListener {
 		setStyledDocument(doc);
 	}
 
-	public void appendOtherMessage(String msg) {
-		appendText(msg);
-	}
-
-	public void appendOwnMessage(String msg) {
-		appendText(Config.NAME_USER + msg);
-	}
-
-	public void appendText(String msg) {
+	private void appendText(String msg) {
 		if (msg.length() > 0)
 			setText(getText() + "\n" + msg);
 	}

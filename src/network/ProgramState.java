@@ -5,7 +5,6 @@ public abstract class ProgramState {
 	protected int port;
 	private boolean client = false;
 	private boolean server = false;
-	private boolean online;
 
 	public abstract void kill();
 

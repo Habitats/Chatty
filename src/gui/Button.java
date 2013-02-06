@@ -58,10 +58,6 @@ public class Button extends JLabel implements NetworkListener {
 			setBackground(Config.BUTTON_COLOR_DEFAULT);
 	}
 
-	ButtonMouseListener getButtonMouseListener() {
-		return buttonMouseListener;
-	}
-
 	@Override
 	public void serverStart(ServerEvent event) {
 	}
