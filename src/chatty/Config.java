@@ -6,11 +6,6 @@ public class Config {
 	// general settings
 	public static final String CHATTY_VER = "Chatty v0.3 - Work in progress";
 	public static final String APPLICATION_NAME = "Chatty";
-	public static int PORT = 7701;
-	// public static final String DEFAULT_HOST = "shoopdawhoop.myftp.org";
-	public static String HOSTNAME = "localhost";
-
-	public static String NICKNAME = "c@rl";
 
 	// general GUI stuff
 	public static final int BORDER_WIDTH = 5;

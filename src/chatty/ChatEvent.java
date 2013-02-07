@@ -20,25 +20,6 @@ public class ChatEvent {
 		}
 	}
 
-	public void executeCommand() {
-		if (cmd == ChatCommand.HELP || (msgArr.length > 2 && msgArr[2].equals("help")))
-			returnMsg = cmd.getHelp();
-		else if (cmd == ChatCommand.QUIT)
-			System.exit(0);
-		else if (msgArr.length == 2) {
-			if (cmd == ChatCommand.CHANGE_NICK) {
-				Config.NICKNAME = msgArr[1];
-				returnMsg = "Changed nick to " + msgArr[1];
-			} else if (cmd == ChatCommand.CONNECT)
-				returnMsg = "";
-			else if (cmd == ChatCommand.DISCONNECT)
-				returnMsg = "";
-			else if (cmd == ChatCommand.LISTEN_PORT)
-				returnMsg = "";
-			else if (cmd == ChatCommand.PRIV_MSG)
-				returnMsg = "";
-		}
-	}
 
 	public boolean isCommand() {
 		return (cmd != null);

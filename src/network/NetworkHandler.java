@@ -3,15 +3,15 @@ package network;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import chatty.Config;
+import chatty.Controller;
 
 import network.client.Client;
 import network.client.ClientEvent;
+import network.client.ClientEvent.Event;
 import network.server.Server;
 import network.server.ServerEvent;
 
 public class NetworkHandler {
-
 
 	private ProgramState programState;
 	private Server serverInstance;
@@ -21,19 +21,20 @@ public class NetworkHandler {
 	private ArrayList<NetworkListener> networkListeners = new ArrayList<NetworkListener>();
 	// store all events for loggins purposes
 	private ArrayList<NetworkEvent> networkEvents = new ArrayList<NetworkEvent>();
+	private final Controller controller;
 
-	public void startServer() {
-		startServer(Config.PORT);
+	public NetworkHandler(Controller controller) {
+		this.controller = controller;
 	}
 
 	public void restartServer(int port) {
 		if (port == 0)
-			port = Config.PORT;
+			port = controller.getPort();
 		getServer().kill();
 		startServer(port);
 	}
 
-	private void startServer(int port) {
+	public void startServer(int port) {
 		Thread serverThread;
 		try {
 			serverInstance = new Server(port, this);
@@ -46,15 +47,12 @@ public class NetworkHandler {
 		}
 	}
 
-	public void startClient() {
-		startClient(Config.HOSTNAME, Config.PORT);
+	public void restartClient(String hostname, int port) {
+		getProgramState().kill();
+		startClient(hostname, port);
 	}
 
-	public void startClient(String hostname) {
-		startClient(hostname, Config.PORT);
-	}
-
-	private void startClient(String hostname, int port) {
+	public void startClient(String hostname, int port) {
 		Thread clientThread;
 		try {
 			clientInstance = new Client(port, hostname, this);
@@ -71,7 +69,7 @@ public class NetworkHandler {
 		networkListeners.add(listener);
 	}
 
-	public void fireServerEvent(ServerEvent event) {
+	synchronized public void fireServerEvent(ServerEvent event) {
 		networkEvents.add(event);
 		for (NetworkListener listener : networkListeners) {
 			switch (event.getEvent()) {
@@ -94,7 +92,7 @@ public class NetworkHandler {
 			case CLIENT_CONNECT:
 				if (event.getMsg() == null)
 					event.setMsg("Client connected!");
-				listener.clientDropped(event);
+				listener.serverStatus(event);
 				break;
 			case CRASH:
 				if (event.getMsg() == null)
@@ -110,38 +108,42 @@ public class NetworkHandler {
 		}
 	}
 
-	public void fireClientEvent(ClientEvent event) {
-		networkEvents.add(event);
-		for (NetworkListener listener : networkListeners) {
-			switch (event.getEvent()) {
-			case START:
-				if (event.getMsg() == null)
-					event.setMsg("Client starting...");
-				listener.clientStart(event);
-				break;
-			case CONNECT:
-				if (event.getMsg() == null)
-					event.setMsg("Client connected!");
-				listener.clientStart(event);
-				break;
-			case SHUTDOWN:
-				if (event.getMsg() == null)
-					event.setMsg("Client shutting down!");
-				listener.clientShutDown(event);
-				break;
-			case CRASH:
-				if (event.getMsg() == null)
-					event.setMsg("Client crashed!");
-				listener.clientCrashed(event);
-				break;
-			case STATUS:
-				listener.clientStatus(event);
-				break;
-			case MESSAGE:
-				listener.clientMessage(event);
-				break;
-			default:
-				break;
+	synchronized public void fireClientEvent(ClientEvent event) {
+		if (event.getEvent() == Event.COMMAND)
+			controller.executeChatCommand(event.getChatEvent());
+		else {
+			networkEvents.add(event);
+			for (NetworkListener listener : networkListeners) {
+				switch (event.getEvent()) {
+				case START:
+					if (event.getMsg() == null)
+						event.setMsg("Client starting...");
+					listener.clientStart(event);
+					break;
+				case CONNECT:
+					if (event.getMsg() == null)
+						event.setMsg("Client connected!");
+					listener.clientStart(event);
+					break;
+				case SHUTDOWN:
+					if (event.getMsg() == null)
+						event.setMsg("Client shutting down!");
+					listener.clientShutDown(event);
+					break;
+				case CRASH:
+					if (event.getMsg() == null)
+						event.setMsg("Client crashed!");
+					listener.clientCrashed(event);
+					break;
+				case STATUS:
+					listener.clientStatus(event);
+					break;
+				case MESSAGE:
+					listener.clientMessage(event);
+					break;
+				default:
+					break;
+				}
 			}
 		}
 	}

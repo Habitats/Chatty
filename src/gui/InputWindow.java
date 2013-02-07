@@ -22,7 +22,7 @@ public class InputWindow extends JTextField {
 		setPreferredSize(dim);
 		setMinimumSize(dim);
 		addActionListener(new myInputListener());
-		
+
 		setBorder(BorderFactory.createEmptyBorder());
 
 	}
@@ -34,8 +34,7 @@ public class InputWindow extends JTextField {
 			ChatEvent chatEvent = new ChatEvent(ae.getActionCommand());
 			if (chatEvent.getMsgArr().length > 0) {
 				if (chatEvent.isCommand()) {
-					chatEvent.executeCommand();
-					mainFrame.getController().getNetworkHandler().fireClientEvent(new ClientEvent(Event.STATUS, chatEvent.getReturnMsg()));
+					mainFrame.getController().getNetworkHandler().fireClientEvent(new ClientEvent(Event.COMMAND, chatEvent));
 				} else
 					mainFrame.getController().sendMessageToAll(chatEvent.getRaw());
 				setText("");

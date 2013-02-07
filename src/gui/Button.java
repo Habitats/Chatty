@@ -12,7 +12,7 @@ import network.server.ServerEvent;
 
 import chatty.Config;
 
-public class Button extends JLabel implements NetworkListener {
+public abstract class Button extends JLabel implements NetworkListener {
 
 	private boolean active = false;
 	protected Dimension dim;

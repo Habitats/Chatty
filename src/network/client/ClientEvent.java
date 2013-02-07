@@ -1,6 +1,8 @@
 package network.client;
 
+import chatty.ChatEvent;
 import network.NetworkEvent;
+import network.client.ClientEvent.Event;
 
 public class ClientEvent extends NetworkEvent {
 	public enum Event {
@@ -12,9 +14,11 @@ public class ClientEvent extends NetworkEvent {
 		MESSAGE, //
 		STATUS, //
 		ERROR, //
+		COMMAND, //
 	}
 
 	private Event event;
+	private ChatEvent chatEvent;
 
 	public ClientEvent(Event event) {
 		this.event = event;
@@ -38,7 +42,16 @@ public class ClientEvent extends NetworkEvent {
 		this.event = event;
 	}
 
+	public ClientEvent(Event event, ChatEvent chatEvent) {
+		this.chatEvent = chatEvent;
+		this.event = event;
+	}
+
 	public Event getEvent() {
 		return event;
+	}
+	
+	public ChatEvent getChatEvent() {
+		return chatEvent;
 	}
 }
