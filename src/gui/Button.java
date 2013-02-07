@@ -38,7 +38,7 @@ public class Button extends JLabel implements NetworkListener {
 		addMouseListener(buttonMouseListener);
 	}
 
-	protected boolean isActive() {
+	public boolean isActive() {
 		return active;
 	}
 
@@ -46,11 +46,11 @@ public class Button extends JLabel implements NetworkListener {
 		this.type = type;
 	}
 
-	protected Type getType() {
+	public Type getType() {
 		return type;
 	}
 
-	protected void setActive(boolean active) {
+	public void setActive(boolean active) {
 		this.active = active;
 		if (active)
 			setBackground(Config.BUTTON_COLOR_ACTIVE);

@@ -4,7 +4,9 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.JTextField;
+import javax.swing.border.Border;
 
 import network.client.ClientEvent;
 import network.client.ClientEvent.Event;
@@ -18,7 +20,10 @@ public class InputWindow extends JTextField {
 	public InputWindow(Dimension dim, final MainFrame mainFrame) {
 		this.mainFrame = mainFrame;
 		setPreferredSize(dim);
+		setMinimumSize(dim);
 		addActionListener(new myInputListener());
+		
+		setBorder(BorderFactory.createEmptyBorder());
 
 	}
 

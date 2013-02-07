@@ -3,6 +3,7 @@ package gui;
 import java.awt.Color;
 import java.awt.Dimension;
 
+import javax.swing.BorderFactory;
 import javax.swing.JTextPane;
 import javax.swing.text.DefaultCaret;
 import javax.swing.text.DefaultStyledDocument;
@@ -19,13 +20,17 @@ import chatty.Config;
 public class FeedWindow extends JTextPane implements NetworkListener {
 
 	public FeedWindow(Dimension dim) {
+		
 		setPreferredSize(dim);
+		setMinimumSize(dim);
 
 		setText("Welcome to  " + Config.CHATTY_VER + " (excuse the name), a lightweight, easy to use, chat client!");
 		// auto scroll
 		DefaultCaret caret = (DefaultCaret) getCaret();
 		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 		setEditable(false);
+		
+		setBorder(BorderFactory.createEmptyBorder());
 
 		// initStyles();
 	}

@@ -43,7 +43,7 @@ public class Server extends ProgramState implements Runnable {
 	private Socket listenForIncomingConnections(ServerSocket serverSocket) {
 		Socket socket = null;
 		try {
-			getNetworkHandler().fireServerEvent(new ServerEvent(Event.STATUS, "Listening for connections..."));
+			getNetworkHandler().fireServerEvent(new ServerEvent(Event.STATUS, "Listening for connections on port " + port + "..."));
 			socket = serverSocket.accept();
 			return socket;
 		} catch (SocketException e) {
@@ -82,6 +82,7 @@ public class Server extends ProgramState implements Runnable {
 			}
 			setRunning(false);
 		} finally {
+			getNetworkHandler().fireServerEvent(new ServerEvent(Event.SHUTDOWN));
 			kill();
 		}
 	}
@@ -117,7 +118,6 @@ public class Server extends ProgramState implements Runnable {
 
 	@Override
 	public void kill() {
-		getNetworkHandler().fireServerEvent(new ServerEvent(Event.SHUTDOWN));
 		setRunning(false);
 		listening = false;
 		try {

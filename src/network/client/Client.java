@@ -76,6 +76,7 @@ public class Client extends ProgramState implements Runnable {
 		} catch (IOException e) {
 			getNetworkHandler().fireClientEvent(new ClientEvent(Event.CRASH, e));
 		} finally {
+			getNetworkHandler().fireClientEvent(new ClientEvent(Event.SHUTDOWN));
 			kill();
 		}
 	}
@@ -86,13 +87,14 @@ public class Client extends ProgramState implements Runnable {
 
 	@Override
 	public void kill() {
-		getNetworkHandler().fireClientEvent(new ClientEvent(Event.SHUTDOWN));
 		// cleanup
 		try {
 			if (echoSocket != null)
 				echoSocket.close();
-			out.close();
-			in.close();
+			if (out != null)
+				out.close();
+			if (in != null)
+				in.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

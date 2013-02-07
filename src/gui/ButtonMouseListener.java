@@ -5,7 +5,7 @@ import java.awt.event.MouseListener;
 
 import chatty.Config;
 
-class ButtonMouseListener implements MouseListener {
+public class ButtonMouseListener implements MouseListener {
 
 	Button button;
 

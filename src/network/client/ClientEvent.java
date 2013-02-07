@@ -11,6 +11,7 @@ public class ClientEvent extends NetworkEvent {
 		CONNECT, //
 		MESSAGE, //
 		STATUS, //
+		ERROR, //
 	}
 
 	private Event event;

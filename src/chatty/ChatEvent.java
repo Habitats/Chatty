@@ -27,7 +27,7 @@ public class ChatEvent {
 			System.exit(0);
 		else if (msgArr.length == 2) {
 			if (cmd == ChatCommand.CHANGE_NICK) {
-				Config.NAME_USER = msgArr[1];
+				Config.NICKNAME = msgArr[1];
 				returnMsg = "Changed nick to " + msgArr[1];
 			} else if (cmd == ChatCommand.CONNECT)
 				returnMsg = "";

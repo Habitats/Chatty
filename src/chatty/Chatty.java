@@ -2,7 +2,6 @@ package chatty;
 
 import gui.MainFrame;
 
-
 public class Chatty {
 	private Controller controller;
 
@@ -13,7 +12,8 @@ public class Chatty {
 	private void run() {
 
 		controller = new Controller();
-		MainFrame gui = new MainFrame(this);
+		MainFrame gui = new MainFrame(controller);
+		controller.setGui(gui);
 	}
 
 	public Controller getController() {

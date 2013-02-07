@@ -23,12 +23,12 @@ public class NetworkHandler {
 	private ArrayList<NetworkEvent> networkEvents = new ArrayList<NetworkEvent>();
 
 	public void startServer() {
-		startServer(Config.DEFAULT_PORT);
+		startServer(Config.PORT);
 	}
 
 	public void restartServer(int port) {
 		if (port == 0)
-			port = Config.DEFAULT_PORT;
+			port = Config.PORT;
 		getServer().kill();
 		startServer(port);
 	}
@@ -47,11 +47,11 @@ public class NetworkHandler {
 	}
 
 	public void startClient() {
-		startClient(Config.DEFAULT_HOST, Config.DEFAULT_PORT);
+		startClient(Config.HOSTNAME, Config.PORT);
 	}
 
 	public void startClient(String hostname) {
-		startClient(hostname, Config.DEFAULT_PORT);
+		startClient(hostname, Config.PORT);
 	}
 
 	private void startClient(String hostname, int port) {
@@ -89,6 +89,7 @@ public class NetworkHandler {
 				if (event.getMsg() == null)
 					event.setMsg("Server shutting down!");
 				listener.serverShutDown(event);
+				System.out.println("dicks");
 				break;
 			case CLIENT_CONNECT:
 				if (event.getMsg() == null)
