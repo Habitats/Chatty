@@ -1,5 +1,9 @@
 package chatty;
 
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.InetAddress;
 
 import gui.ButtonEvent;
@@ -193,4 +197,6 @@ public class Controller implements ButtonListener {
 	public String getNickname() {
 		return nickname;
 	}
+
+
 }

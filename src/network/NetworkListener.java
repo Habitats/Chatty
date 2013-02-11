@@ -16,6 +16,8 @@ public interface NetworkListener {
 
 	public void serverStatus(ServerEvent event);
 
+	public void serverNormalMessage(ServerEvent event);
+	
 	// CLIENT EVENTS
 	public void clientStart(ClientEvent event);
 
@@ -28,4 +30,6 @@ public interface NetworkListener {
 	public void clientStatus(ClientEvent event);
 
 	public void clientMessage(ClientEvent event);
+
+
 }

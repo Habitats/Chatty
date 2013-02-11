@@ -20,7 +20,7 @@ import chatty.Config;
 public class FeedWindow extends JTextPane implements NetworkListener {
 
 	public FeedWindow(Dimension dim) {
-		
+
 		setPreferredSize(dim);
 		setMinimumSize(dim);
 
@@ -28,9 +28,12 @@ public class FeedWindow extends JTextPane implements NetworkListener {
 		// auto scroll
 		DefaultCaret caret = (DefaultCaret) getCaret();
 		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+		setBackground(Themes.BACKGROUND);
+		setForeground(Themes.FOREGROUND);
+		setFont(Config.genFont(12, false));
 		setEditable(false);
-		
-		setBorder(BorderFactory.createEmptyBorder());
+
+		setBorder(BorderFactory.createMatteBorder(5, 5, 5, 5, Themes.BACKGROUND));
 
 		// initStyles();
 	}
@@ -90,6 +93,11 @@ public class FeedWindow extends JTextPane implements NetworkListener {
 	@Override
 	public void serverStatus(ServerEvent event) {
 		sendStatusToOwnFeed(event.getMsg());
+	}
+	
+	@Override
+	public void serverNormalMessage(ServerEvent event) {
+		sendNormalMessageToOwnFeed(event.getMsg());
 	}
 
 	@Override

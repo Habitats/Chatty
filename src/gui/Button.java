@@ -3,7 +3,9 @@ package gui;
 import gui.MenuButton.Type;
 
 import java.awt.Dimension;
+import java.awt.Font;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 
 import network.NetworkListener;
@@ -12,7 +14,7 @@ import network.server.ServerEvent;
 
 import chatty.Config;
 
-public abstract class Button extends JLabel implements NetworkListener {
+public  abstract class Button extends JLabel implements NetworkListener {
 
 	private boolean active = false;
 	protected Dimension dim;
@@ -25,17 +27,18 @@ public abstract class Button extends JLabel implements NetworkListener {
 	}
 
 	public Button(String text) {
-		setPreferredSize(dim);
+		setText(text.toUpperCase());
 		init();
 	}
 
 	public Button(String text, Dimension dim) {
-		setText(text);
+		setText(text.toUpperCase());
 		init();
 	}
 
 	private void init() {
 		addMouseListener(buttonMouseListener);
+		setFont(Config.genFont(18, true));
 	}
 
 	public boolean isActive() {
@@ -53,9 +56,9 @@ public abstract class Button extends JLabel implements NetworkListener {
 	public void setActive(boolean active) {
 		this.active = active;
 		if (active)
-			setBackground(Config.BUTTON_COLOR_ACTIVE);
+			setBackground(Themes.BUTTON_COLOR_ACTIVE);
 		else
-			setBackground(Config.BUTTON_COLOR_DEFAULT);
+			setBackground(Themes.BUTTON_COLOR_DEFAULT);
 	}
 
 	@Override
@@ -100,5 +103,11 @@ public abstract class Button extends JLabel implements NetworkListener {
 
 	@Override
 	public void clientMessage(ClientEvent event) {
+	}
+
+	@Override
+	public void serverNormalMessage(ServerEvent event) {
+		// TODO Auto-generated method stub
+		
 	}
 }

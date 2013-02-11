@@ -11,6 +11,7 @@ public class ChatEvent {
 	private String raw;
 
 	private String returnMsg;
+	private Object objectFromServer;
 
 	public ChatEvent(String raw) {
 		this.raw = raw;
@@ -18,6 +19,11 @@ public class ChatEvent {
 		if (msgArr[0].startsWith("/")) {
 			cmd = ChatCommand.getCmd(msgArr[0]);
 		}
+	}
+
+
+	public ChatEvent(Object objectFromServer) {
+		this.objectFromServer = objectFromServer;
 	}
 
 

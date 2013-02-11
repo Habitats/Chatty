@@ -1,6 +1,12 @@
 package chatty;
 
-import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import network.client.ClientEvent;
+import network.client.ClientEvent.Event;
 
 public class Config {
 	// general settings
@@ -10,11 +16,22 @@ public class Config {
 	// general GUI stuff
 	public static final int BORDER_WIDTH = 5;
 
-	// colors
-	public static final Color BUTTON_COLOR_HOVER = Color.GRAY;
-	public static final Color BUTTON_COLOR_DEFAULT = Color.DARK_GRAY;
-	public static final Color BUTTON_COLOR_CLICK = Color.DARK_GRAY;
-	public static final Color BUTTON_COLOR_ACTIVE = Color.RED;
-	public static final Color TEXT_COLOR_DEFAULT_MENU = Color.WHITE;
+	public static Font genFont(float size, boolean bold) {
+		Font font = null;
+		if (font == null) {
+			try {
+				// font = Font.createFont(Font.TRUETYPE_FONT,
+				// getClass().getResourceAsStream("/res/8-BitCustom.TTF"));
+				font = Font.createFont(Font.TRUETYPE_FONT, new FileInputStream("./res/consola.ttf"));
+				font = font.deriveFont(size);
+				if (bold)
+					font = font.deriveFont(Font.BOLD);
+			} catch (IOException | FontFormatException e) {
+				System.err.println("LOADING FONT FAILED!");
+			}
+		}
+		return font;
+	}
+
 
 }

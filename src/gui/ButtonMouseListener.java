@@ -3,7 +3,6 @@ package gui;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-import chatty.Config;
 
 public class ButtonMouseListener implements MouseListener {
 
@@ -19,26 +18,26 @@ public class ButtonMouseListener implements MouseListener {
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		button.setBackground(Config.BUTTON_COLOR_HOVER);
+		button.setBackground(Themes.BUTTON_COLOR_HOVER);
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
 		if (button.isActive())
-			button.setBackground(Config.BUTTON_COLOR_ACTIVE);
+			button.setBackground(Themes.BUTTON_COLOR_ACTIVE);
 		else
-			button.setBackground(Config.BUTTON_COLOR_DEFAULT);
+			button.setBackground(Themes.BUTTON_COLOR_DEFAULT);
 		if (button.isActive())
-			button.setBackground(Config.BUTTON_COLOR_ACTIVE);
+			button.setBackground(Themes.BUTTON_COLOR_ACTIVE);
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		button.setBackground(Config.BUTTON_COLOR_CLICK);
+		button.setBackground(Themes.BUTTON_COLOR_CLICK);
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		button.setBackground(Config.BUTTON_COLOR_HOVER);
+		button.setBackground(Themes.BUTTON_COLOR_HOVER);
 	}
 }

@@ -1,5 +1,6 @@
 package gui.options;
 
+import gui.Themes;
 import gui.options.OptionsMenu.Option;
 
 import java.awt.Color;
@@ -19,9 +20,10 @@ public class OptionsLabel extends JLabel {
 		setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
 
 		setHorizontalAlignment(SwingConstants.RIGHT);
-		setText(option.getOption());
-		setForeground(Config.TEXT_COLOR_DEFAULT_MENU);
-		setBackground(Config.BUTTON_COLOR_DEFAULT);
+		setText(option.getOption().toUpperCase());
+		setFont(Config.genFont(13, true));
+		setForeground(Themes.FOREGROUND);
+		setBackground(Themes.BUTTON_COLOR_HOVER);
 		setOpaque(true);
 	}
 }

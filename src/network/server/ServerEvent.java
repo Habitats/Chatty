@@ -1,6 +1,7 @@
 package network.server;
 
 import network.NetworkEvent;
+import network.server.ServerEvent.Event;
 
 public class ServerEvent extends NetworkEvent {
 	public enum Event {
@@ -35,6 +36,11 @@ public class ServerEvent extends NetworkEvent {
 		super.msg = msg;
 		super.e = e;
 		this.event = event;
+	}
+
+	public ServerEvent(Event event, Object objectFromUser) {
+		this.event = event;
+		super.object = objectFromUser;
 	}
 
 	public Event getEvent() {

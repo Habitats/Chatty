@@ -31,8 +31,9 @@ public class MainFrame {
 	private OptionsMenu optionsMenu;
 	private Controller controller;
 	private MenuButton optionsButton;
-
+	
 	public MainFrame(Controller controller) {
+		Themes.setTheme(Themes.GRAY);
 		JFrame frame = new JFrame();
 		this.controller = controller;
 
@@ -75,7 +76,7 @@ public class MainFrame {
 		getController().getNetworkHandler().addNetworkListener(feedWindow);
 
 		JScrollPane scrollPane = new JScrollPane(feedWindow);
-		scrollPane.setBorder(BorderFactory.createMatteBorder(5, 5, 5, 5, Color.WHITE));
+		scrollPane.setBorder(BorderFactory.createEmptyBorder());
 		mainPanel.add(scrollPane, new GBC(0, 2, Align.FULL_WIDTH).setSpan(menuSize, 1).setWeight(0, 1));
 		mainPanel.add(inputWindow, new GBC(0, 8, Align.FULL_WIDTH_BOTTOM).setSpan(menuSize, 2).setWeight(1, 0));
 

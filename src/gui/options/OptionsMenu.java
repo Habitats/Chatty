@@ -43,8 +43,8 @@ public class OptionsMenu extends JPanel {
 		setLayout(new GridBagLayout());
 		setVisible(false);
 
-		Dimension labelDim = new Dimension(80, 20);
-		Dimension fieldDim = new Dimension(160, 20);
+		Dimension labelDim = new Dimension(100, 20);
+		Dimension fieldDim = new Dimension(180, 20);
 
 		add(new OptionsLabel(labelDim, Option.HOSTNAME), new GBC(0, 0, Align.LEFT));
 		add(new OptionsLabel(labelDim, Option.PORT), new GBC(0, 1, Align.LEFT));

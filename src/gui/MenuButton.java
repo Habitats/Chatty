@@ -13,7 +13,6 @@ import network.client.ClientEvent;
 import network.server.ServerEvent;
 
 import chatty.Chatty;
-import chatty.Config;
 import chatty.Controller;
 
 public class MenuButton extends Button {
@@ -36,15 +35,14 @@ public class MenuButton extends Button {
 		}
 	}
 
-	private Color color = Color.DARK_GRAY;
 	private final ButtonHandler buttonHandler;
 
 	public MenuButton(final Type type, Dimension dim, ButtonHandler buttonHandler) {
 		this.buttonHandler = buttonHandler;
-		setBackground(color);
+		setBackground(Themes.BUTTON_COLOR_DEFAULT);
 		// font color
-		setForeground(Config.TEXT_COLOR_DEFAULT_MENU);
-		setText(type.getText());
+		setForeground(Themes.FOREGROUND);
+		setText(type.getText().toUpperCase());
 		setType(type);
 
 		setPreferredSize(dim);

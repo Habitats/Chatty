@@ -5,6 +5,7 @@ import network.NetworkEvent;
 import network.client.ClientEvent.Event;
 
 public class ClientEvent extends NetworkEvent {
+
 	public enum Event {
 		START, //
 		SHUTDOWN, //
@@ -15,6 +16,7 @@ public class ClientEvent extends NetworkEvent {
 		STATUS, //
 		ERROR, //
 		COMMAND, //
+		OBJECT, //
 	}
 
 	private Event event;
@@ -47,10 +49,15 @@ public class ClientEvent extends NetworkEvent {
 		this.event = event;
 	}
 
+	public ClientEvent(Event event, Object objectFromServer) {
+		this.event = event;
+		super.object = objectFromServer;
+	}
+
 	public Event getEvent() {
 		return event;
 	}
-	
+
 	public ChatEvent getChatEvent() {
 		return chatEvent;
 	}

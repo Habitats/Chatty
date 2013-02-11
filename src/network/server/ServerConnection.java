@@ -3,6 +3,8 @@ package network.server;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketException;
@@ -12,53 +14,67 @@ import network.server.ServerEvent.Event;
 public class ServerConnection implements Runnable {
 
 	private Socket clientSocket;
-	private PrintWriter out;
 	private Server server;
+	private String fromUser;
+	private String welcomeMsg;
+	private Object objectFromUser;
 
 	public ServerConnection(Socket clientSocket, Server server) {
 		this.clientSocket = clientSocket;
 		this.server = server;
 	}
 
+	private void initPrintSteamConnection() throws IOException {
+		PrintWriter printWriterOutputStream = new PrintWriter(getClientSocket().getOutputStream(), true);
+		getServer().getClientConnections().add(new ClientConnection(printWriterOutputStream, getClientSocket()));
+		BufferedReader printWriterInputStream = new BufferedReader(new InputStreamReader(getClientSocket().getInputStream()));
+
+		// welcome message to new client
+		printWriterOutputStream.println(welcomeMsg);
+
+		while ((fromUser = printWriterInputStream.readLine()) != null) {
+			// send message to SERVER (self)
+			getServer().getNetworkHandler().fireServerEvent(new ServerEvent(Event.MESSAGE, fromUser));
+
+			// broadcast INCOMING message to ALL
+			getServer().broadcastMessageToClients(fromUser);
+		}
+
+		printWriterOutputStream.close();
+		printWriterInputStream.close();
+		getClientSocket().close();
+	}
+
+	private void initObjectStreamConnection() throws IOException, ClassNotFoundException {
+		ObjectOutputStream objectOutputStream = new ObjectOutputStream(getClientSocket().getOutputStream());
+		getServer().getClientConnections().add(new ClientConnection(objectOutputStream, getClientSocket()));
+		ObjectInputStream objectInputStream = new ObjectInputStream(getClientSocket().getInputStream());
+
+		objectOutputStream.writeObject(welcomeMsg);
+
+		while ((objectFromUser = objectInputStream.readObject()) != null) {
+			getServer().getNetworkHandler().fireServerEvent(new ServerEvent(Event.MESSAGE, objectFromUser));
+		}
+
+		objectOutputStream.close();
+		objectInputStream.close();
+		getClientSocket().close();
+	}
+
 	@Override
 	public void run() {
-		String fromUser;
-		// TODO: Needs polishing
-		String welcomeMsg = "SERVER: Welcome Human, I'm a server!";
-
-		out = null;
-		BufferedReader in = null;
+		welcomeMsg = "SERVER: Welcome Human, I'm a server!";
 
 		try {
-			out = new PrintWriter(getClientSocket().getOutputStream(), true);
-			getServer().getClientConnections().add(new ClientConnection(out, getClientSocket()));
-			in = new BufferedReader(new InputStreamReader(getClientSocket().getInputStream()));
-
-			// welcome message to new client
-			out.println(welcomeMsg);
-
-			while ((fromUser = in.readLine()) != null) {
-				// send message to SERVER (self)
-				getServer().getNetworkHandler().fireServerEvent(new ServerEvent(Event.STATUS, fromUser));
-
-				// broadcast INCOMING message to ALL
-				getServer().broadcastMessageToClients(fromUser);
-			}
-
-			out.close();
-			in.close();
-			getClientSocket().close();
+			// initObjectStreamConnection();
+			initPrintSteamConnection();
 		} catch (SocketException e) {
 			getServer().getNetworkHandler().fireServerEvent(new ServerEvent(Event.CLIENT_DROPPED));
 		} catch (IOException e) {
-			e.printStackTrace();
+			getServer().getNetworkHandler().fireServerEvent(new ServerEvent(Event.CRASH, e));
 		}
 
 		System.out.println("END");
-	}
-
-	public PrintWriter getOutputStream() {
-		return out;
 	}
 
 	public Server getServer() {

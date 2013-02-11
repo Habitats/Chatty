@@ -95,13 +95,17 @@ public class NetworkHandler {
 				listener.serverStatus(event);
 				break;
 			case CRASH:
-				if (event.getMsg() == null)
+				if (event.getMsg() == null){
 					event.setMsg("Server crashed!");
+					event.getException().printStackTrace();
+				}
 				listener.serverCrashed(event);
 				break;
 			case STATUS:
 				listener.serverStatus(event);
 				break;
+			case MESSAGE:
+				listener.serverNormalMessage(event);
 			default:
 				break;
 			}

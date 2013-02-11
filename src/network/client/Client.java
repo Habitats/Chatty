@@ -3,21 +3,27 @@ package network.client;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+
+import chatty.ChatEvent;
 import network.NetworkHandler;
 import network.ProgramState;
 import network.client.ClientEvent.Event;
 
 public class Client extends ProgramState implements Runnable {
 
-	private PrintWriter out;
+	private PrintWriter printWriterOutputStream;
 	private NetworkHandler networkHandler;
 	private String hostname;
 	private Socket echoSocket;
-	private BufferedReader in;
+	private BufferedReader bufferedReaderInputStream;
+	private ObjectOutputStream objectOutputStream;
+	private ObjectInputStream objectInputStream;
 
 	public Client(int port, String hostname, NetworkHandler networkHandler) throws IOException {
 		this.hostname = hostname;
@@ -42,6 +48,33 @@ public class Client extends ProgramState implements Runnable {
 		return null;
 	}
 
+	private void initPrintStreamConnection() throws IOException {
+		printWriterOutputStream = new PrintWriter(echoSocket.getOutputStream(), true);
+		bufferedReaderInputStream = new BufferedReader(new InputStreamReader(echoSocket.getInputStream()));
+
+		String fromServer;
+
+		setRunning(true);
+		// this loop constantly checks for changes a on the socket
+		while (isRunning() && (fromServer = bufferedReaderInputStream.readLine()) != null) {
+			// send message from SERVER to own FEED
+			getNetworkHandler().fireClientEvent(new ClientEvent(Event.MESSAGE, fromServer));
+		}
+	}
+
+	private void initObjectStreamConnection() throws IOException, ClassNotFoundException {
+		objectOutputStream = new ObjectOutputStream(echoSocket.getOutputStream());
+		objectInputStream = new ObjectInputStream(echoSocket.getInputStream());
+
+		setRunning(true);
+
+		Object objectFromServer;
+		
+		while (isRunning() && ((objectFromServer = objectInputStream.readObject()) != null)) {
+			getNetworkHandler().fireClientEvent(new ClientEvent(Event.MESSAGE, objectFromServer));
+		}
+	}
+
 	@Override
 	public void run() {
 		getNetworkHandler().fireClientEvent(new ClientEvent(Event.START));
@@ -56,20 +89,9 @@ public class Client extends ProgramState implements Runnable {
 		if (echoSocket == null)
 			return;
 
-		in = null;
-
 		try {
-			out = new PrintWriter(echoSocket.getOutputStream(), true);
-			in = new BufferedReader(new InputStreamReader(echoSocket.getInputStream()));
-
-			String fromServer;
-
-			setRunning(true);
-			// this loop constantly checks for changes a on the socket
-			while (isRunning() && (fromServer = in.readLine()) != null) {
-				// send message from SERVER to own FEED
-				getNetworkHandler().fireClientEvent(new ClientEvent(Event.MESSAGE, fromServer));
-			}
+//			initObjectStreamConnection();
+			 initPrintStreamConnection();
 		} catch (SocketException e) {
 			getNetworkHandler().fireClientEvent(new ClientEvent(Event.DISCONNECT, e));
 			return;
@@ -82,7 +104,11 @@ public class Client extends ProgramState implements Runnable {
 	}
 
 	public PrintWriter getOutputStream() {
-		return out;
+		return printWriterOutputStream;
+	}
+
+	public ObjectOutputStream getObjectOutputStream() {
+		return objectOutputStream;
 	}
 
 	@Override
@@ -91,10 +117,10 @@ public class Client extends ProgramState implements Runnable {
 		try {
 			if (echoSocket != null)
 				echoSocket.close();
-			if (out != null)
-				out.close();
-			if (in != null)
-				in.close();
+			if (printWriterOutputStream != null)
+				printWriterOutputStream.close();
+			if (bufferedReaderInputStream != null)
+				bufferedReaderInputStream.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

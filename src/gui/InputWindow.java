@@ -12,6 +12,7 @@ import network.client.ClientEvent;
 import network.client.ClientEvent.Event;
 
 import chatty.ChatEvent;
+import chatty.Config;
 
 public class InputWindow extends JTextField {
 
@@ -24,6 +25,9 @@ public class InputWindow extends JTextField {
 		addActionListener(new myInputListener());
 
 		setBorder(BorderFactory.createEmptyBorder());
+		setBackground(Themes.BACKGROUND);
+		setForeground(Themes.FOREGROUND);
+		setFont(Config.genFont(12, false));
 
 	}
 

@@ -1,5 +1,6 @@
 package gui.options;
 
+import gui.Themes;
 import gui.options.OptionsMenu.Option;
 
 import java.awt.Dimension;
@@ -7,6 +8,8 @@ import java.awt.Dimension;
 import javax.swing.BorderFactory;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
+
+import chatty.Config;
 
 public class OptionsField extends JTextField {
 	private final Option option;
@@ -16,8 +19,11 @@ public class OptionsField extends JTextField {
 		setPreferredSize(dim);
 		setMaximumSize(dim);
 		setMinimumSize(dim);
+		setBackground(Themes.BACKGROUND);
+		setForeground(Themes.FOREGROUND);
+		setFont(Config.genFont(13, false));
+		setBorder(BorderFactory.createEmptyBorder(2, 5, 0, 5));
 
-		setBorder(BorderFactory.createEmptyBorder());
 	}
 
 	public String submit() {
