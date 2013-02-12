@@ -62,16 +62,21 @@ public class Client extends ProgramState implements Runnable {
 		}
 	}
 
-	private void initObjectStreamConnection() throws IOException, ClassNotFoundException {
+	private void initObjectStreamConnection() throws IOException {
 		objectOutputStream = new ObjectOutputStream(echoSocket.getOutputStream());
 		objectInputStream = new ObjectInputStream(echoSocket.getInputStream());
 
 		setRunning(true);
 
 		Object objectFromServer;
-		
-		while (isRunning() && ((objectFromServer = objectInputStream.readObject()) != null)) {
-			getNetworkHandler().fireClientEvent(new ClientEvent(Event.MESSAGE, objectFromServer));
+
+		try {
+			while (isRunning() && ((objectFromServer = objectInputStream.readObject()) != null)) {
+				String[] arr = (String[]) objectFromServer;
+				getNetworkHandler().fireClientEvent(new ClientEvent(Event.MESSAGE, arr[0]));
+			}
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -80,8 +85,6 @@ public class Client extends ProgramState implements Runnable {
 		getNetworkHandler().fireClientEvent(new ClientEvent(Event.START));
 		setClient(true);
 		setServer(false);
-
-		// String hostname = "78.91.48.1";
 
 		echoSocket = setUpConnection(port, hostname);
 

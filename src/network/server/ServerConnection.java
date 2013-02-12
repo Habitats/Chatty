@@ -45,15 +45,20 @@ public class ServerConnection implements Runnable {
 		getClientSocket().close();
 	}
 
-	private void initObjectStreamConnection() throws IOException, ClassNotFoundException {
+	private void initObjectStreamConnection() throws IOException {
 		ObjectOutputStream objectOutputStream = new ObjectOutputStream(getClientSocket().getOutputStream());
 		getServer().getClientConnections().add(new ClientConnection(objectOutputStream, getClientSocket()));
 		ObjectInputStream objectInputStream = new ObjectInputStream(getClientSocket().getInputStream());
 
 		objectOutputStream.writeObject(welcomeMsg);
 
-		while ((objectFromUser = objectInputStream.readObject()) != null) {
-			getServer().getNetworkHandler().fireServerEvent(new ServerEvent(Event.MESSAGE, objectFromUser));
+		try {
+			while ((objectFromUser = objectInputStream.readObject()) != null) {
+				String[] arr = (String[]) objectFromUser;
+				getServer().getNetworkHandler().fireServerEvent(new ServerEvent(Event.MESSAGE, arr[0]));
+			}
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
 		}
 
 		objectOutputStream.close();
@@ -64,7 +69,6 @@ public class ServerConnection implements Runnable {
 	@Override
 	public void run() {
 		welcomeMsg = "SERVER: Welcome Human, I'm a server!";
-
 		try {
 			// initObjectStreamConnection();
 			initPrintSteamConnection();

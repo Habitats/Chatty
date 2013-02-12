@@ -1,6 +1,7 @@
 package network.server;
 
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -97,12 +98,31 @@ public class Server extends ProgramState implements Runnable {
 		return networkHandler;
 	}
 
-	// broadcasts message to ALL connected OUTPUT streams
-	// only SERVER should be calling this
+	/*
+	 * HANDLES OBJECTS
+	 */
+	public void broadcastObjectToClients(Object object) {
+		for (int i = 0; i < getClientConnections().size(); i++) {
+			ObjectOutputStream currentObjectOutputStream = getClientConnections().get(i).getObjectOutputStream();
+			try {
+				currentObjectOutputStream.writeObject(object);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void broadcastObjectToAll(Object object) {
+		getNetworkHandler().fireServerEvent(new ServerEvent(Event.OBJECT, object));
+		broadcastObjectToClients(object);
+	}
+
+	/*
+	 * HANDLES CLEAR TEXT ONLY
+	 */
 	public void broadcastMessageToClients(String msg) {
 		for (int i = 0; i < getClientConnections().size(); i++) {
 			PrintWriter currentOut = getClientConnections().get(i).getOutputStream();
-			// if(client)
 			currentOut.println(msg);
 		}
 	}

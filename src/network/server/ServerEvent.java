@@ -12,6 +12,7 @@ public class ServerEvent extends NetworkEvent {
 		CLIENT_DROPPED, //
 		STATUS, //
 		MESSAGE, //
+		OBJECT, //
 	}
 
 	private Event event;
