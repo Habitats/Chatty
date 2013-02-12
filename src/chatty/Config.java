@@ -10,7 +10,7 @@ import network.client.ClientEvent.ClientEvents;
 
 public class Config {
 	// general settings
-	public static final String CHATTY_VER = "Chatty v0.3 - Work in progress";
+	public static final String CHATTY_VER = "Chatty v0.4 - Work in progress";
 	public static final String APPLICATION_NAME = "Chatty";
 
 	// general GUI stuff
