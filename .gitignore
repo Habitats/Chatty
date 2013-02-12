@@ -5,3 +5,6 @@ bin/
 .project
 .classpath
 Chatty.ucls
+div/Authentication Sequence.png div/Authentication Sequence.txt
+div/
+testing/

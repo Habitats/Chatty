@@ -90,8 +90,8 @@ public class Server extends ProgramState implements Runnable {
 
 	private void connectWithClient(final Socket clientSocket) {
 		ServerConnection serverConnection = new ServerConnection(clientSocket, this);
-		Thread clientThread = new Thread(serverConnection);
-		clientThread.start();
+		Thread serverConnectionThread = new Thread(serverConnection);
+		serverConnectionThread.start();
 	}
 
 	synchronized public NetworkHandler getNetworkHandler() {
