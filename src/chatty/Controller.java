@@ -161,7 +161,7 @@ public class Controller implements ButtonListener {
 		}
 	}
 
-	public void executeChatCommand(ChatEvent chatEvent) {
+	public void executeChatCommand(CommandEvent chatEvent) {
 		String returnMsg = "";
 		if (chatEvent.getCommand() == ChatCommand.HELP || (chatEvent.getMsgArr().length > 2 && chatEvent.getMsgArr()[2].equals("help")))
 			returnMsg = chatEvent.getCommand().getHelp();

@@ -1,6 +1,6 @@
 package network.client;
 
-import chatty.ChatEvent;
+import chatty.CommandEvent;
 import network.NetworkEvent;
 import network.client.ClientEvent.Event;
 
@@ -20,7 +20,7 @@ public class ClientEvent extends NetworkEvent {
 	}
 
 	private Event event;
-	private ChatEvent chatEvent;
+	private CommandEvent chatEvent;
 
 	public ClientEvent(Event event) {
 		this.event = event;
@@ -44,7 +44,7 @@ public class ClientEvent extends NetworkEvent {
 		this.event = event;
 	}
 
-	public ClientEvent(Event event, ChatEvent chatEvent) {
+	public ClientEvent(Event event, CommandEvent chatEvent) {
 		this.chatEvent = chatEvent;
 		this.event = event;
 	}
@@ -58,7 +58,7 @@ public class ClientEvent extends NetworkEvent {
 		return event;
 	}
 
-	public ChatEvent getChatEvent() {
+	public CommandEvent getChatEvent() {
 		return chatEvent;
 	}
 }

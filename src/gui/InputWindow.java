@@ -12,6 +12,7 @@ import network.client.ClientEvent;
 import network.client.ClientEvent.Event;
 
 import chatty.ChatEvent;
+import chatty.CommandEvent;
 import chatty.Config;
 
 public class InputWindow extends JTextField {
@@ -40,7 +41,7 @@ public class InputWindow extends JTextField {
 				if (chatEvent.isCommand()) {
 					mainFrame.getController().getNetworkHandler().fireClientEvent(new ClientEvent(Event.COMMAND, chatEvent));
 				} else
-					mainFrame.getController().sendMessageToAll(chatEvent.getRaw());
+					mainFrame.getController().sendMessageToAll(chatEvent.getMsg());
 				setText("");
 			}
 		}

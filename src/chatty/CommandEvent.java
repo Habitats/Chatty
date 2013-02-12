@@ -1,6 +1,6 @@
 package chatty;
 
-public class ChatEvent {
+public class CommandEvent {
 
 	private String msg;
 	private String cmdAsString;
@@ -13,20 +13,14 @@ public class ChatEvent {
 	private String returnMsg;
 	private Object objectFromServer;
 
-	public ChatEvent(String raw) {
+	public CommandEvent(String raw) {
 		this.raw = raw;
 		msgArr = raw.split(" ");
 		if (msgArr[0].startsWith("/")) {
 			cmd = ChatCommand.getCmd(msgArr[0]);
 		}
 	}
-
-
-	public ChatEvent(Object objectFromServer) {
-		this.objectFromServer = objectFromServer;
-	}
-
-
+	
 	public boolean isCommand() {
 		return (cmd != null);
 	}

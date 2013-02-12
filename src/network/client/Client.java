@@ -10,7 +10,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
-import chatty.ChatEvent;
+import chatty.CommandEvent;
 import network.NetworkHandler;
 import network.ProgramState;
 import network.client.ClientEvent.Event;
@@ -62,18 +62,16 @@ public class Client extends ProgramState implements Runnable {
 		}
 	}
 
-	private void initObjectStreamConnection() throws IOException {
+	private void initConnection() throws IOException {
 		objectOutputStream = new ObjectOutputStream(echoSocket.getOutputStream());
 		objectInputStream = new ObjectInputStream(echoSocket.getInputStream());
 
+		CommandEvent chatEvent;
+
 		setRunning(true);
-
-		Object objectFromServer;
-
 		try {
-			while (isRunning() && ((objectFromServer = objectInputStream.readObject()) != null)) {
-				String[] arr = (String[]) objectFromServer;
-				getNetworkHandler().fireClientEvent(new ClientEvent(Event.MESSAGE, arr[0]));
+			while (isRunning() && ((chatEvent = (CommandEvent) objectInputStream.readObject()) != null)) {
+				getNetworkHandler().fireClientEvent(new ClientEvent(Event.MESSAGE, chatEvent));
 			}
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
@@ -93,7 +91,7 @@ public class Client extends ProgramState implements Runnable {
 			return;
 
 		try {
-//			initObjectStreamConnection();
+//			initConnection();
 			 initPrintStreamConnection();
 		} catch (SocketException e) {
 			getNetworkHandler().fireClientEvent(new ClientEvent(Event.DISCONNECT, e));

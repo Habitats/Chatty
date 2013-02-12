@@ -8,6 +8,8 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
 
+import chatty.CommandEvent;
+
 import network.NetworkHandler;
 import network.ProgramState;
 import network.server.ServerEvent.Event;
@@ -101,20 +103,20 @@ public class Server extends ProgramState implements Runnable {
 	/*
 	 * HANDLES OBJECTS
 	 */
-	public void broadcastObjectToClients(Object object) {
+	public void broadcastChatEventToClients(CommandEvent chatEvent) {
 		for (int i = 0; i < getClientConnections().size(); i++) {
 			ObjectOutputStream currentObjectOutputStream = getClientConnections().get(i).getObjectOutputStream();
 			try {
-				currentObjectOutputStream.writeObject(object);
+				currentObjectOutputStream.writeObject(chatEvent);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 	}
 
-	private void broadcastObjectToAll(Object object) {
-		getNetworkHandler().fireServerEvent(new ServerEvent(Event.OBJECT, object));
-		broadcastObjectToClients(object);
+	private void broadcastChatEventToAll(CommandEvent chatEvent) {
+		getNetworkHandler().fireServerEvent(new ServerEvent(Event.OBJECT, chatEvent));
+		broadcastChatEventToClients(chatEvent);
 	}
 
 	/*
@@ -133,6 +135,7 @@ public class Server extends ProgramState implements Runnable {
 	}
 
 	public void broadcastServerMessage(String msg) {
+		CommandEvent chatEvent = new CommandEvent(msg);
 		broadcastMessageToAll("SERVER: " + msg);
 	}
 

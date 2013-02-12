@@ -9,6 +9,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketException;
 
+import chatty.CommandEvent;
+
 import network.server.ServerEvent.Event;
 
 public class ServerConnection implements Runnable {
@@ -17,7 +19,6 @@ public class ServerConnection implements Runnable {
 	private Server server;
 	private String fromUser;
 	private String welcomeMsg;
-	private Object objectFromUser;
 
 	public ServerConnection(Socket clientSocket, Server server) {
 		this.clientSocket = clientSocket;
@@ -45,17 +46,17 @@ public class ServerConnection implements Runnable {
 		getClientSocket().close();
 	}
 
-	private void initObjectStreamConnection() throws IOException {
+	private void initConnection() throws IOException {
 		ObjectOutputStream objectOutputStream = new ObjectOutputStream(getClientSocket().getOutputStream());
 		getServer().getClientConnections().add(new ClientConnection(objectOutputStream, getClientSocket()));
 		ObjectInputStream objectInputStream = new ObjectInputStream(getClientSocket().getInputStream());
 
 		objectOutputStream.writeObject(welcomeMsg);
+		CommandEvent chatEvent;
 
 		try {
-			while ((objectFromUser = objectInputStream.readObject()) != null) {
-				String[] arr = (String[]) objectFromUser;
-				getServer().getNetworkHandler().fireServerEvent(new ServerEvent(Event.MESSAGE, arr[0]));
+			while ((chatEvent = (CommandEvent) objectInputStream.readObject()) != null) {
+				getServer().getNetworkHandler().fireServerEvent(new ServerEvent(Event.MESSAGE, chatEvent));
 			}
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
@@ -70,8 +71,8 @@ public class ServerConnection implements Runnable {
 	public void run() {
 		welcomeMsg = "SERVER: Welcome Human, I'm a server!";
 		try {
-			// initObjectStreamConnection();
-			initPrintSteamConnection();
+//			initConnection();
+			 initPrintSteamConnection();
 		} catch (SocketException e) {
 			getServer().getNetworkHandler().fireServerEvent(new ServerEvent(Event.CLIENT_DROPPED));
 		} catch (IOException e) {
