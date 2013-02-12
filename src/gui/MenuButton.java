@@ -1,6 +1,6 @@
 package gui;
 
-import gui.ButtonEvent.Event;
+import gui.ButtonEvent.ButtonEvents;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -10,7 +10,9 @@ import java.util.ArrayList;
 import javax.swing.SwingConstants;
 
 import network.client.ClientEvent;
+import network.client.ClientEvent.ClientEvents;
 import network.server.ServerEvent;
+import network.server.ServerEvent.ServerEvents;
 
 import chatty.Chatty;
 import chatty.Controller;
@@ -55,7 +57,7 @@ public class MenuButton extends Button {
 
 			@Override
 			public void mouseClicked(MouseEvent mouseEvent) {
-				fireButtonEvent(new ButtonEvent(mouseEvent, button, Event.CLICKED));
+				fireButtonEvent(new ButtonEvent(mouseEvent, button, ButtonEvents.CLICKED));
 			}
 		});
 	}
@@ -66,24 +68,21 @@ public class MenuButton extends Button {
 	}
 
 	@Override
-	public void serverStart(ServerEvent event) {
-		if (getType() == Type.SERVER)
-			setActive(true);
+	public void serverStatus(ServerEvent event) {
+		if (getType() == Type.SERVER) {
+			if (event.getEvent() == ServerEvents.START)
+				setActive(true);
+			else if (event.getEvent() == network.server.ServerEvent.ServerEvents.SHUTDOWN)
+				setActive(false);
+		}
 	}
 
 	@Override
-	public void serverShutDown(ServerEvent event) {
-		setActive(false);
-	}
-
-	@Override
-	public void clientStart(ClientEvent event) {
+	public void clientStatus(ClientEvent event) {
 		if (getType() == Type.CLIENT)
-			setActive(true);
-	}
-
-	@Override
-	public void clientShutDown(ClientEvent event) {
-		setActive(false);
+			if (event.getEvent() == ClientEvents.START)
+				setActive(true);
+			else if (event.getEvent() == ClientEvents.SHUTDOWN)
+				setActive(false);
 	}
 }

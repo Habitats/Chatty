@@ -1,50 +1,50 @@
 package network.server;
 
+import chatty.ChatEvent;
 import network.NetworkEvent;
-import network.server.ServerEvent.Event;
+import network.server.ServerEvent.ServerEvents;
 
 public class ServerEvent extends NetworkEvent {
-	public enum Event {
+	public enum ServerEvents {
 		START, //
 		SHUTDOWN, //
 		CRASH, //
 		CLIENT_CONNECT, //
 		CLIENT_DROPPED, //
 		STATUS, //
-		MESSAGE, //
-		OBJECT, //
+		CHAT_EVENT, //
 	}
 
-	private Event event;
+	private ServerEvents event;
 
-	public ServerEvent(Event event) {
+	public ServerEvent(ServerEvents event) {
 		this.event = event;
 		generateGeneralInfo();
 	}
 
-	public ServerEvent(Event event, String msg) {
+	public ServerEvent(ServerEvents event, String msg) {
 		super.msg = msg;
 		this.event = event;
 		generateGeneralInfo();
 	}
 
-	public ServerEvent(Event event, Exception e) {
+	public ServerEvent(ServerEvents event, Exception e) {
 		super.e = e;
 		this.event = event;
 	}
 
-	public ServerEvent(Event event, Exception e, String msg) {
+	public ServerEvent(ServerEvents event, Exception e, String msg) {
 		super.msg = msg;
 		super.e = e;
 		this.event = event;
 	}
 
-	public ServerEvent(Event event, Object objectFromUser) {
+	public ServerEvent(ServerEvents event, ChatEvent chatEvent) {
 		this.event = event;
-		super.object = objectFromUser;
+		super.chatEvent = chatEvent;
 	}
 
-	public Event getEvent() {
+	public ServerEvents getEvent() {
 		return event;
 	}
 }

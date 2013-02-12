@@ -9,9 +9,11 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketException;
 
+import chatty.ChatEvent;
 import chatty.CommandEvent;
+import chatty.User;
 
-import network.server.ServerEvent.Event;
+import network.server.ServerEvent.ServerEvents;
 
 public class ServerConnection implements Runnable {
 
@@ -19,31 +21,12 @@ public class ServerConnection implements Runnable {
 	private Server server;
 	private String fromUser;
 	private String welcomeMsg;
+	private User serverUser;
 
 	public ServerConnection(Socket clientSocket, Server server) {
 		this.clientSocket = clientSocket;
 		this.server = server;
-	}
-
-	private void initPrintSteamConnection() throws IOException {
-		PrintWriter printWriterOutputStream = new PrintWriter(getClientSocket().getOutputStream(), true);
-		getServer().getClientConnections().add(new ClientConnection(printWriterOutputStream, getClientSocket()));
-		BufferedReader printWriterInputStream = new BufferedReader(new InputStreamReader(getClientSocket().getInputStream()));
-
-		// welcome message to new client
-		printWriterOutputStream.println(welcomeMsg);
-
-		while ((fromUser = printWriterInputStream.readLine()) != null) {
-			// send message to SERVER (self)
-			getServer().getNetworkHandler().fireServerEvent(new ServerEvent(Event.MESSAGE, fromUser));
-
-			// broadcast INCOMING message to ALL
-			getServer().broadcastMessageToClients(fromUser);
-		}
-
-		printWriterOutputStream.close();
-		printWriterInputStream.close();
-		getClientSocket().close();
+		this.serverUser = new User("SERVER");
 	}
 
 	private void initConnection() throws IOException {
@@ -51,15 +34,16 @@ public class ServerConnection implements Runnable {
 		getServer().getClientConnections().add(new ClientConnection(objectOutputStream, getClientSocket()));
 		ObjectInputStream objectInputStream = new ObjectInputStream(getClientSocket().getInputStream());
 
-		objectOutputStream.writeObject(welcomeMsg);
-		CommandEvent chatEvent;
+		objectOutputStream.writeObject(new ChatEvent(serverUser, serverUser, welcomeMsg));
+		ChatEvent chatEvent;
 
 		try {
-			while ((chatEvent = (CommandEvent) objectInputStream.readObject()) != null) {
-				getServer().getNetworkHandler().fireServerEvent(new ServerEvent(Event.MESSAGE, chatEvent));
+			while ((chatEvent = (ChatEvent) objectInputStream.readObject()) != null) {
+				getServer().getNetworkHandler().fireServerEvent(new ServerEvent(ServerEvents.CHAT_EVENT, chatEvent));
+				getServer().broadcastChatEventToClients(chatEvent);
 			}
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+			System.err.println("CLASS NOT FOUND EXEPTION (serverConnection)");
 		}
 
 		objectOutputStream.close();
@@ -71,12 +55,12 @@ public class ServerConnection implements Runnable {
 	public void run() {
 		welcomeMsg = "SERVER: Welcome Human, I'm a server!";
 		try {
-//			initConnection();
-			 initPrintSteamConnection();
+			initConnection();
+			// initPrintSteamConnection();
 		} catch (SocketException e) {
-			getServer().getNetworkHandler().fireServerEvent(new ServerEvent(Event.CLIENT_DROPPED));
+			getServer().getNetworkHandler().fireServerEvent(new ServerEvent(ServerEvents.CLIENT_DROPPED));
 		} catch (IOException e) {
-			getServer().getNetworkHandler().fireServerEvent(new ServerEvent(Event.CRASH, e));
+			getServer().getNetworkHandler().fireServerEvent(new ServerEvent(ServerEvents.CRASH, e));
 		}
 
 		System.out.println("END");

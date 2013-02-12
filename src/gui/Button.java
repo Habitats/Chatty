@@ -61,37 +61,6 @@ public  abstract class Button extends JLabel implements NetworkListener {
 			setBackground(Themes.BUTTON_COLOR_DEFAULT);
 	}
 
-	@Override
-	public void serverStart(ServerEvent event) {
-	}
-
-	@Override
-	public void serverShutDown(ServerEvent event) {
-	}
-
-	@Override
-	public void clientDropped(ServerEvent event) {
-	}
-
-	@Override
-	public void serverCrashed(ServerEvent event) {
-	}
-
-	@Override
-	public void clientStart(ClientEvent event) {
-	}
-
-	@Override
-	public void clientShutDown(ClientEvent event) {
-	}
-
-	@Override
-	public void clientCrashed(ClientEvent event) {
-	}
-
-	@Override
-	public void clientConnect(ClientEvent event) {
-	}
 
 	@Override
 	public void serverStatus(ServerEvent event) {

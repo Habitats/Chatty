@@ -7,7 +7,7 @@ import chatty.Controller;
 
 import network.client.Client;
 import network.client.ClientEvent;
-import network.client.ClientEvent.Event;
+import network.client.ClientEvent.ClientEvents;
 import network.server.Server;
 import network.server.ServerEvent;
 
@@ -76,18 +76,18 @@ public class NetworkHandler {
 			case START:
 				if (event.getMsg() == null)
 					event.setMsg("Starting server...");
-				listener.serverStart(event);
+				listener.serverStatus(event);
 				break;
 			case CLIENT_DROPPED:
 				if (event.getMsg() == null)
 					event.setMsg("Client connection dropped!");
-				listener.serverStart(event);
+				listener.serverStatus(event);
 				break;
 			case SHUTDOWN:
 				if (event.getMsg() == null)
 					event.setMsg("Server shutting down!");
-				listener.serverShutDown(event);
 				System.out.println("dicks");
+				listener.serverStatus(event);
 				break;
 			case CLIENT_CONNECT:
 				if (event.getMsg() == null)
@@ -95,17 +95,18 @@ public class NetworkHandler {
 				listener.serverStatus(event);
 				break;
 			case CRASH:
-				if (event.getMsg() == null){
+				if (event.getMsg() == null) {
 					event.setMsg("Server crashed!");
 					event.getException().printStackTrace();
 				}
-				listener.serverCrashed(event);
+				listener.serverStatus(event);
 				break;
 			case STATUS:
 				listener.serverStatus(event);
 				break;
-			case MESSAGE:
+			case CHAT_EVENT:
 				listener.serverNormalMessage(event);
+				break;
 			default:
 				break;
 			}
@@ -113,7 +114,7 @@ public class NetworkHandler {
 	}
 
 	synchronized public void fireClientEvent(ClientEvent event) {
-		if (event.getEvent() == Event.COMMAND)
+		if (event.getEvent() == ClientEvents.COMMAND)
 			controller.executeChatCommand(event.getChatEvent());
 		else {
 			networkEvents.add(event);
@@ -122,27 +123,27 @@ public class NetworkHandler {
 				case START:
 					if (event.getMsg() == null)
 						event.setMsg("Client starting...");
-					listener.clientStart(event);
+					listener.clientStatus(event);
 					break;
 				case CONNECT:
 					if (event.getMsg() == null)
 						event.setMsg("Client connected!");
-					listener.clientStart(event);
+					listener.clientStatus(event);
 					break;
 				case SHUTDOWN:
 					if (event.getMsg() == null)
 						event.setMsg("Client shutting down!");
-					listener.clientShutDown(event);
+					listener.clientStatus(event);
 					break;
 				case CRASH:
 					if (event.getMsg() == null)
 						event.setMsg("Client crashed!");
-					listener.clientCrashed(event);
+					listener.clientStatus(event);
 					break;
 				case STATUS:
 					listener.clientStatus(event);
 					break;
-				case MESSAGE:
+				case CHAT_EVENT:
 					listener.clientMessage(event);
 					break;
 				default:

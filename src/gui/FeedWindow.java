@@ -15,6 +15,7 @@ import network.NetworkListener;
 import network.client.ClientEvent;
 import network.server.ServerEvent;
 
+import chatty.ChatEvent;
 import chatty.Config;
 
 public class FeedWindow extends JTextPane implements NetworkListener {
@@ -64,6 +65,10 @@ public class FeedWindow extends JTextPane implements NetworkListener {
 		appendText(msg);
 	}
 
+	private void sendNormalMessageToOwnFeed(ChatEvent chatEvent) {
+		appendText("from: " + chatEvent.getFrom().getName() + " msg: " + chatEvent.getMsg());
+	}
+
 	private void sendErrorToOwnFeed(String msg) {
 		appendText("ERROR: " + msg);
 	}
@@ -71,53 +76,13 @@ public class FeedWindow extends JTextPane implements NetworkListener {
 	// network stuff
 
 	@Override
-	public void serverStart(ServerEvent event) {
-		sendStatusToOwnFeed(event.getMsg());
-	}
-
-	@Override
-	public void serverShutDown(ServerEvent event) {
-		sendStatusToOwnFeed(event.getMsg());
-	}
-
-	@Override
-	public void clientDropped(ServerEvent event) {
-		sendErrorToOwnFeed(event.getMsg());
-	}
-
-	@Override
-	public void serverCrashed(ServerEvent event) {
-		sendErrorToOwnFeed(event.getMsg());
-	}
-
-	@Override
 	public void serverStatus(ServerEvent event) {
 		sendStatusToOwnFeed(event.getMsg());
 	}
-	
+
 	@Override
 	public void serverNormalMessage(ServerEvent event) {
-		sendNormalMessageToOwnFeed(event.getMsg());
-	}
-
-	@Override
-	public void clientStart(ClientEvent event) {
-		sendStatusToOwnFeed(event.getMsg());
-	}
-
-	@Override
-	public void clientShutDown(ClientEvent event) {
-		sendStatusToOwnFeed(event.getMsg());
-	}
-
-	@Override
-	public void clientCrashed(ClientEvent event) {
-		sendErrorToOwnFeed(event.getMsg());
-	}
-
-	@Override
-	public void clientConnect(ClientEvent event) {
-		sendStatusToOwnFeed(event.getMsg());
+		sendNormalMessageToOwnFeed(event.getChatEvent());
 	}
 
 	@Override
@@ -127,6 +92,6 @@ public class FeedWindow extends JTextPane implements NetworkListener {
 
 	@Override
 	public void clientMessage(ClientEvent event) {
-		sendNormalMessageToOwnFeed(event.getMsg());
+		sendNormalMessageToOwnFeed(event.getChatEvent());
 	}
 }

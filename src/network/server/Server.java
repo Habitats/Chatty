@@ -8,11 +8,12 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
 
+import chatty.ChatEvent;
 import chatty.CommandEvent;
 
 import network.NetworkHandler;
 import network.ProgramState;
-import network.server.ServerEvent.Event;
+import network.server.ServerEvent.ServerEvents;
 
 public class Server extends ProgramState implements Runnable {
 
@@ -38,7 +39,7 @@ public class Server extends ProgramState implements Runnable {
 			serverSocket = new ServerSocket(port);
 			return serverSocket;
 		} catch (Exception e) {
-			getNetworkHandler().fireServerEvent(new ServerEvent(Event.SHUTDOWN, e, "Failed to setup server on port " + port + " failed. Exiting..."));
+			getNetworkHandler().fireServerEvent(new ServerEvent(ServerEvents.SHUTDOWN, e, "Failed to setup server on port " + port + " failed. Exiting..."));
 			return null;
 		}
 	}
@@ -46,21 +47,21 @@ public class Server extends ProgramState implements Runnable {
 	private Socket listenForIncomingConnections(ServerSocket serverSocket) {
 		Socket socket = null;
 		try {
-			getNetworkHandler().fireServerEvent(new ServerEvent(Event.STATUS, "Listening for connections on port " + port + "..."));
+			getNetworkHandler().fireServerEvent(new ServerEvent(ServerEvents.STATUS, "Listening for connections on port " + port + "..."));
 			socket = serverSocket.accept();
 			return socket;
 		} catch (SocketException e) {
-			getNetworkHandler().fireServerEvent(new ServerEvent(Event.SHUTDOWN, e));
+			getNetworkHandler().fireServerEvent(new ServerEvent(ServerEvents.SHUTDOWN, e));
 			return null;
 		} catch (NullPointerException | IOException e) {
-			getNetworkHandler().fireServerEvent(new ServerEvent(Event.CRASH, e));
+			getNetworkHandler().fireServerEvent(new ServerEvent(ServerEvents.CRASH, e));
 			return null;
 		}
 	}
 
 	@Override
 	public void run() {
-		getNetworkHandler().fireServerEvent(new ServerEvent(Event.START));
+		getNetworkHandler().fireServerEvent(new ServerEvent(ServerEvents.START));
 
 		// tries to open up a socket on PORT, returns if fail
 		if ((serverSocket = setUpServer(port)) == null)
@@ -80,12 +81,12 @@ public class Server extends ProgramState implements Runnable {
 				connectWithClient(clientSocket);
 				String clientIp = clientSocket.getRemoteSocketAddress().toString().split("[/:]")[1];
 				String localPort = clientSocket.getRemoteSocketAddress().toString().split("[/:]")[2];
-				getNetworkHandler().fireServerEvent(new ServerEvent(Event.CLIENT_CONNECT, clientIp + " connected on local port " + localPort + "!"));
+				getNetworkHandler().fireServerEvent(new ServerEvent(ServerEvents.CLIENT_CONNECT, clientIp + " connected on local port " + localPort + "!"));
 				setRunning(true);
 			}
 			setRunning(false);
 		} finally {
-			getNetworkHandler().fireServerEvent(new ServerEvent(Event.SHUTDOWN));
+			getNetworkHandler().fireServerEvent(new ServerEvent(ServerEvents.SHUTDOWN));
 			kill();
 		}
 	}
@@ -103,7 +104,7 @@ public class Server extends ProgramState implements Runnable {
 	/*
 	 * HANDLES OBJECTS
 	 */
-	public void broadcastChatEventToClients(CommandEvent chatEvent) {
+	public void broadcastChatEventToClients(ChatEvent chatEvent) {
 		for (int i = 0; i < getClientConnections().size(); i++) {
 			ObjectOutputStream currentObjectOutputStream = getClientConnections().get(i).getObjectOutputStream();
 			try {
@@ -114,29 +115,13 @@ public class Server extends ProgramState implements Runnable {
 		}
 	}
 
-	private void broadcastChatEventToAll(CommandEvent chatEvent) {
-		getNetworkHandler().fireServerEvent(new ServerEvent(Event.OBJECT, chatEvent));
+	public void broadcastChatEventToAll(ChatEvent chatEvent) {
+		getNetworkHandler().fireServerEvent(new ServerEvent(ServerEvents.CHAT_EVENT, chatEvent));
 		broadcastChatEventToClients(chatEvent);
 	}
 
-	/*
-	 * HANDLES CLEAR TEXT ONLY
-	 */
-	public void broadcastMessageToClients(String msg) {
-		for (int i = 0; i < getClientConnections().size(); i++) {
-			PrintWriter currentOut = getClientConnections().get(i).getOutputStream();
-			currentOut.println(msg);
-		}
-	}
-
-	private void broadcastMessageToAll(String msg) {
-		getNetworkHandler().fireServerEvent(new ServerEvent(Event.MESSAGE, msg));
-		broadcastMessageToClients(msg);
-	}
-
-	public void broadcastServerMessage(String msg) {
-		CommandEvent chatEvent = new CommandEvent(msg);
-		broadcastMessageToAll("SERVER: " + msg);
+	public void broadcastChatEvent(ChatEvent chatEvent) {
+		broadcastChatEventToAll(chatEvent);
 	}
 
 	@Override

@@ -10,10 +10,11 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
+import chatty.ChatEvent;
 import chatty.CommandEvent;
 import network.NetworkHandler;
 import network.ProgramState;
-import network.client.ClientEvent.Event;
+import network.client.ClientEvent.ClientEvents;
 
 public class Client extends ProgramState implements Runnable {
 
@@ -35,43 +36,30 @@ public class Client extends ProgramState implements Runnable {
 
 	private Socket setUpConnection(int port, String hostname) {
 		Socket socket = null;
-		getNetworkHandler().fireClientEvent(new ClientEvent(Event.STATUS, "Connecting to " + hostname + " on " + port + "..."));
+		getNetworkHandler().fireClientEvent(new ClientEvent(ClientEvents.STATUS, "Connecting to " + hostname + " on " + port + "..."));
 		try {
 			socket = new Socket(hostname, port);
-			getNetworkHandler().fireClientEvent(new ClientEvent(Event.CONNECT));
+			getNetworkHandler().fireClientEvent(new ClientEvent(ClientEvents.CONNECT));
 			return socket;
 		} catch (UnknownHostException e) {
-			getNetworkHandler().fireClientEvent(new ClientEvent(Event.SHUTDOWN, e, "Unknown host: " + hostname + "!"));
+			getNetworkHandler().fireClientEvent(new ClientEvent(ClientEvents.SHUTDOWN, e, "Unknown host: " + hostname + "!"));
 		} catch (IOException e) {
-			getNetworkHandler().fireClientEvent(new ClientEvent(Event.SHUTDOWN, e, "Connection failed."));
+			getNetworkHandler().fireClientEvent(new ClientEvent(ClientEvents.SHUTDOWN, e, "Connection failed."));
 		}
 		return null;
 	}
 
-	private void initPrintStreamConnection() throws IOException {
-		printWriterOutputStream = new PrintWriter(echoSocket.getOutputStream(), true);
-		bufferedReaderInputStream = new BufferedReader(new InputStreamReader(echoSocket.getInputStream()));
-
-		String fromServer;
-
-		setRunning(true);
-		// this loop constantly checks for changes a on the socket
-		while (isRunning() && (fromServer = bufferedReaderInputStream.readLine()) != null) {
-			// send message from SERVER to own FEED
-			getNetworkHandler().fireClientEvent(new ClientEvent(Event.MESSAGE, fromServer));
-		}
-	}
 
 	private void initConnection() throws IOException {
 		objectOutputStream = new ObjectOutputStream(echoSocket.getOutputStream());
 		objectInputStream = new ObjectInputStream(echoSocket.getInputStream());
 
-		CommandEvent chatEvent;
+		ChatEvent chatEvent;
 
 		setRunning(true);
 		try {
-			while (isRunning() && ((chatEvent = (CommandEvent) objectInputStream.readObject()) != null)) {
-				getNetworkHandler().fireClientEvent(new ClientEvent(Event.MESSAGE, chatEvent));
+			while (isRunning() && ((chatEvent = (ChatEvent) objectInputStream.readObject()) != null)) {
+				getNetworkHandler().fireClientEvent(new ClientEvent(ClientEvents.CHAT_EVENT, chatEvent));
 			}
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
@@ -80,7 +68,7 @@ public class Client extends ProgramState implements Runnable {
 
 	@Override
 	public void run() {
-		getNetworkHandler().fireClientEvent(new ClientEvent(Event.START));
+		getNetworkHandler().fireClientEvent(new ClientEvent(ClientEvents.START));
 		setClient(true);
 		setServer(false);
 
@@ -91,15 +79,15 @@ public class Client extends ProgramState implements Runnable {
 			return;
 
 		try {
-//			initConnection();
-			 initPrintStreamConnection();
+			initConnection();
+			// initPrintStreamConnection();
 		} catch (SocketException e) {
-			getNetworkHandler().fireClientEvent(new ClientEvent(Event.DISCONNECT, e));
+			getNetworkHandler().fireClientEvent(new ClientEvent(ClientEvents.DISCONNECT, e));
 			return;
 		} catch (IOException e) {
-			getNetworkHandler().fireClientEvent(new ClientEvent(Event.CRASH, e));
+			getNetworkHandler().fireClientEvent(new ClientEvent(ClientEvents.CRASH, e));
 		} finally {
-			getNetworkHandler().fireClientEvent(new ClientEvent(Event.SHUTDOWN));
+			getNetworkHandler().fireClientEvent(new ClientEvent(ClientEvents.SHUTDOWN));
 			kill();
 		}
 	}

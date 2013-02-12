@@ -9,7 +9,7 @@ import javax.swing.JTextField;
 import javax.swing.border.Border;
 
 import network.client.ClientEvent;
-import network.client.ClientEvent.Event;
+import network.client.ClientEvent.ClientEvents;
 
 import chatty.ChatEvent;
 import chatty.CommandEvent;
@@ -36,12 +36,13 @@ public class InputWindow extends JTextField {
 
 		@Override
 		public void actionPerformed(ActionEvent ae) {
-			ChatEvent chatEvent = new ChatEvent(ae.getActionCommand());
+			ChatEvent chatEvent = new ChatEvent(mainFrame.getController().getUser(), null, ae.getActionCommand());
 			if (chatEvent.getMsgArr().length > 0) {
 				if (chatEvent.isCommand()) {
-					mainFrame.getController().getNetworkHandler().fireClientEvent(new ClientEvent(Event.COMMAND, chatEvent));
+					mainFrame.getController().getNetworkHandler().fireClientEvent(new ClientEvent(ClientEvents.COMMAND, chatEvent));
 				} else
-					mainFrame.getController().sendMessageToAll(chatEvent.getMsg());
+					// mainFrame.getController().sendMessageToAll(chatEvent.getMsg());
+					mainFrame.getController().sendChatEventToAll(chatEvent);
 				setText("");
 			}
 		}

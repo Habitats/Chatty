@@ -14,7 +14,7 @@ import gui.options.OptionsMenu;
 import gui.options.OptionsMenu.Option;
 import network.NetworkHandler;
 import network.client.ClientEvent;
-import network.client.ClientEvent.Event;
+import network.client.ClientEvent.ClientEvents;
 
 public class Controller implements ButtonListener {
 
@@ -22,22 +22,24 @@ public class Controller implements ButtonListener {
 	private MainFrame gui;
 	private int port = 7701;
 	public String hostname = "localhost";
-	private String nickname = "c@rl";
+	private User user;
 
 	public Controller() {
 		networkHandler = new NetworkHandler(this);
+		String nickname = "c@rl";
+		user = new User(nickname);
 	}
 
-	public void sendMessageToAll(String msg) {
-		// TODO: send SELF messages to SERVER, TEMPORARY WORKAROUND
+	public void sendChatEventToAll(ChatEvent chatEvent) {
 
-		// if CLIENT, send to SERVER only
 		if (networkHandler.getProgramState() != null && networkHandler.getProgramState().isRunning() && networkHandler.getProgramState().isClient())
-			networkHandler.getClient().getOutputStream().println(getNickname() + ": " + msg);
-
-		// if SERVER, send to all CLIENTS and SELF
+			try {
+				networkHandler.getClient().getObjectOutputStream().writeObject(chatEvent);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		else if (networkHandler.getProgramState() != null && networkHandler.getProgramState().isRunning() && networkHandler.getProgramState().isServer()) {
-			networkHandler.getServer().broadcastServerMessage(msg);
+			networkHandler.getServer().broadcastChatEventToAll(chatEvent);
 		}
 	}
 
@@ -66,14 +68,14 @@ public class Controller implements ButtonListener {
 	}
 
 	private void setNick(String nickname) {
-		if (nickname.length() == 0 || nickname.equals(getNickname()))
+		if (nickname.length() == 0 || nickname.equals(user.getName()))
 			return;
 		if (nickname.length() > 15)
-			networkHandler.fireClientEvent(new ClientEvent(Event.STATUS, String.format("Invalid nickname: \"%s\"", nickname)));
+			networkHandler.fireClientEvent(new ClientEvent(ClientEvents.STATUS, String.format("Invalid nickname: \"%s\"", nickname)));
 		else {
 			nickname = nickname.replaceAll("\\s", "_");
-			networkHandler.fireClientEvent(new ClientEvent(Event.STATUS, String.format("Changed nickname to: \"%s\"", nickname)));
-			this.nickname = nickname;
+			networkHandler.fireClientEvent(new ClientEvent(ClientEvents.STATUS, String.format("Changed nickname to: \"%s\"", nickname)));
+			user.setName(nickname);
 		}
 	}
 
@@ -84,10 +86,10 @@ public class Controller implements ButtonListener {
 		System.out.println(port);
 		for (Character c : port.toCharArray())
 			if (!Character.isDigit(c)) {
-				networkHandler.fireClientEvent(new ClientEvent(Event.STATUS, "Invalid port: " + port));
+				networkHandler.fireClientEvent(new ClientEvent(ClientEvents.STATUS, "Invalid port: " + port));
 				return;
 			}
-		networkHandler.fireClientEvent(new ClientEvent(Event.STATUS, "Changed port to: " + port));
+		networkHandler.fireClientEvent(new ClientEvent(ClientEvents.STATUS, "Changed port to: " + port));
 		this.port = Integer.parseInt(port);
 	}
 
@@ -107,10 +109,10 @@ public class Controller implements ButtonListener {
 			}
 		}
 		if (valid) {
-			networkHandler.fireClientEvent(new ClientEvent(Event.STATUS, "Changed host to: " + hostnameAndIP));
+			networkHandler.fireClientEvent(new ClientEvent(ClientEvents.STATUS, "Changed host to: " + hostnameAndIP));
 			this.hostname = hostname;
 		} else
-			networkHandler.fireClientEvent(new ClientEvent(Event.STATUS, "Invalid hostname: " + hostname));
+			networkHandler.fireClientEvent(new ClientEvent(ClientEvents.STATUS, "Invalid hostname: " + hostname));
 	}
 
 	public void toggleOptions() {
@@ -124,7 +126,7 @@ public class Controller implements ButtonListener {
 					str.setText(hostname);
 					break;
 				case NICKNAME:
-					str.setText(getNickname());
+					str.setText(user.getName());
 					break;
 				case PORT:
 					str.setText(Integer.toString(getPort()));
@@ -161,7 +163,7 @@ public class Controller implements ButtonListener {
 		}
 	}
 
-	public void executeChatCommand(CommandEvent chatEvent) {
+	public void executeChatCommand(ChatEvent chatEvent) {
 		String returnMsg = "";
 		if (chatEvent.getCommand() == ChatCommand.HELP || (chatEvent.getMsgArr().length > 2 && chatEvent.getMsgArr()[2].equals("help")))
 			returnMsg = chatEvent.getCommand().getHelp();
@@ -194,9 +196,8 @@ public class Controller implements ButtonListener {
 		return port;
 	}
 
-	public String getNickname() {
-		return nickname;
+	public User getUser() {
+		return user;
 	}
-
 
 }

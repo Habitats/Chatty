@@ -3,7 +3,6 @@ package chatty;
 import java.io.Serializable;
 import java.util.Date;
 
-
 public class ChatEvent implements Serializable {
 
 	private final User from;
@@ -17,10 +16,6 @@ public class ChatEvent implements Serializable {
 	private ChatCommand cmd;
 
 	private String returnMsg;
-
-	public ChatEvent(String msg) {
-		this(null, null, msg);
-	}
 
 	public ChatEvent(User from, User to, String msg) {
 		this.from = from;

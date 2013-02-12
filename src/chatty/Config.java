@@ -6,7 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import network.client.ClientEvent;
-import network.client.ClientEvent.Event;
+import network.client.ClientEvent.ClientEvents;
 
 public class Config {
 	// general settings
