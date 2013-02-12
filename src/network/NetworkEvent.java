@@ -5,8 +5,8 @@ import java.util.Date;
 import chatty.ChatEvent;
 
 public abstract class NetworkEvent {
+
 	private Date date;
-	protected String msg;
 	public Exception e;
 	protected ChatEvent chatEvent;
 
@@ -16,18 +16,6 @@ public abstract class NetworkEvent {
 
 	public Date getDate() {
 		return date;
-	}
-
-	public String getMsg() {
-		return msg;
-	}
-
-	public void setMsg(String msg) {
-		this.msg = msg;
-	}
-
-	public Object getObject() {
-		return chatEvent;
 	}
 
 	public void setObject(ChatEvent chatEvent) {
@@ -41,4 +29,6 @@ public abstract class NetworkEvent {
 	public ChatEvent getChatEvent() {
 		return chatEvent;
 	}
+
+	public abstract Object getEvent();
 }

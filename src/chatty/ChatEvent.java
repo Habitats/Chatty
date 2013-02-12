@@ -1,6 +1,7 @@
 package chatty;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class ChatEvent implements Serializable {
@@ -10,7 +11,7 @@ public class ChatEvent implements Serializable {
 	private final String msg;
 	private final String[] msgArr;
 
-	private final Date sendDate;
+	private final String sendDate;
 	private Date receivedDate;
 
 	private ChatCommand cmd;
@@ -21,7 +22,7 @@ public class ChatEvent implements Serializable {
 		this.from = from;
 		this.to = to;
 		this.msg = msg;
-		this.sendDate = new Date();
+		this.sendDate = new SimpleDateFormat("hh:mm:ss").format(new Date());
 		msgArr = msg.split(" ");
 		if (msgArr[0].startsWith("/")) {
 			cmd = ChatCommand.getCmd(msgArr[0]);

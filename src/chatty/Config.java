@@ -15,6 +15,7 @@ public class Config {
 
 	// general GUI stuff
 	public static final int BORDER_WIDTH = 5;
+	public static final String SEP = " > ";
 
 	public static Font genFont(float size, boolean bold) {
 		Font font = null;

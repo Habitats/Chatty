@@ -2,6 +2,8 @@ package gui;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.swing.BorderFactory;
 import javax.swing.JTextPane;
@@ -11,9 +13,12 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 
+import network.NetworkEvent;
 import network.NetworkListener;
 import network.client.ClientEvent;
+import network.client.ClientEvent.ClientEvents;
 import network.server.ServerEvent;
+import network.server.ServerEvent.ServerEvents;
 
 import chatty.ChatEvent;
 import chatty.Config;
@@ -54,30 +59,28 @@ public class FeedWindow extends JTextPane implements NetworkListener {
 
 	private void appendText(String msg) {
 		if (msg.length() > 0)
-			setText(getText() + "\n" + msg);
+			setText(getText() + "\n" + (new SimpleDateFormat("hh:mm:ss").format(new Date())) + Config.SEP + msg);
 	}
 
-	private void sendStatusToOwnFeed(String msg) {
-		appendText("STATUS: " + msg);
-	}
-
-	private void sendNormalMessageToOwnFeed(String msg) {
-		appendText(msg);
+	private void sendStatusToOwnFeed(NetworkEvent event) {
+		if (event instanceof ServerEvent) {
+			ServerEvents serverEvents = (ServerEvents) event.getEvent();
+			appendText(serverEvents.getPrefix() + Config.SEP + serverEvents.getMsg());
+		} else if (event instanceof ClientEvent) {
+			ClientEvents clientEvents = (ClientEvents) event.getEvent();
+			appendText(clientEvents.getPrefix() + Config.SEP + clientEvents.getMsg());
+		}
 	}
 
 	private void sendNormalMessageToOwnFeed(ChatEvent chatEvent) {
-		appendText("from: " + chatEvent.getFrom().getName() + " msg: " + chatEvent.getMsg());
-	}
-
-	private void sendErrorToOwnFeed(String msg) {
-		appendText("ERROR: " + msg);
+		appendText(chatEvent.getFrom().getName() + Config.SEP + chatEvent.getMsg());
 	}
 
 	// network stuff
 
 	@Override
 	public void serverStatus(ServerEvent event) {
-		sendStatusToOwnFeed(event.getMsg());
+		sendStatusToOwnFeed(event);
 	}
 
 	@Override
@@ -87,7 +90,7 @@ public class FeedWindow extends JTextPane implements NetworkListener {
 
 	@Override
 	public void clientStatus(ClientEvent event) {
-		sendStatusToOwnFeed(event.getMsg());
+		sendStatusToOwnFeed(event);
 	}
 
 	@Override

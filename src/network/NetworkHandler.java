@@ -73,41 +73,11 @@ public class NetworkHandler {
 		networkEvents.add(event);
 		for (NetworkListener listener : networkListeners) {
 			switch (event.getEvent()) {
-			case START:
-				if (event.getMsg() == null)
-					event.setMsg("Starting server...");
-				listener.serverStatus(event);
-				break;
-			case CLIENT_DROPPED:
-				if (event.getMsg() == null)
-					event.setMsg("Client connection dropped!");
-				listener.serverStatus(event);
-				break;
-			case SHUTDOWN:
-				if (event.getMsg() == null)
-					event.setMsg("Server shutting down!");
-				System.out.println("dicks");
-				listener.serverStatus(event);
-				break;
-			case CLIENT_CONNECT:
-				if (event.getMsg() == null)
-					event.setMsg("Client connected!");
-				listener.serverStatus(event);
-				break;
-			case CRASH:
-				if (event.getMsg() == null) {
-					event.setMsg("Server crashed!");
-					event.getException().printStackTrace();
-				}
-				listener.serverStatus(event);
-				break;
-			case STATUS:
-				listener.serverStatus(event);
-				break;
 			case CHAT_EVENT:
 				listener.serverNormalMessage(event);
 				break;
 			default:
+				listener.serverStatus(event);
 				break;
 			}
 		}
@@ -120,33 +90,11 @@ public class NetworkHandler {
 			networkEvents.add(event);
 			for (NetworkListener listener : networkListeners) {
 				switch (event.getEvent()) {
-				case START:
-					if (event.getMsg() == null)
-						event.setMsg("Client starting...");
-					listener.clientStatus(event);
-					break;
-				case CONNECT:
-					if (event.getMsg() == null)
-						event.setMsg("Client connected!");
-					listener.clientStatus(event);
-					break;
-				case SHUTDOWN:
-					if (event.getMsg() == null)
-						event.setMsg("Client shutting down!");
-					listener.clientStatus(event);
-					break;
-				case CRASH:
-					if (event.getMsg() == null)
-						event.setMsg("Client crashed!");
-					listener.clientStatus(event);
-					break;
-				case STATUS:
-					listener.clientStatus(event);
-					break;
 				case CHAT_EVENT:
 					listener.clientMessage(event);
 					break;
 				default:
+					listener.clientStatus(event);
 					break;
 				}
 			}

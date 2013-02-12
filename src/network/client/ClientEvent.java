@@ -8,15 +8,36 @@ import network.client.ClientEvent.ClientEvents;
 public class ClientEvent extends NetworkEvent {
 
 	public enum ClientEvents {
-		START, //
-		SHUTDOWN, //
-		DISCONNECT, //
-		CRASH, //
-		CONNECT, //
+		START("Client stared!"), //
+		SHUTDOWN("Client shutting down!"), //
+		DISCONNECT("Disconnected!"), //
+		CRASH("Client crashed!"), //
+		CONNECT("Client connected!"), //
 		STATUS, //
-		ERROR, //
 		COMMAND, //
 		CHAT_EVENT, //
+		;
+		String msg;
+		private final String prefix = "STATUS";
+
+		private ClientEvents() {
+		}
+
+		private ClientEvents(String msg) {
+			this.msg = msg;
+		}
+
+		public String getMsg() {
+			return msg;
+		}
+
+		public void setMsg(String msg) {
+			this.msg = msg;
+		}
+
+		public String getPrefix() {
+			return prefix;
+		}
 	}
 
 	private ClientEvents event;
@@ -27,7 +48,7 @@ public class ClientEvent extends NetworkEvent {
 	}
 
 	public ClientEvent(ClientEvents event, String msg) {
-		super.msg = msg;
+		event.setMsg(msg);
 		this.event = event;
 		generateGeneralInfo();
 	}
@@ -39,7 +60,7 @@ public class ClientEvent extends NetworkEvent {
 
 	public ClientEvent(ClientEvents event, Exception e, String msg) {
 		super.e = e;
-		super.msg = msg;
+		event.setMsg(msg);
 		this.event = event;
 	}
 
