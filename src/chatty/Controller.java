@@ -51,6 +51,9 @@ public class Controller implements ButtonListener {
 	public void setGui(MainFrame gui) {
 		this.gui = gui;
 	}
+	public MainFrame getGui(){
+		return gui;
+	}
 
 	private void updateConfig(ButtonEvent event) {
 		for (OptionsField field : gui.getOptionsMenu().getOptionFields())

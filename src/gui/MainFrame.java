@@ -31,7 +31,7 @@ public class MainFrame {
 	private OptionsMenu optionsMenu;
 	private Controller controller;
 	private MenuButton optionsButton;
-	
+
 	public MainFrame(Controller controller) {
 		Themes.setTheme(Themes.GRAY);
 		JFrame frame = new JFrame();
@@ -63,8 +63,9 @@ public class MainFrame {
 		overlayPanel.setLayout(new GridBagLayout());
 
 		feedWindow = new FeedWindow(new Dimension(frameWidth, 200));
+		feedWindow.addMouseListener(new FeedMouseListener(this));
 		inputWindow = new InputWindow(new Dimension(frameWidth, 20), this);
-		optionsMenu = new OptionsMenu(new Dimension((int) (frameWidth * .66), (int) (frameHeight * .33)),buttonHandler);
+		optionsMenu = new OptionsMenu(new Dimension((int) (frameWidth * .66), (int) (frameHeight * .33)), buttonHandler);
 
 		Dimension buttonDim = new Dimension(((frameWidth - Config.BORDER_WIDTH * 4) / menuSize), 30);
 		MenuButton clientButton = new MenuButton(Type.CLIENT, buttonDim, buttonHandler);
@@ -78,7 +79,7 @@ public class MainFrame {
 		JScrollPane scrollPane = new JScrollPane(feedWindow);
 		scrollPane.setBorder(BorderFactory.createEmptyBorder());
 		scrollPane.getVerticalScrollBar().setBackground(Themes.FOREGROUND);
-		scrollPane.getVerticalScrollBar().setForeground(Themes.FOREGROUND);
+
 		mainPanel.add(scrollPane, new GBC(0, 2, Align.FULL_WIDTH).setSpan(menuSize, 1).setWeight(0, 1));
 		mainPanel.add(inputWindow, new GBC(0, 8, Align.FULL_WIDTH_BOTTOM).setSpan(menuSize, 2).setWeight(1, 0));
 
@@ -90,7 +91,7 @@ public class MainFrame {
 
 		mainPanel.addKeyListener(new MyKeyListener());
 		mainPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-		
+
 		layeredPane.setOpaque(false);
 		layeredPane.add(mainPanel, new Integer(0));
 		layeredPane.add(overlayPanel, new Integer(2));
@@ -101,8 +102,6 @@ public class MainFrame {
 
 		frame.getContentPane().setBackground(Color.black);
 		frame.getContentPane().add(layeredPane);
-		frame.getGlassPane().setBackground(Color.yellow);
-		frame.getGlassPane().setVisible(true);
 
 		frame.setTitle(Config.CHATTY_VER);
 		frame.pack();
@@ -115,7 +114,7 @@ public class MainFrame {
 		frame.setLocationRelativeTo(frame.getRootPane());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		 frame.setResizable(false);
+		frame.setResizable(false);
 		frame.setVisible(true);
 
 		// sets focus to TEXT FIELD
@@ -134,6 +133,7 @@ public class MainFrame {
 	public OptionsMenu getOptionsMenu() {
 		return optionsMenu;
 	}
+
 	public MenuButton getOptionsButton() {
 		return optionsButton;
 	}

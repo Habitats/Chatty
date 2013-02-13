@@ -2,6 +2,7 @@ package gui;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -24,6 +25,10 @@ import network.server.ServerEvent.ServerEvents;
 
 import chatty.ChatEvent;
 import chatty.Config;
+
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 public class FeedWindow extends JTextPane implements NetworkListener {
 
@@ -58,6 +63,7 @@ public class FeedWindow extends JTextPane implements NetworkListener {
 	//
 	// setStyledDocument(doc);
 	// }
+
 
 	private void appendText(String msg) {
 		try {
