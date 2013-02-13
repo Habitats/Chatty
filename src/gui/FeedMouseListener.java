@@ -25,8 +25,10 @@ public class FeedMouseListener extends MouseAdapter {
 		if (SwingUtilities.isRightMouseButton(e)) {
 			// TODO: this is quite sloppy atm
 			RightClickType type;
-			if (clickedNick(e, gui.getController().getUser().getName()))
+			if (clickedNick(e, gui.getController().getUser().getName())){
+				System.out.println("CLICKED NICK: " + gui.getController().getUser().getName());
 				type = RightClickType.NICK;
+			}
 			else
 				type = RightClickType.DEFAULT;
 			gui.getRightClickMenu().setLocation(e.getX() + gui.getScrollPane().getX(), e.getY() + gui.getScrollPane().getY());
@@ -40,7 +42,6 @@ public class FeedMouseListener extends MouseAdapter {
 		int triggerWordIndex = cont.indexOf(nick, mouseClickIndex - nick.length());
 		int triggerWordEndIndex = triggerWordIndex + nick.length();
 		System.out.println(triggerWordIndex + " <= " + mouseClickIndex + " <= " + triggerWordEndIndex);
-		System.out.println("CLICKED NICK: " + nick);
 		return (triggerWordIndex <= mouseClickIndex && mouseClickIndex <= (triggerWordIndex + nick.length()));
 	}
 }

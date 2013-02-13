@@ -10,6 +10,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.peer.MenuPeer;
 
 import javax.swing.BorderFactory;
@@ -66,9 +68,19 @@ public class MainFrame {
 
 		feedWindow = new FeedWindow(new Dimension(frameWidth, 200));
 		feedWindow.addMouseListener(new FeedMouseListener(this));
+
 		inputWindow = new InputWindow(new Dimension(frameWidth, 20), this);
+		// TODO: this isn't very pretty
+		inputWindow.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				super.keyPressed(e);
+				rightClickMenu.setVisible(false);
+			}
+		});
+		
 		optionsMenu = new OptionsMenu(new Dimension((int) (frameWidth * .66), (int) (frameHeight * .33)), buttonHandler);
-		rightClickMenu = new RightClickMenu(new Dimension(120,160));
+		rightClickMenu = new RightClickMenu(new Dimension(120, 160));
 
 		Dimension buttonDim = new Dimension(((frameWidth - Config.BORDER_WIDTH * 4) / menuSize), 30);
 		MenuButton clientButton = new MenuButton(Type.CLIENT, buttonDim, buttonHandler);
@@ -122,9 +134,10 @@ public class MainFrame {
 		frame.setVisible(true);
 
 		// sets focus to TEXT FIELD
-		// inputWindow.requestFocus();
-		mainPanel.requestFocus();
+		inputWindow.requestFocus();
+//		mainPanel.requestFocus();
 	}
+
 	public RightClickMenu getRightClickMenu() {
 		return rightClickMenu;
 	}
@@ -144,6 +157,7 @@ public class MainFrame {
 	public MenuButton getOptionsButton() {
 		return optionsButton;
 	}
+
 	public JScrollPane getScrollPane() {
 		return scrollPane;
 	}
