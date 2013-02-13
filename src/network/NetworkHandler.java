@@ -29,7 +29,7 @@ public class NetworkHandler {
 
 	public void restartServer(int port) {
 		if (port == 0)
-			port = controller.getPort();
+			port = getController().getPort();
 		getServer().kill();
 		startServer(port);
 	}
@@ -85,7 +85,7 @@ public class NetworkHandler {
 
 	synchronized public void fireClientEvent(ClientEvent event) {
 		if (event.getEvent() == ClientEvents.COMMAND)
-			controller.executeChatCommand(event.getChatEvent());
+			getController().executeChatCommand(event.getChatEvent());
 		else {
 			networkEvents.add(event);
 			for (NetworkListener listener : networkListeners) {
@@ -122,5 +122,9 @@ public class NetworkHandler {
 
 	public Client getClient() {
 		return clientInstance;
+	}
+
+	public Controller getController() {
+		return controller;
 	}
 }

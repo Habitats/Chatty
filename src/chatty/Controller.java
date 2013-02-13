@@ -26,18 +26,24 @@ public class Controller implements ButtonListener {
 
 	public Controller() {
 		networkHandler = new NetworkHandler(this);
-		String nickname = "c@rl";
+		String nickname = Integer.toString((int) (10000 * Math.random()));
 		user = new User(nickname);
 	}
 
-	public void sendChatEventToAll(ChatEvent chatEvent) {
+	public void sendChatEvent(ChatEvent chatEvent) {
 
+		/*
+		 * IF CLIENT
+		 */
 		if (networkHandler.getProgramState() != null && networkHandler.getProgramState().isRunning() && networkHandler.getProgramState().isClient())
 			try {
 				networkHandler.getClient().getObjectOutputStream().writeObject(chatEvent);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+		/*
+		 * IF SERVER
+		 */
 		else if (networkHandler.getProgramState() != null && networkHandler.getProgramState().isRunning() && networkHandler.getProgramState().isServer()) {
 			networkHandler.getServer().broadcastChatEventToAll(chatEvent);
 		}
@@ -51,7 +57,8 @@ public class Controller implements ButtonListener {
 	public void setGui(MainFrame gui) {
 		this.gui = gui;
 	}
-	public MainFrame getGui(){
+
+	public MainFrame getGui() {
 		return gui;
 	}
 

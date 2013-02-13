@@ -11,9 +11,11 @@ public class Chatty {
 
 	private void run() {
 
-		controller = new Controller();
-		MainFrame gui = new MainFrame(controller);
-		controller.setGui(gui);
+		for (int i = 0; i < 4; i++) {
+			controller = new Controller();
+			MainFrame gui = new MainFrame(controller);
+			controller.setGui(gui);
+		}
 	}
 
 	public Controller getController() {

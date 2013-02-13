@@ -12,6 +12,7 @@ import java.net.UnknownHostException;
 
 import chatty.ChatEvent;
 import chatty.CommandEvent;
+import chatty.ChatEvent.Receipient;
 import network.NetworkHandler;
 import network.ProgramState;
 import network.client.ClientEvent.ClientEvents;
@@ -49,7 +50,6 @@ public class Client extends ProgramState implements Runnable {
 		return null;
 	}
 
-
 	private void initConnection() throws IOException {
 		objectOutputStream = new ObjectOutputStream(echoSocket.getOutputStream());
 		objectInputStream = new ObjectInputStream(echoSocket.getInputStream());
@@ -58,6 +58,7 @@ public class Client extends ProgramState implements Runnable {
 
 		setRunning(true);
 		try {
+			getObjectOutputStream().writeObject(new ChatEvent(getNetworkHandler().getController().getUser(), null, Receipient.SERVER, getNetworkHandler().getController().getUser().getName() + " says hi!"));
 			while (isRunning() && ((chatEvent = (ChatEvent) objectInputStream.readObject()) != null)) {
 				getNetworkHandler().fireClientEvent(new ClientEvent(ClientEvents.CHAT_EVENT, chatEvent));
 			}
@@ -73,6 +74,7 @@ public class Client extends ProgramState implements Runnable {
 		setServer(false);
 
 		echoSocket = setUpConnection(port, hostname);
+		getNetworkHandler().getController().getUser().setActivePort(echoSocket.getLocalPort());
 
 		// return if connection went to hell or w/e
 		if (echoSocket == null)

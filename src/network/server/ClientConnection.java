@@ -4,11 +4,14 @@ import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import chatty.User;
+
 public class ClientConnection {
 
 	private PrintWriter outputStream;
 	private Socket clientSocket;
 	private ObjectOutputStream objectOutputStream;
+	private User user;
 
 	public ClientConnection(PrintWriter outputStream, Socket clientSocket) {
 		this.outputStream = outputStream;
@@ -31,5 +34,13 @@ public class ClientConnection {
 
 	public ObjectOutputStream getObjectOutputStream() {
 		return objectOutputStream;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	public User getUser() {
+		return user;
 	}
 }
