@@ -31,6 +31,8 @@ public class MainFrame {
 	private OptionsMenu optionsMenu;
 	private Controller controller;
 	private MenuButton optionsButton;
+	private RightClickMenu rightClickMenu;
+	private JScrollPane scrollPane;
 
 	public MainFrame(Controller controller) {
 		Themes.setTheme(Themes.GRAY);
@@ -66,6 +68,7 @@ public class MainFrame {
 		feedWindow.addMouseListener(new FeedMouseListener(this));
 		inputWindow = new InputWindow(new Dimension(frameWidth, 20), this);
 		optionsMenu = new OptionsMenu(new Dimension((int) (frameWidth * .66), (int) (frameHeight * .33)), buttonHandler);
+		rightClickMenu = new RightClickMenu(new Dimension(120,160));
 
 		Dimension buttonDim = new Dimension(((frameWidth - Config.BORDER_WIDTH * 4) / menuSize), 30);
 		MenuButton clientButton = new MenuButton(Type.CLIENT, buttonDim, buttonHandler);
@@ -76,7 +79,7 @@ public class MainFrame {
 		getController().getNetworkHandler().addNetworkListener(serverButton);
 		getController().getNetworkHandler().addNetworkListener(feedWindow);
 
-		JScrollPane scrollPane = new JScrollPane(feedWindow);
+		scrollPane = new JScrollPane(feedWindow);
 		scrollPane.setBorder(BorderFactory.createEmptyBorder());
 		scrollPane.getVerticalScrollBar().setBackground(Themes.FOREGROUND);
 
@@ -95,6 +98,7 @@ public class MainFrame {
 		layeredPane.setOpaque(false);
 		layeredPane.add(mainPanel, new Integer(0));
 		layeredPane.add(overlayPanel, new Integer(2));
+		layeredPane.add(rightClickMenu, new Integer(3));
 
 		// DO NOT SET LAYOUT MANAGER TO LAYERED PANE
 		// layeredPane.setLayout(new FlowLayout());
@@ -121,6 +125,9 @@ public class MainFrame {
 		// inputWindow.requestFocus();
 		mainPanel.requestFocus();
 	}
+	public RightClickMenu getRightClickMenu() {
+		return rightClickMenu;
+	}
 
 	public FeedWindow getFeedWindow() {
 		return feedWindow;
@@ -136,6 +143,9 @@ public class MainFrame {
 
 	public MenuButton getOptionsButton() {
 		return optionsButton;
+	}
+	public JScrollPane getScrollPane() {
+		return scrollPane;
 	}
 
 }

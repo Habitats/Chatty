@@ -1,5 +1,7 @@
 package gui;
 
+import gui.RightClickMenu.RightClickType;
+
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -19,17 +21,26 @@ public class FeedMouseListener extends MouseAdapter {
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		if (SwingUtilities.isRightMouseButton(e))
-			searchForNick(e, gui.getController().getUser().getName());
+		gui.getRightClickMenu().setVisible(false);
+		if (SwingUtilities.isRightMouseButton(e)) {
+			// TODO: this is quite sloppy atm
+			RightClickType type;
+			if (clickedNick(e, gui.getController().getUser().getName()))
+				type = RightClickType.NICK;
+			else
+				type = RightClickType.DEFAULT;
+			gui.getRightClickMenu().setLocation(e.getX() + gui.getScrollPane().getX(), e.getY() + gui.getScrollPane().getY());
+			gui.getRightClickMenu().open(type);
+		}
 	}
 
-	private void searchForNick(MouseEvent e, String nick) {
+	private boolean clickedNick(MouseEvent e, String nick) {
 		String cont = feedWindow.getText();
 		int mouseClickIndex = feedWindow.viewToModel(e.getPoint());
 		int triggerWordIndex = cont.indexOf(nick, mouseClickIndex - nick.length());
 		int triggerWordEndIndex = triggerWordIndex + nick.length();
 		System.out.println(triggerWordIndex + " <= " + mouseClickIndex + " <= " + triggerWordEndIndex);
-		if (triggerWordIndex <= mouseClickIndex && mouseClickIndex <= (triggerWordIndex + nick.length()))
-			System.out.println("CLICKED NICK: " + nick);
+		System.out.println("CLICKED NICK: " + nick);
+		return (triggerWordIndex <= mouseClickIndex && mouseClickIndex <= (triggerWordIndex + nick.length()));
 	}
 }
