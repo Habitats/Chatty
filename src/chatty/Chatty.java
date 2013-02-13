@@ -10,8 +10,9 @@ public class Chatty {
 	}
 
 	private void run() {
+		int instances = 1;
 
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < instances; i++) {
 			controller = new Controller();
 			MainFrame gui = new MainFrame(controller);
 			controller.setGui(gui);
