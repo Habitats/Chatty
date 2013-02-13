@@ -6,7 +6,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.swing.BorderFactory;
+import javax.swing.JTextArea;
 import javax.swing.JTextPane;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultCaret;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Style;
@@ -44,22 +46,31 @@ public class FeedWindow extends JTextPane implements NetworkListener {
 		// initStyles();
 	}
 
-	private void initStyles() {
-		StyleContext sc = new StyleContext();
-		final DefaultStyledDocument doc = new DefaultStyledDocument(sc);
-
-		Style error = sc.addStyle("error", null);
-		error.addAttribute(StyleConstants.Foreground, Color.RED);
-
-		Style normal = sc.addStyle("normal", null);
-		normal.addAttribute(StyleConstants.Foreground, Color.BLACK);
-
-		setStyledDocument(doc);
-	}
+	// private void initStyles() {
+	// StyleContext sc = new StyleContext();
+	// final DefaultStyledDocument doc = new DefaultStyledDocument(sc);
+	//
+	// Style error = sc.addStyle("error", null);
+	// error.addAttribute(StyleConstants.Foreground, Color.RED);
+	//
+	// Style normal = sc.addStyle("normal", null);
+	// normal.addAttribute(StyleConstants.Foreground, Color.BLACK);
+	//
+	// setStyledDocument(doc);
+	// }
 
 	private void appendText(String msg) {
-		if (msg.length() > 0)
-			setText(getText() + "\n" + (new SimpleDateFormat("hh:mm:ss").format(new Date())) + Config.SEP + msg);
+		try {
+			// if (msg.length() > 0)
+			// setText(getText() + "\n" + (new
+			// SimpleDateFormat("hh:mm:ss").format(new Date())) + Config.SEP +
+			// msg);
+			getDocument().insertString(getText().length(), "\n" + new SimpleDateFormat("hh:mm:ss").format(new Date()) + Config.SEP + msg, null);
+			setCaretPosition(getDocument().getLength());
+		} catch (BadLocationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private void sendStatusToOwnFeed(NetworkEvent event) {

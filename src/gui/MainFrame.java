@@ -77,6 +77,8 @@ public class MainFrame {
 
 		JScrollPane scrollPane = new JScrollPane(feedWindow);
 		scrollPane.setBorder(BorderFactory.createEmptyBorder());
+		scrollPane.getVerticalScrollBar().setBackground(Themes.FOREGROUND);
+		scrollPane.getVerticalScrollBar().setForeground(Themes.FOREGROUND);
 		mainPanel.add(scrollPane, new GBC(0, 2, Align.FULL_WIDTH).setSpan(menuSize, 1).setWeight(0, 1));
 		mainPanel.add(inputWindow, new GBC(0, 8, Align.FULL_WIDTH_BOTTOM).setSpan(menuSize, 2).setWeight(1, 0));
 
