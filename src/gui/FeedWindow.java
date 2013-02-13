@@ -39,7 +39,7 @@ public class FeedWindow extends JTextPane implements NetworkListener {
 		setPreferredSize(dim);
 		setMinimumSize(dim);
 
-		setText("Welcome to  " + Config.CHATTY_VER + " (excuse the name), a lightweight, easy to use, chat client!");
+		setText("Welcome to " + Config.CHATTY_VER + " (excuse the name) -- a lightweight, easy to use, chat client!");
 		// auto scroll
 		DefaultCaret caret = (DefaultCaret) getCaret();
 		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
