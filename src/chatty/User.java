@@ -58,9 +58,4 @@ public class User implements Serializable {
 	public void setLastMessage() {
 		lastMessage = new Date();
 	}
-
-	public User duplicate() {
-		return new User(userName, displayName, activePort, lastMessage,created);
-
-	}
 }
