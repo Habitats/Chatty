@@ -44,8 +44,8 @@ public class ServerConnection implements Runnable {
 					getServer().getUsers().put(chatEvent.getFrom().getName(), chatEvent.getFrom());
 				}
 				for (ClientConnection clientSocket : getServer().getClientConnections()) {
-					System.out.print("server port: " + clientSocket.getClientSocket().getPort());
-					System.out.println(" - client port: " + chatEvent.getFrom().getActivePort());
+//					System.out.print("server port: " + clientSocket.getClientSocket().getPort());
+//					System.out.println(" - client port: " + chatEvent.getFrom().getActivePort());
 					if (chatEvent.getFrom().getActivePort() == clientSocket.getClientSocket().getPort()) {
 						System.out.println("Match! Client: " + chatEvent.getFrom().getName() + " - connected on: " + clientSocket.getClientSocket().getPort());
 						clientSocket.setUser(chatEvent.getFrom());

@@ -6,9 +6,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 
+import gui.Button;
 import gui.ButtonEvent;
+import gui.ButtonEvent.ButtonEvents;
+import gui.ButtonHandler;
 import gui.ButtonListener;
 import gui.MainFrame;
+import gui.MenuButton;
 import gui.options.OptionsField;
 import gui.options.OptionsMenu;
 import gui.options.OptionsMenu.Option;
@@ -28,6 +32,10 @@ public class Controller implements ButtonListener {
 		networkHandler = new NetworkHandler(this);
 		String nickname = Integer.toString((int) (10000 * Math.random()));
 		user = new User(nickname);
+	}
+
+	public void startTestInstance(int servers, int clients) {
+
 	}
 
 	public void sendChatEvent(ChatEvent chatEvent) {
