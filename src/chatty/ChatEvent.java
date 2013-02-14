@@ -29,7 +29,7 @@ public class ChatEvent implements Serializable {
 		}
 	}
 
-	private final User from;
+	private User from;
 	private Receipient rec;
 	private String msg;
 	private final String[] msgArr;
@@ -49,7 +49,7 @@ public class ChatEvent implements Serializable {
 		this.from = from;
 		this.msg = msg;
 		setRec(rec, to);
-		this.sendDate = new SimpleDateFormat("hh:mm:ss").format(new Date());
+		this.sendDate = new SimpleDateFormat("hh:mm:ss:SSSS").format(new Date());
 		msgArr = msg.split(" ");
 		if (msgArr[0].startsWith("/")) {
 			cmd = ChatCommand.getCmd(msgArr[0]);
@@ -101,5 +101,13 @@ public class ChatEvent implements Serializable {
 
 	public void setReceivedDate() {
 		this.receivedDate = new Date();
+	}
+
+	public String toString() {
+		return String.format("F: %s - T: %s - M: %s - T: %s", from, rec, msg, sendDate);
+	}
+
+	public void setFrom(User duplicate) {
+		this.from = duplicate;
 	}
 }

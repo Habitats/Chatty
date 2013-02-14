@@ -12,22 +12,27 @@ public class Chatty {
 	public static void main(String[] args) {
 		// new Chatty().run();
 		Chatty chatty = new Chatty();
-		if (args[0] != null) {
-			int instances = Integer.parseInt(args[0]);
-			chatty.test(instances);
-		} else
-			chatty.run();
+		// if (args != null && args[0] != null && Integer.parseInt(args[0]) !=
+		// 0) { int instances = Integer.parseInt(args[0]);
+		// chatty.test(instances);
+		// } else
+		chatty.test(1);
 
 	}
 
 	private void test(int instances) {
 
+		
 		for (int i = 0; i < instances; i++) {
 			controller = new Controller();
 			MainFrame guiCli = new MainFrame(controller);
 			controller.setGui(guiCli);
 			controller.buttonClicked(new ButtonEvent(null, new MenuButton(MenuButton.Type.CLIENT, null, new ButtonHandler()), ButtonEvents.CLICKED));
 		}
+		controller = new Controller();
+		MainFrame guiServ = new MainFrame(controller);
+		controller.setGui(guiServ);
+		controller.buttonClicked(new ButtonEvent(null, new MenuButton(MenuButton.Type.SERVER, null, new ButtonHandler()), ButtonEvents.CLICKED));
 	}
 
 	private void run() {

@@ -22,7 +22,6 @@ public class ServerConnection implements Runnable {
 	private Server server;
 	private String welcomeMsg;
 	private User serverUser;
-	private User currentUser;
 
 	public ServerConnection(Socket clientSocket, Server server) {
 		this.clientSocket = clientSocket;
@@ -40,6 +39,7 @@ public class ServerConnection implements Runnable {
 
 		try {
 			while ((chatEvent = (ChatEvent) objectInputStream.readObject()) != null) {
+				System.out.println("Reading [S]: " + chatEvent);
 				if (!getServer().getUsers().containsKey(chatEvent.getFrom().getName())) {
 					getServer().getUsers().put(chatEvent.getFrom().getName(), chatEvent.getFrom());
 				}
@@ -47,7 +47,7 @@ public class ServerConnection implements Runnable {
 //					System.out.print("server port: " + clientSocket.getClientSocket().getPort());
 //					System.out.println(" - client port: " + chatEvent.getFrom().getActivePort());
 					if (chatEvent.getFrom().getActivePort() == clientSocket.getClientSocket().getPort()) {
-						System.out.println("Match! Client: " + chatEvent.getFrom().getName() + " - connected on: " + clientSocket.getClientSocket().getPort());
+//						System.out.println("Match! Client: " + chatEvent.getFrom().getName() + " - connected on: " + clientSocket.getClientSocket().getPort());
 						clientSocket.setUser(chatEvent.getFrom());
 					}
 				}
@@ -57,6 +57,7 @@ public class ServerConnection implements Runnable {
 				} else if (chatEvent.getReceipient() == Receipient.PRIVATE) {
 					getServer().sendPrivateChatEvent(chatEvent);
 				}
+				chatEvent = null;
 			}
 		} catch (ClassNotFoundException e) {
 			System.err.println("CLASS NOT FOUND EXEPTION (serverConnection)");

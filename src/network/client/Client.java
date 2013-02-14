@@ -74,11 +74,11 @@ public class Client extends ProgramState implements Runnable {
 		setServer(false);
 
 		echoSocket = setUpConnection(port, hostname);
-		getNetworkHandler().getController().getUser().setActivePort(echoSocket.getLocalPort());
 
 		// return if connection went to hell or w/e
 		if (echoSocket == null)
 			return;
+		getNetworkHandler().getController().getUser().setActivePort(echoSocket.getLocalPort());
 
 		try {
 			initConnection();

@@ -5,6 +5,9 @@ import java.awt.FontFormatException;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.sql.ClientInfoStatus;
+
+import chatty.ChatEvent.Receipient;
 
 import gui.Button;
 import gui.ButtonEvent;
@@ -25,7 +28,7 @@ public class Controller implements ButtonListener {
 	private final NetworkHandler networkHandler;
 	private MainFrame gui;
 	private int port = 7701;
-	public String hostname = "shoopdawhoop.myftp.org";
+	public String hostname = "localhost";
 	private User user;
 
 	public Controller() {
@@ -38,13 +41,17 @@ public class Controller implements ButtonListener {
 
 	}
 
-	public void sendChatEvent(ChatEvent chatEvent) {
+	public synchronized void sendChatEvent(ChatEvent chatEvent) {
 
 		/*
 		 * IF CLIENT
 		 */
 		if (networkHandler.getProgramState() != null && networkHandler.getProgramState().isRunning() && networkHandler.getProgramState().isClient())
 			try {
+//				System.out.println("Sending [1]: " + chatEvent);
+//				networkHandler.getClient().getObjectOutputStream().writeObject(chatEvent);
+				chatEvent.setFrom(chatEvent.getFrom().duplicate());
+				System.out.println("Sending [2]: " + chatEvent);
 				networkHandler.getClient().getObjectOutputStream().writeObject(chatEvent);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -88,12 +95,12 @@ public class Controller implements ButtonListener {
 	private void setNick(String nickname) {
 		if (nickname.length() == 0 || nickname.equals(user.getName()))
 			return;
-		if (nickname.length() > 15)
+		if (nickname.length() > 20)
 			networkHandler.fireClientEvent(new ClientEvent(ClientEvents.STATUS, String.format("Invalid nickname: \"%s\"", nickname)));
 		else {
 			nickname = nickname.replaceAll("\\s", "_");
 			networkHandler.fireClientEvent(new ClientEvent(ClientEvents.STATUS, String.format("Changed nickname to: \"%s\"", nickname)));
-			user.setName(nickname);
+			getUser().setDisplayName(nickname);
 		}
 	}
 
@@ -183,9 +190,10 @@ public class Controller implements ButtonListener {
 
 	public void executeChatCommand(ChatEvent chatEvent) {
 		String returnMsg = "";
-		if (chatEvent.getCommand() == ChatCommand.HELP || (chatEvent.getMsgArr().length > 2 && chatEvent.getMsgArr()[2].equals("help")))
+		if (chatEvent.getCommand() == ChatCommand.HELP || (chatEvent.getMsgArr().length > 2 && chatEvent.getMsgArr()[2].equals("help"))) {
 			returnMsg = chatEvent.getCommand().getHelp();
-		else if (chatEvent.getCommand() == ChatCommand.QUIT)
+			getNetworkHandler().fireClientEvent(new ClientEvent(ClientEvents.STATUS, returnMsg));
+		} else if (chatEvent.getCommand() == ChatCommand.QUIT)
 			System.exit(0);
 		else if (chatEvent.getMsgArr().length == 2) {
 			switch (chatEvent.getCommand()) {

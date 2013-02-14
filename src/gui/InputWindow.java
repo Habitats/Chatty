@@ -4,6 +4,7 @@ package gui;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Date;
 
 import javax.swing.BorderFactory;
 import javax.swing.JTextField;
@@ -41,6 +42,7 @@ public class InputWindow extends JTextField {
 		public void actionPerformed(ActionEvent ae) {
 			ChatEvent chatEvent = new ChatEvent(mainFrame.getController().getUser(), Receipient.GLOBAL, ae.getActionCommand());
 			if (chatEvent.getMsgArr().length > 0) {
+				mainFrame.getController().getUser().setLastMessage();
 				if (chatEvent.isCommand() && chatEvent.getCommand() == ChatCommand.PRIV_MSG) {
 					chatEvent.setRec(Receipient.PRIVATE, chatEvent.getMsgArr()[1]);
 					mainFrame.getController().sendChatEvent(chatEvent);

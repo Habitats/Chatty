@@ -93,7 +93,7 @@ public class FeedWindow extends JTextPane implements NetworkListener {
 	}
 
 	private void sendNormalMessageToOwnFeed(ChatEvent chatEvent) {
-		appendText(chatEvent.getFrom().getName() + Config.SEP + chatEvent.getMsg());
+		appendText(chatEvent.getFrom().getDisplayName() + Config.SEP + chatEvent.getMsg());
 	}
 
 	// network stuff

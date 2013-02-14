@@ -48,7 +48,8 @@ public class NetworkHandler {
 	}
 
 	public void restartClient(String hostname, int port) {
-		getProgramState().kill();
+		if (getProgramState() != null)
+			getProgramState().kill();
 		startClient(hostname, port);
 	}
 
