@@ -12,8 +12,7 @@ public class Chatty {
 	public static void main(String[] args) {
 		new Chatty().run();
 	}
-
-	private void run() {
+	private void test(){
 		int instances = 200;
 
 		// buttonClicked(new ButtonEvent(null, new
@@ -31,6 +30,12 @@ public class Chatty {
 			controller.buttonClicked(new ButtonEvent(null, new MenuButton(MenuButton.Type.CLIENT, null, new ButtonHandler()), ButtonEvents.CLICKED));
 		}
 		// controller.startTestInstance(1, 2);
+	}
+
+	private void run() {
+		controller = new Controller();
+		MainFrame gui = new MainFrame(controller);
+		controller.setGui(gui);
 	}
 
 	public Controller getController() {
