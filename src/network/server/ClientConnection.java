@@ -27,7 +27,7 @@ public class ClientConnection {
 		return outputStream;
 	}
 
-	public Socket getClientSocket() {
+	public synchronized Socket getClientSocket() {
 		return clientSocket;
 
 	}
@@ -36,7 +36,7 @@ public class ClientConnection {
 		return objectOutputStream;
 	}
 
-	public void setUser(User user) {
+	public synchronized void setUser(User user) {
 		this.user = user;
 	}
 

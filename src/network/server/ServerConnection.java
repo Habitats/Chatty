@@ -8,6 +8,7 @@ import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.List;
 
 import chatty.ChatEvent;
 import chatty.CommandEvent;
@@ -39,16 +40,19 @@ public class ServerConnection implements Runnable {
 
 		try {
 			while ((chatEvent = (ChatEvent) objectInputStream.readObject()) != null) {
-				System.out.println("Reading [S]: " + chatEvent);
-				if (!getServer().getUsers().containsKey(chatEvent.getFrom().getName())) {
-					getServer().getUsers().put(chatEvent.getFrom().getName(), chatEvent.getFrom());
+				if (!getServer().getUsers().containsKey(chatEvent.getFrom().getUsername())) {
+					getServer().getUsers().put(chatEvent.getFrom().getUsername(), chatEvent.getFrom());
 				}
-				for (ClientConnection clientSocket : getServer().getClientConnections()) {
-//					System.out.print("server port: " + clientSocket.getClientSocket().getPort());
-//					System.out.println(" - client port: " + chatEvent.getFrom().getActivePort());
-					if (chatEvent.getFrom().getActivePort() == clientSocket.getClientSocket().getPort()) {
-//						System.out.println("Match! Client: " + chatEvent.getFrom().getName() + " - connected on: " + clientSocket.getClientSocket().getPort());
-						clientSocket.setUser(chatEvent.getFrom());
+				List<ClientConnection> clientConnections = getServer().getClientConnections();
+				synchronized (clientConnections) {
+					for (ClientConnection clientConnection : clientConnections) {
+//						System.out.print("server port: " + clientConnection.getClientSocket().getPort());
+//						System.out.println("Socket info: " + clientConnection.getClientSocket());
+//						System.out.println(" - client port: " + chatEvent.getFrom().getActivePort());
+						if (clientConnection.getClientSocket() == clientSocket) {
+							clientConnection.setUser(chatEvent.getFrom());
+							break;
+						}
 					}
 				}
 				getServer().getNetworkHandler().fireServerEvent(new ServerEvent(ServerEvents.CHAT_EVENT, chatEvent));
@@ -82,15 +86,15 @@ public class ServerConnection implements Runnable {
 		System.out.println("END");
 	}
 
-	public Server getServer() {
+	private Server getServer() {
 		return server;
 	}
 
-	public void setServer(Server server) {
+	private void setServer(Server server) {
 		this.server = server;
 	}
 
-	public Socket getClientSocket() {
+	private Socket getClientSocket() {
 		return clientSocket;
 	}
 }

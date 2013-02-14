@@ -7,7 +7,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 import chatty.ChatEvent;
 import chatty.CommandEvent;
@@ -19,7 +22,7 @@ import network.server.ServerEvent.ServerEvents;
 
 public class Server extends ProgramState implements Runnable {
 
-	private ArrayList<ClientConnection> clientConnections = new ArrayList<ClientConnection>();
+	private List<ClientConnection> clientConnections =Collections.synchronizedList(new ArrayList<ClientConnection>());
 	private HashMap<String, User> users = new HashMap<String, User>();
 
 	private boolean listening = true;
@@ -100,7 +103,7 @@ public class Server extends ProgramState implements Runnable {
 		serverConnectionThread.start();
 	}
 
-	synchronized public NetworkHandler getNetworkHandler() {
+	public synchronized NetworkHandler getNetworkHandler() {
 		return networkHandler;
 	}
 
@@ -110,9 +113,14 @@ public class Server extends ProgramState implements Runnable {
 	public synchronized void broadcastChatEventToClients(ChatEvent chatEvent) {
 		ObjectOutputStream currentObjectOutputStream;
 		for (ClientConnection clientConnection : clientConnections) {
-			if (clientConnection.getUser() != chatEvent.getFrom()) {
+//			System.out.println("getuser: " + clientConnection.getUser());
+//			System.out.println("getusername: " + clientConnection.getUser().getUsername());
+//			System.out.println("getfrom:" + chatEvent.getFrom());
+//			System.out.println("getfromusername: " + chatEvent.getFrom().getUsername());
+			if (!clientConnection.getUser().getUsername().equals(chatEvent.getFrom().getUsername())) {
 				currentObjectOutputStream = clientConnection.getObjectOutputStream();
 				try {
+					currentObjectOutputStream.reset();
 					currentObjectOutputStream.writeObject(chatEvent);
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -121,12 +129,12 @@ public class Server extends ProgramState implements Runnable {
 		}
 	}
 
-	public void broadcastChatEventToAll(ChatEvent chatEvent) {
+	public synchronized void broadcastChatEventToAll(ChatEvent chatEvent) {
 		getNetworkHandler().fireServerEvent(new ServerEvent(ServerEvents.CHAT_EVENT, chatEvent));
 		broadcastChatEventToClients(chatEvent);
 	}
 
-	public void broadcastChatEvent(ChatEvent chatEvent) {
+	public synchronized void broadcastChatEvent(ChatEvent chatEvent) {
 		broadcastChatEventToAll(chatEvent);
 	}
 
@@ -150,20 +158,21 @@ public class Server extends ProgramState implements Runnable {
 		this.networkHandler = networkHandler;
 	}
 
-	public HashMap<String, User> getUsers() {
+	public synchronized HashMap<String, User> getUsers() {
 		return users;
 	}
 
-	public ArrayList<ClientConnection> getClientConnections() {
+	public List<ClientConnection> getClientConnections() {
 		return clientConnections;
 	}
 
-	public void sendPrivateChatEvent(ChatEvent chatEvent) {
+	public synchronized void sendPrivateChatEvent(ChatEvent chatEvent) {
 		String to = chatEvent.getReceipient().getUsername();
 		for (ClientConnection clientConnection : clientConnections) {
 			// if clientConnection is the RECEIVER or SENDER
-			if (clientConnection.getUser().getName().equals(to) || clientConnection.getUser() == chatEvent.getFrom())
+			if (clientConnection.getUser().getUsername().equals(to))
 				try {
+					clientConnection.getObjectOutputStream().reset();
 					clientConnection.getObjectOutputStream().writeObject(chatEvent);
 				} catch (IOException e) {
 					e.printStackTrace();

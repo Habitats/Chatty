@@ -27,7 +27,7 @@ public class User implements Serializable {
 		this.lastMessage = lastMessage;
 	}
 
-	public String getName() {
+	public String getUsername() {
 		return userName;
 	}
 

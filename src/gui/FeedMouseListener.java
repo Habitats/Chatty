@@ -26,8 +26,8 @@ public class FeedMouseListener extends MouseAdapter {
 		if (SwingUtilities.isRightMouseButton(e)) {
 			// TODO: this is quite sloppy atm
 			RightClickType type;
-			if (clickedNick(e, gui.getController().getUser().getName())){
-				System.out.println("CLICKED NICK: " + gui.getController().getUser().getName());
+			if (clickedNick(e, gui.getController().getUser().getUsername())){
+				System.out.println("CLICKED NICK: " + gui.getController().getUser().getUsername());
 				type = RightClickType.NICK;
 			}
 			else

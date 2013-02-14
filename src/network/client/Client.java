@@ -58,7 +58,8 @@ public class Client extends ProgramState implements Runnable {
 
 		setRunning(true);
 		try {
-			getObjectOutputStream().writeObject(new ChatEvent(getNetworkHandler().getController().getUser(), null, Receipient.SERVER, getNetworkHandler().getController().getUser().getName() + " says hi!"));
+			getObjectOutputStream().reset();
+			getObjectOutputStream().writeObject(new ChatEvent(getNetworkHandler().getController().getUser(), null, Receipient.SERVER, getNetworkHandler().getController().getUser().getUsername() + " says hi!"));
 			while (isRunning() && ((chatEvent = (ChatEvent) objectInputStream.readObject()) != null)) {
 				getNetworkHandler().fireClientEvent(new ClientEvent(ClientEvents.CHAT_EVENT, chatEvent));
 			}

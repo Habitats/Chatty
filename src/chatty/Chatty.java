@@ -14,13 +14,18 @@ public class Chatty {
 		Chatty chatty = new Chatty();
 		if (args.length > 0 && args[0] != null) {
 			int instances = Integer.parseInt(args[0]);
-			chatty.test(instances);
-		} else
-			 chatty.test(1);
-//			chatty.run();
+			chatty.test(instances, null);
+		} else if (args.length == 2) {
+			int instances = Integer.parseInt(args[0]);
+			String hostname = args[1];
+			chatty.test(instances, hostname);
+		} else {
+//			chatty.test(100, null);
+			chatty.run();
+		}
 	}
 
-	private void test(int instances) {
+	private void test(int instances, String hostname) {
 
 		for (int i = 0; i < instances; i++) {
 			controller = new Controller();

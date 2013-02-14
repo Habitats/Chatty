@@ -10,6 +10,8 @@ public enum ChatCommand {
 	LISTEN_PORT("/port", "Change listening port (server will restart!): /port PORT"), //
 
 	HELP("/help", "Available commands (prefix with /): nick, disconnect, query, quit, connect, port"), //
+
+	STATUS("/status","Stats...");
 	;
 	private String cmdAsString;
 	private String help;

@@ -22,13 +22,16 @@ import gui.options.OptionsMenu.Option;
 import network.NetworkHandler;
 import network.client.ClientEvent;
 import network.client.ClientEvent.ClientEvents;
+import network.server.ServerEvent;
+import network.server.ServerEvent.ServerEvents;
 
 public class Controller implements ButtonListener {
 
 	private final NetworkHandler networkHandler;
 	private MainFrame gui;
 	private int port = 7701;
-	public String hostname = "localhost";
+	 public String hostname = "shoopdawhoop.myftp.org";
+//	public String hostname = "localhost";
 	private User user;
 
 	public Controller() {
@@ -94,7 +97,7 @@ public class Controller implements ButtonListener {
 	}
 
 	private void setNick(String nickname) {
-		if (nickname.length() == 0 || nickname.equals(user.getName()))
+		if (nickname.length() == 0 || nickname.equals(user.getUsername()))
 			return;
 		if (nickname.length() > 20)
 			networkHandler.fireClientEvent(new ClientEvent(ClientEvents.STATUS, String.format("Invalid nickname: \"%s\"", nickname)));
@@ -108,8 +111,6 @@ public class Controller implements ButtonListener {
 	private void setPort(String port) {
 		if (port.length() == 0 || port.equals(Integer.toString(getPort())))
 			return;
-		System.out.println(port);
-		System.out.println(port);
 		for (Character c : port.toCharArray())
 			if (!Character.isDigit(c)) {
 				networkHandler.fireClientEvent(new ClientEvent(ClientEvents.STATUS, "Invalid port: " + port));
@@ -152,7 +153,7 @@ public class Controller implements ButtonListener {
 					str.setText(hostname);
 					break;
 				case NICKNAME:
-					str.setText(user.getName());
+					str.setText(user.getUsername());
 					break;
 				case PORT:
 					str.setText(Integer.toString(getPort()));
@@ -196,6 +197,12 @@ public class Controller implements ButtonListener {
 			getNetworkHandler().fireClientEvent(new ClientEvent(ClientEvents.STATUS, returnMsg));
 		} else if (chatEvent.getCommand() == ChatCommand.QUIT)
 			System.exit(0);
+		if (chatEvent.getMsgArr().length == 1)
+			switch (chatEvent.getCommand()) {
+			case STATUS:
+				getNetworkHandler().fireServerEvent(new ServerEvent(ServerEvents.STATUS, String.format("Online clients: " + getNetworkHandler().getServer().getClientConnections().size())));
+				break;
+			}
 		else if (chatEvent.getMsgArr().length == 2) {
 			switch (chatEvent.getCommand()) {
 			case CHANGE_NICK:
