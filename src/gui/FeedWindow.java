@@ -1,6 +1,5 @@
 package gui;
 
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
@@ -35,6 +34,9 @@ import java.awt.event.MouseListener;
 
 public class FeedWindow extends JTextPane implements NetworkListener {
 
+	private boolean enableTimeStamp;
+	private boolean enableDeltaTime;
+
 	public FeedWindow(Dimension dim) {
 
 		setPreferredSize(dim);
@@ -50,6 +52,9 @@ public class FeedWindow extends JTextPane implements NetworkListener {
 		setEditable(false);
 
 		setBorder(BorderFactory.createMatteBorder(5, 5, 5, 5, Themes.BACKGROUND));
+
+		enableTimeStamp = true;
+		enableDeltaTime = true;
 
 		// initStyles();
 	}
@@ -67,14 +72,16 @@ public class FeedWindow extends JTextPane implements NetworkListener {
 	// setStyledDocument(doc);
 	// }
 
-
 	private void appendText(String msg) {
 		try {
 			// if (msg.length() > 0)
 			// setText(getText() + "\n" + (new
 			// SimpleDateFormat("hh:mm:ss").format(new Date())) + Config.SEP +
 			// msg);
-			getDocument().insertString(getText().length(), "\n" + new SimpleDateFormat("hh:mm:ss").format(new Date()) + Config.SEP + msg, null);
+			String timeStamp = "";
+			if (enableTimeStamp)
+				timeStamp = new SimpleDateFormat("hh:mm:ss").format(new Date()) + Config.SEP;
+			getDocument().insertString(getText().length(), "\n" + timeStamp + msg, null);
 			setCaretPosition(getDocument().getLength());
 		} catch (BadLocationException e) {
 			// TODO Auto-generated catch block
@@ -93,7 +100,10 @@ public class FeedWindow extends JTextPane implements NetworkListener {
 	}
 
 	private void sendNormalMessageToOwnFeed(ChatEvent chatEvent) {
-		appendText(chatEvent.getFrom().getDisplayName() + Config.SEP + chatEvent.getMsg());
+		String deltaTime = "";
+		if (enableDeltaTime)
+			deltaTime = chatEvent.getDelay() + " ms" + Config.SEP;
+		appendText(deltaTime + chatEvent.getFrom().getDisplayName() + Config.SEP + chatEvent.getMsg());
 	}
 
 	// network stuff

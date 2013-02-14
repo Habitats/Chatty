@@ -12,17 +12,16 @@ public class Chatty {
 	public static void main(String[] args) {
 		// new Chatty().run();
 		Chatty chatty = new Chatty();
-		// if (args != null && args[0] != null && Integer.parseInt(args[0]) !=
-		// 0) { int instances = Integer.parseInt(args[0]);
-		// chatty.test(instances);
-		// } else
-		chatty.test(1);
-
+		if (args.length > 0 && args[0] != null) {
+			int instances = Integer.parseInt(args[0]);
+			chatty.test(instances);
+		} else
+			 chatty.test(1);
+//			chatty.run();
 	}
 
 	private void test(int instances) {
 
-		
 		for (int i = 0; i < instances; i++) {
 			controller = new Controller();
 			MainFrame guiCli = new MainFrame(controller);

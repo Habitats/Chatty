@@ -49,9 +49,11 @@ public class Controller implements ButtonListener {
 		if (networkHandler.getProgramState() != null && networkHandler.getProgramState().isRunning() && networkHandler.getProgramState().isClient())
 			try {
 				System.out.println("Sending [1]: " + chatEvent);
-				// See: http://stackoverflow.com/questions/14883073/sending-the-same-objects-with-different-fields-over-an-object-serialized-stream
+				// See:
+				// http://stackoverflow.com/questions/14883073/sending-the-same-objects-with-different-fields-over-an-object-serialized-stream
 				networkHandler.getClient().getObjectOutputStream().reset();
 				networkHandler.getClient().getObjectOutputStream().writeObject(chatEvent);
+				networkHandler.fireClientEvent(new ClientEvent(ClientEvents.CHAT_EVENT, chatEvent));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

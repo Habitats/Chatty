@@ -108,12 +108,15 @@ public class Server extends ProgramState implements Runnable {
 	 * HANDLES OBJECTS
 	 */
 	public synchronized void broadcastChatEventToClients(ChatEvent chatEvent) {
-		for (int i = 0; i < getClientConnections().size(); i++) {
-			ObjectOutputStream currentObjectOutputStream = getClientConnections().get(i).getObjectOutputStream();
-			try {
-				currentObjectOutputStream.writeObject(chatEvent);
-			} catch (IOException e) {
-				e.printStackTrace();
+		ObjectOutputStream currentObjectOutputStream;
+		for (ClientConnection clientConnection : clientConnections) {
+			if (clientConnection.getUser() != chatEvent.getFrom()) {
+				currentObjectOutputStream = clientConnection.getObjectOutputStream();
+				try {
+					currentObjectOutputStream.writeObject(chatEvent);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
