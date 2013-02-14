@@ -25,7 +25,7 @@ public class Controller implements ButtonListener {
 	private final NetworkHandler networkHandler;
 	private MainFrame gui;
 	private int port = 7701;
-	public String hostname = "localhost";
+	public String hostname = "shoopdawhoop.myftp.org";
 	private User user;
 
 	public Controller() {

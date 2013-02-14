@@ -10,18 +10,27 @@ public class Chatty {
 	private Controller controller;
 
 	public static void main(String[] args) {
-		new Chatty().run();
+		// new Chatty().run();
+		Chatty chatty = new Chatty();
+		if (args[0] != null) {
+			int instances = Integer.parseInt(args[0]);
+			chatty.test(instances);
+		} else
+			chatty.run();
+
 	}
-	private void test(){
-		int instances = 200;
+
+	private void test(int instances) {
 
 		// buttonClicked(new ButtonEvent(null, new
 		// MenuButton(MenuButton.Type.SERVER, null, new ButtonHandler()),
 		// ButtonEvents.CLICKED));
-		controller = new Controller();
-		MainFrame gui = new MainFrame(controller);
-		controller.setGui(gui);
-		controller.buttonClicked(new ButtonEvent(null, new MenuButton(MenuButton.Type.SERVER, null, new ButtonHandler()), ButtonEvents.CLICKED));
+		// controller = new Controller();
+		// MainFrame gui = new MainFrame(controller);
+		// controller.setGui(gui);
+		// controller.buttonClicked(new ButtonEvent(null, new
+		// MenuButton(MenuButton.Type.SERVER, null, new ButtonHandler()),
+		// ButtonEvents.CLICKED));
 
 		for (int i = 0; i < instances; i++) {
 			controller = new Controller();
