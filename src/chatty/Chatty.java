@@ -22,23 +22,12 @@ public class Chatty {
 
 	private void test(int instances) {
 
-		// buttonClicked(new ButtonEvent(null, new
-		// MenuButton(MenuButton.Type.SERVER, null, new ButtonHandler()),
-		// ButtonEvents.CLICKED));
-		// controller = new Controller();
-		// MainFrame gui = new MainFrame(controller);
-		// controller.setGui(gui);
-		// controller.buttonClicked(new ButtonEvent(null, new
-		// MenuButton(MenuButton.Type.SERVER, null, new ButtonHandler()),
-		// ButtonEvents.CLICKED));
-
 		for (int i = 0; i < instances; i++) {
 			controller = new Controller();
 			MainFrame guiCli = new MainFrame(controller);
 			controller.setGui(guiCli);
 			controller.buttonClicked(new ButtonEvent(null, new MenuButton(MenuButton.Type.CLIENT, null, new ButtonHandler()), ButtonEvents.CLICKED));
 		}
-		// controller.startTestInstance(1, 2);
 	}
 
 	private void run() {
