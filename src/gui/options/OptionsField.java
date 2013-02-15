@@ -7,8 +7,6 @@ import java.awt.Dimension;
 
 import javax.swing.BorderFactory;
 import javax.swing.JTextField;
-import javax.swing.border.Border;
-
 import chatty.Config;
 
 public class OptionsField extends JTextField {

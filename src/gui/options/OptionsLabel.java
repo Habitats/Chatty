@@ -3,7 +3,6 @@ package gui.options;
 import gui.Themes;
 import gui.options.OptionsMenu.Option;
 
-import java.awt.Color;
 import java.awt.Dimension;
 
 import javax.swing.BorderFactory;

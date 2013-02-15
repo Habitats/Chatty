@@ -3,20 +3,14 @@ package gui;
 
 import gui.ButtonEvent.ButtonEvents;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-
 import javax.swing.SwingConstants;
 
 import network.client.ClientEvent;
 import network.client.ClientEvent.ClientEvents;
 import network.server.ServerEvent;
 import network.server.ServerEvent.ServerEvents;
-
-import chatty.Chatty;
-import chatty.Controller;
 
 public class MenuButton extends Button {
 

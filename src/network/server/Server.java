@@ -2,18 +2,15 @@ package network.server;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
 import chatty.ChatEvent;
-import chatty.CommandEvent;
 import chatty.User;
 
 import network.NetworkHandler;
@@ -167,10 +164,10 @@ public class Server extends ProgramState implements Runnable {
 	}
 
 	public synchronized void sendPrivateChatEvent(ChatEvent chatEvent) {
-		String to = chatEvent.getReceipient().getUsername();
+		String to = chatEvent.getTo();
 		for (ClientConnection clientConnection : clientConnections) {
 			// if clientConnection is the RECEIVER or SENDER
-			if (clientConnection.getUser().getUsername().equals(to))
+			if (clientConnection.getUser().getDisplayName().equals(to))
 				try {
 					clientConnection.getObjectOutputStream().reset();
 					clientConnection.getObjectOutputStream().writeObject(chatEvent);

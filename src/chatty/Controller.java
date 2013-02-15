@@ -1,24 +1,11 @@
 package chatty;
 
-import java.awt.Font;
-import java.awt.FontFormatException;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.sql.ClientInfoStatus;
-
-import chatty.ChatEvent.Receipient;
-
-import gui.Button;
 import gui.ButtonEvent;
-import gui.ButtonEvent.ButtonEvents;
-import gui.ButtonHandler;
 import gui.ButtonListener;
 import gui.MainFrame;
-import gui.MenuButton;
 import gui.options.OptionsField;
-import gui.options.OptionsMenu;
-import gui.options.OptionsMenu.Option;
 import network.NetworkHandler;
 import network.client.ClientEvent;
 import network.client.ClientEvent.ClientEvents;

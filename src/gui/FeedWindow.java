@@ -1,21 +1,13 @@
 package gui;
 
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Point;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.swing.BorderFactory;
-import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultCaret;
-import javax.swing.text.DefaultStyledDocument;
-import javax.swing.text.Style;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyleContext;
-
 import network.NetworkEvent;
 import network.NetworkListener;
 import network.client.ClientEvent;
@@ -25,12 +17,6 @@ import network.server.ServerEvent.ServerEvents;
 
 import chatty.ChatEvent;
 import chatty.Config;
-
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
 public class FeedWindow extends JTextPane implements NetworkListener {
 

@@ -3,9 +3,6 @@ package gui;
 import gui.MenuButton.Type;
 
 import java.awt.Dimension;
-import java.awt.Font;
-
-import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 
 import network.NetworkListener;

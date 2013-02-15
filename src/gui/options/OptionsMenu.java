@@ -3,11 +3,8 @@ package gui.options;
 import gui.ButtonHandler;
 import gui.GBC;
 import gui.MenuButton;
-import gui.MyKeyListener;
 import gui.GBC.Align;
 import gui.MenuButton.Type;
-import gui.ButtonMouseListener;
-
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.util.ArrayList;

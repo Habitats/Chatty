@@ -2,7 +2,6 @@ package network.server;
 
 import chatty.ChatEvent;
 import network.NetworkEvent;
-import network.server.ServerEvent.ServerEvents;
 
 public class ServerEvent extends NetworkEvent {
 	public enum ServerEvents {
@@ -66,6 +65,7 @@ public class ServerEvent extends NetworkEvent {
 		super.chatEvent = chatEvent;
 	}
 
+	@Override
 	public ServerEvents getEvent() {
 		return event;
 	}

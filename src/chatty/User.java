@@ -1,7 +1,6 @@
 package chatty;
 
 import java.io.Serializable;
-import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -47,6 +46,7 @@ public class User implements Serializable {
 		return activePort;
 	}
 
+	@Override
 	public String toString() {
 		return String.format("[UN: %s - DN: %s - P: %s - C: %s - LM: %s]", userName, displayName, activePort, new SimpleDateFormat("HH:mm:ss:SSSS").format(created), new SimpleDateFormat("mm:ss:SSSS").format(lastMessage));
 	}

@@ -4,19 +4,12 @@ import gui.GBC.Align;
 import gui.MenuButton.Type;
 import gui.options.OptionsMenu;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.peer.MenuPeer;
-
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;

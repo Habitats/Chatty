@@ -3,13 +3,10 @@ package gui;
 
 import gui.RightClickMenu.RightClickType;
 
-import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.SwingUtilities;
-
-import chatty.Controller;
 
 public class FeedMouseListener extends MouseAdapter {
 	private MainFrame gui;

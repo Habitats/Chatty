@@ -1,9 +1,7 @@
 package network.client;
 
 import chatty.ChatEvent;
-import chatty.CommandEvent;
 import network.NetworkEvent;
-import network.client.ClientEvent.ClientEvents;
 
 public class ClientEvent extends NetworkEvent {
 
@@ -69,6 +67,7 @@ public class ClientEvent extends NetworkEvent {
 		super.chatEvent = chatEvent;
 	}
 
+	@Override
 	public ClientEvents getEvent() {
 		return event;
 	}

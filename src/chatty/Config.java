@@ -5,9 +5,6 @@ import java.awt.FontFormatException;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import network.client.ClientEvent;
-import network.client.ClientEvent.ClientEvents;
-
 public class Config {
 	// general settings
 	public static final String CHATTY_VER = "Chatty v0.5 - Work in progress";
