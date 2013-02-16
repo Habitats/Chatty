@@ -16,20 +16,17 @@ public class Config {
 
 	public static Font genFont(float size, boolean bold) {
 		Font font = null;
-		if (font == null) {
-			try {
-				// font = Font.createFont(Font.TRUETYPE_FONT,
-				// getClass().getResourceAsStream("/res/8-BitCustom.TTF"));
-				font = Font.createFont(Font.TRUETYPE_FONT, new FileInputStream("./res/consola.ttf"));
-				font = font.deriveFont(size);
-				if (bold)
-					font = font.deriveFont(Font.BOLD);
-			} catch (IOException | FontFormatException e) {
-				System.err.println("LOADING FONT FAILED!");
-			}
+		try {
+			// font = Font.createFont(Font.TRUETYPE_FONT,
+			// getClass().getResourceAsStream("/res/8-BitCustom.TTF"));
+			font = Font.createFont(Font.TRUETYPE_FONT, new FileInputStream("./res/consola.ttf"));
+			font = font.deriveFont(size);
+			if (bold)
+				font = font.deriveFont(Font.BOLD);
+		} catch (IOException | FontFormatException e) {
+			System.err.println("LOADING FONT FAILED!");
 		}
 		return font;
 	}
-
 
 }

@@ -7,6 +7,7 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JPanel;
 
+@SuppressWarnings("serial")
 public class RightClickMenu extends JPanel {
 	public RightClickMenu(Dimension dim) {
 		setVisible(false);

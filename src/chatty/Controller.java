@@ -6,25 +6,35 @@ import gui.ButtonEvent;
 import gui.ButtonListener;
 import gui.MainFrame;
 import gui.options.OptionsField;
+import msg.ChatEvent;
+import msg.MessageHandler;
 import network.NetworkHandler;
-import network.client.ClientEvent;
-import network.client.ClientEvent.ClientEvents;
-import network.server.ServerEvent;
-import network.server.ServerEvent.ServerEvents;
 
 public class Controller implements ButtonListener {
 
 	private final NetworkHandler networkHandler;
 	private MainFrame gui;
 	private int port = 7701;
-	 public String hostname = "shoopdawhoop.myftp.org";
-//	public String hostname = "localhost";
+	// private String hostname = "shoopdawhoop.myftp.org";
+	public String hostname = "localhost";
 	private User user;
+	private MessageHandler messageHandler;
 
 	public Controller() {
 		networkHandler = new NetworkHandler(this);
 		String nickname = Integer.toString((int) (10000 * Math.random()));
 		user = new User(nickname);
+		messageHandler = new MessageHandler(this);
+	}
+
+	private void addMessaegeListeners() {
+		messageHandler.addMessageListener(getGui().getFeedWindow());
+	}
+
+	private void addNetworkListeners() {
+		networkHandler.addNetworkListener(getGui().getClientButton());
+		networkHandler.addNetworkListener(getGui().getServerButton());
+		networkHandler.addNetworkListener(messageHandler);
 	}
 
 	public void startTestInstance(int servers, int clients) {
@@ -38,12 +48,12 @@ public class Controller implements ButtonListener {
 		 */
 		if (networkHandler.getProgramState() != null && networkHandler.getProgramState().isRunning() && networkHandler.getProgramState().isClient())
 			try {
-				System.out.println("Sending [1]: " + chatEvent);
+				System.out.println("Sending: " + chatEvent);
 				// See:
 				// http://stackoverflow.com/questions/14883073/sending-the-same-objects-with-different-fields-over-an-object-serialized-stream
 				networkHandler.getClient().getObjectOutputStream().reset();
 				networkHandler.getClient().getObjectOutputStream().writeObject(chatEvent);
-				networkHandler.fireClientEvent(new ClientEvent(ClientEvents.CHAT_EVENT, chatEvent));
+				messageHandler.fireChatEventToListeners(chatEvent);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -62,6 +72,8 @@ public class Controller implements ButtonListener {
 
 	public void setGui(MainFrame gui) {
 		this.gui = gui;
+		addMessaegeListeners();
+		addNetworkListeners();
 	}
 
 	public MainFrame getGui() {
@@ -83,33 +95,30 @@ public class Controller implements ButtonListener {
 			}
 	}
 
-	private void setNick(String nickname) {
+	public String setNick(String nickname) {
 		if (nickname.length() == 0 || nickname.equals(user.getUsername()))
-			return;
+			return null;
 		if (nickname.length() > 20)
-			networkHandler.fireClientEvent(new ClientEvent(ClientEvents.STATUS, String.format("Invalid nickname: \"%s\"", nickname)));
-		else {
-			nickname = nickname.replaceAll("\\s", "_");
-			networkHandler.fireClientEvent(new ClientEvent(ClientEvents.STATUS, String.format("Changed nickname to: \"%s\"", nickname)));
-			getUser().setDisplayName(nickname);
-		}
+			return String.format("Invalid nickname: \"%s\"", nickname);
+		nickname = nickname.replaceAll("\\s", "_");
+		getUser().setDisplayName(nickname);
+		return String.format("Changed nickname to: \"%s\"", nickname);
 	}
 
-	private void setPort(String port) {
+	public String setPort(String port) {
 		if (port.length() == 0 || port.equals(Integer.toString(getPort())))
-			return;
+			return null;
 		for (Character c : port.toCharArray())
 			if (!Character.isDigit(c)) {
-				networkHandler.fireClientEvent(new ClientEvent(ClientEvents.STATUS, "Invalid port: " + port));
-				return;
+				return "Invalid port: " + port;
 			}
-		networkHandler.fireClientEvent(new ClientEvent(ClientEvents.STATUS, "Changed port to: " + port));
 		this.port = Integer.parseInt(port);
+		return "Changed port to: " + port;
 	}
 
-	private void setHostname(String hostname) {
+	public String setHostname(String hostname) {
 		if (hostname.length() == 0 || getHostname().contains(hostname))
-			return;
+			return null;
 		InetAddress ip;
 		String hostnameAndIP = "";
 		boolean valid = false;
@@ -123,13 +132,13 @@ public class Controller implements ButtonListener {
 			}
 		}
 		if (valid) {
-			networkHandler.fireClientEvent(new ClientEvent(ClientEvents.STATUS, "Changed host to: " + hostnameAndIP));
 			this.hostname = hostname;
-		} else
-			networkHandler.fireClientEvent(new ClientEvent(ClientEvents.STATUS, "Invalid hostname: " + hostname));
+			return "Changed host to: " + hostnameAndIP;
+		}
+		return "Invalid hostname: " + hostname;
 	}
 
-	public void toggleOptions() {
+	private void toggleOptions() {
 		if (gui.getOptionsMenu().isVisible()) {
 			gui.getOptionsMenu().setVisible(false);
 			gui.getOptionsButton().setActive(false);
@@ -177,38 +186,6 @@ public class Controller implements ButtonListener {
 		}
 	}
 
-	public void executeChatCommand(ChatEvent chatEvent) {
-		String returnMsg = "";
-		if (chatEvent.getCommand() == ChatCommand.HELP || (chatEvent.getMsgArr().length > 2 && chatEvent.getMsgArr()[2].equals("help"))) {
-			returnMsg = chatEvent.getCommand().getHelp();
-			getNetworkHandler().fireClientEvent(new ClientEvent(ClientEvents.STATUS, returnMsg));
-		} else if (chatEvent.getCommand() == ChatCommand.QUIT)
-			System.exit(0);
-		if (chatEvent.getMsgArr().length == 1)
-			switch (chatEvent.getCommand()) {
-			case STATUS:
-				getNetworkHandler().fireServerEvent(new ServerEvent(ServerEvents.STATUS, String.format("Online clients: " + getNetworkHandler().getServer().getClientConnections().size())));
-				break;
-			}
-		else if (chatEvent.getMsgArr().length == 2) {
-			switch (chatEvent.getCommand()) {
-			case CHANGE_NICK:
-				setNick(chatEvent.getMsgArr()[1]);
-				break;
-			case LISTEN_PORT:
-				setPort(chatEvent.getMsgArr()[1]);
-				break;
-			case CONNECT:
-				setHostname(chatEvent.getMsgArr()[1]);
-				networkHandler.restartClient(hostname, port);
-				break;
-			case DISCONNECT:
-				networkHandler.shutDown();
-				break;
-			}
-		}
-	}
-
 	public String getHostname() {
 		return hostname;
 	}
@@ -219,6 +196,10 @@ public class Controller implements ButtonListener {
 
 	public User getUser() {
 		return user;
+	}
+
+	public MessageHandler getMessageHandler() {
+		return messageHandler;
 	}
 
 }

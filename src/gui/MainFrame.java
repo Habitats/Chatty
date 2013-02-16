@@ -21,7 +21,6 @@ import chatty.Controller;
 public class MainFrame {
 	private int frameWidth = 600;
 	private int frameHeight = 450;
-	private Chatty main;
 	private Controller controller;
 	private ButtonHandler buttonHandler;
 
@@ -31,6 +30,8 @@ public class MainFrame {
 	private OptionsMenu optionsMenu;
 	private JScrollPane scrollPane;
 	private FeedWindow feedWindow;
+	private MenuButton clientButton;
+	private MenuButton serverButton;
 
 	public MainFrame(Controller controller) {
 		Themes.setTheme(Themes.GRAY);
@@ -46,7 +47,8 @@ public class MainFrame {
 		layeredPane.add(overlayPanel, new Integer(2));
 		layeredPane.add(rightClickMenu, new Integer(3));
 
-		JFrame frame = buildFrame(layeredPane);
+		buildFrame(layeredPane);
+
 	}
 
 	private JPanel buildOverlayPanel() {
@@ -89,8 +91,8 @@ public class MainFrame {
 		buttonHandler = new ButtonHandler();
 		buttonHandler.addButtonListener(controller);
 
-		MenuButton clientButton = new MenuButton(Type.CLIENT, buttonDim, buttonHandler);
-		MenuButton serverButton = new MenuButton(Type.SERVER, buttonDim, buttonHandler);
+		clientButton = new MenuButton(Type.CLIENT, buttonDim, buttonHandler);
+		serverButton = new MenuButton(Type.SERVER, buttonDim, buttonHandler);
 		optionsButton = new MenuButton(Type.OPTIONS, buttonDim, buttonHandler);
 
 		feedWindow = new FeedWindow(new Dimension(frameWidth, 200));
@@ -100,7 +102,7 @@ public class MainFrame {
 
 		feedWindow.addMouseListener(new FeedMouseListener(this));
 
-		InputWindow inputWindow = new InputWindow(new Dimension(frameWidth, 20), this);
+		InputWindow inputWindow = new InputWindow(new Dimension(frameWidth, 20), controller.getMessageHandler());
 		// TODO: this isn't very pretty
 		inputWindow.addKeyListener(new KeyAdapter() {
 			@Override
@@ -113,9 +115,6 @@ public class MainFrame {
 		// sets focus to TEXT FIELD
 		inputWindow.requestFocus();
 
-		controller.getNetworkHandler().addNetworkListener(clientButton);
-		getController().getNetworkHandler().addNetworkListener(serverButton);
-		getController().getNetworkHandler().addNetworkListener(feedWindow);
 		// requestFocus();
 		// THIS FUCKS UP SO MUCH
 		// frame.setPreferredSize(new Dimension(frameWidth, frameHeight));
@@ -136,7 +135,7 @@ public class MainFrame {
 		return mainPanel;
 	}
 
-	private JFrame buildFrame(JLayeredPane layeredPane) {
+	private void buildFrame(JLayeredPane layeredPane) {
 		JFrame frame = new JFrame();
 
 		frame.getContentPane().setBackground(Color.black);
@@ -150,8 +149,6 @@ public class MainFrame {
 
 		frame.setResizable(false);
 		frame.setVisible(true);
-
-		return frame;
 	}
 
 	public Controller getController() {
@@ -176,5 +173,13 @@ public class MainFrame {
 
 	public FeedWindow getFeedWindow() {
 		return feedWindow;
+	}
+
+	public MenuButton getClientButton() {
+		return clientButton;
+	}
+
+	public MenuButton getServerButton() {
+		return serverButton;
 	}
 }

@@ -47,7 +47,11 @@ public class NetworkHandler {
 		}
 	}
 
-	public void restartClient(String hostname, int port) {
+	public void restartClient() {
+		restartClient(getController().getHostname(), getController().getPort());
+	}
+
+	private void restartClient(String hostname, int port) {
 		if (getProgramState() != null)
 			getProgramState().kill();
 		startClient(hostname, port);
@@ -86,7 +90,7 @@ public class NetworkHandler {
 
 	synchronized public void fireClientEvent(ClientEvent event) {
 		if (event.getEvent() == ClientEvents.COMMAND)
-			getController().executeChatCommand(event.getChatEvent());
+			getController().getMessageHandler().fireChatEventToListeners(event.getChatEvent());
 		else {
 			networkEvents.add(event);
 			for (NetworkListener listener : networkListeners) {
@@ -105,8 +109,7 @@ public class NetworkHandler {
 	public boolean isRunning() {
 		if (programState != null)
 			return programState.isRunning();
-		else
-			return false;
+		return false;
 	}
 
 	public ProgramState getProgramState() {

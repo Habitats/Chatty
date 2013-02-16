@@ -11,6 +11,7 @@ import javax.swing.SwingConstants;
 
 import chatty.Config;
 
+@SuppressWarnings("serial")
 public class OptionsLabel extends JLabel {
 	public OptionsLabel(Dimension dim, Option option) {
 		setPreferredSize(dim);

@@ -57,7 +57,7 @@ public class MenuButton extends Button {
 		});
 	}
 
-	public void fireButtonEvent(ButtonEvent event) {
+	private void fireButtonEvent(ButtonEvent event) {
 		for (ButtonListener listener : buttonHandler.getButtonListeners())
 			listener.buttonClicked(event);
 	}

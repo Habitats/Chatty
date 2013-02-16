@@ -9,8 +9,8 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
-import chatty.ChatEvent;
-import chatty.ChatEvent.Receipient;
+import msg.ChatEvent;
+import msg.ChatEvent.Receipient;
 import network.NetworkHandler;
 import network.ProgramState;
 import network.client.ClientEvent.ClientEvents;

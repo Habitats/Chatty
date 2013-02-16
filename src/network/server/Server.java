@@ -10,16 +10,16 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import chatty.ChatEvent;
 import chatty.User;
 
+import msg.ChatEvent;
 import network.NetworkHandler;
 import network.ProgramState;
 import network.server.ServerEvent.ServerEvents;
 
 public class Server extends ProgramState implements Runnable {
 
-	private List<ClientConnection> clientConnections =Collections.synchronizedList(new ArrayList<ClientConnection>());
+	private List<ClientConnection> clientConnections = Collections.synchronizedList(new ArrayList<ClientConnection>());
 	private HashMap<String, User> users = new HashMap<String, User>();
 
 	private boolean listening = true;
@@ -76,22 +76,20 @@ public class Server extends ProgramState implements Runnable {
 		// tries to initiate a connection to the client by accepting incoming
 		// connections
 		// the accept method listens for incoming connections
-		try {
-			while (listening) {
-				clientSocket = listenForIncomingConnections(serverSocket);
-				if (clientSocket == null)
-					return;
-				connectWithClient(clientSocket);
-				String clientIp = clientSocket.getRemoteSocketAddress().toString().split("[/:]")[1];
-				String localPort = clientSocket.getRemoteSocketAddress().toString().split("[/:]")[2];
-				getNetworkHandler().fireServerEvent(new ServerEvent(ServerEvents.CLIENT_CONNECT, clientIp + " connected on local port " + localPort + "!"));
-				setRunning(true);
-			}
-			setRunning(false);
-		} finally {
-			getNetworkHandler().fireServerEvent(new ServerEvent(ServerEvents.SHUTDOWN));
-			kill();
+		while (listening) {
+			clientSocket = listenForIncomingConnections(serverSocket);
+			if (clientSocket == null)
+				return;
+			connectWithClient(clientSocket);
+			String clientIp = clientSocket.getRemoteSocketAddress().toString().split("[/:]")[1];
+			String localPort = clientSocket.getRemoteSocketAddress().toString().split("[/:]")[2];
+			getNetworkHandler().fireServerEvent(new ServerEvent(ServerEvents.CLIENT_CONNECT, clientIp + " connected on local port " + localPort + "!"));
+			setRunning(true);
 		}
+//		
+//		setRunning(false);
+//		getNetworkHandler().fireServerEvent(new ServerEvent(ServerEvents.SHUTDOWN));
+//		kill();
 	}
 
 	private void connectWithClient(final Socket clientSocket) {
@@ -110,10 +108,12 @@ public class Server extends ProgramState implements Runnable {
 	public synchronized void broadcastChatEventToClients(ChatEvent chatEvent) {
 		ObjectOutputStream currentObjectOutputStream;
 		for (ClientConnection clientConnection : clientConnections) {
-//			System.out.println("getuser: " + clientConnection.getUser());
-//			System.out.println("getusername: " + clientConnection.getUser().getUsername());
-//			System.out.println("getfrom:" + chatEvent.getFrom());
-//			System.out.println("getfromusername: " + chatEvent.getFrom().getUsername());
+			// System.out.println("getuser: " + clientConnection.getUser());
+			// System.out.println("getusername: " +
+			// clientConnection.getUser().getUsername());
+			// System.out.println("getfrom:" + chatEvent.getFrom());
+			// System.out.println("getfromusername: " +
+			// chatEvent.getFrom().getUsername());
 			if (!clientConnection.getUser().getUsername().equals(chatEvent.getFrom().getUsername())) {
 				currentObjectOutputStream = clientConnection.getObjectOutputStream();
 				try {

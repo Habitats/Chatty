@@ -73,7 +73,5 @@ public  abstract class Button extends JLabel implements NetworkListener {
 
 	@Override
 	public void serverNormalMessage(ServerEvent event) {
-		// TODO Auto-generated method stub
-		
 	}
 }

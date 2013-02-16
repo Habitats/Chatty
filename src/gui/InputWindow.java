@@ -1,28 +1,20 @@
 package gui;
 
-
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
 import javax.swing.JTextField;
-import network.client.ClientEvent;
-import network.client.ClientEvent.ClientEvents;
 
-import chatty.ChatCommand;
-import chatty.ChatEvent;
-import chatty.ChatEvent.Receipient;
+import msg.MessageHandler;
 import chatty.Config;
 
 public class InputWindow extends JTextField {
 
-	private final MainFrame mainFrame;
-
-	public InputWindow(Dimension dim, final MainFrame mainFrame) {
-		this.mainFrame = mainFrame;
+	public InputWindow(Dimension dim, MessageHandler messageHandler) {
 		setPreferredSize(dim);
 		setMinimumSize(dim);
-		addActionListener(new myInputListener());
+		addActionListener(new myInputListener(messageHandler));
 
 		setBorder(BorderFactory.createEmptyBorder());
 		setBackground(Themes.BACKGROUND);
@@ -32,21 +24,16 @@ public class InputWindow extends JTextField {
 	}
 
 	private class myInputListener implements ActionListener {
+		MessageHandler messageHandler;
+
+		public myInputListener(MessageHandler messageHandler) {
+			this.messageHandler = messageHandler;
+		}
 
 		@Override
 		public void actionPerformed(ActionEvent ae) {
-			ChatEvent chatEvent = new ChatEvent(mainFrame.getController().getUser(), Receipient.GLOBAL, ae.getActionCommand());
-			if (chatEvent.getMsgArr().length > 0) {
-				if (chatEvent.isCommand() && chatEvent.getCommand() == ChatCommand.PRIV_MSG) {
-					chatEvent.setRec(Receipient.PRIVATE, chatEvent.getMsgArr()[1]);
-					mainFrame.getController().sendChatEvent(chatEvent);
-				} else if (chatEvent.isCommand())
-					mainFrame.getController().getNetworkHandler().fireClientEvent(new ClientEvent(ClientEvents.COMMAND, chatEvent));
-				else
-					// mainFrame.getController().sendMessageToAll(chatEvent.getMsg());
-					mainFrame.getController().sendChatEvent(chatEvent);
-				setText("");
-			}
+			messageHandler.newChatEvent(ae);
+			setText("");
 		}
 	}
 }

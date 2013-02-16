@@ -34,7 +34,7 @@ public class GBC extends GridBagConstraints {
 		setFill(BOTH);
 	}
 
-	public GBC(int grix, int gridy) {
+	public GBC(int gridx, int gridy) {
 		this.gridx = gridx;
 		this.gridy = gridy;
 		setFill(BOTH);

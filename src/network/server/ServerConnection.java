@@ -7,10 +7,10 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.List;
 
-import chatty.ChatEvent;
 import chatty.User;
-import chatty.ChatEvent.Receipient;
 
+import msg.ChatEvent;
+import msg.ChatEvent.Receipient;
 import network.server.ServerEvent.ServerEvents;
 
 public class ServerConnection implements Runnable {

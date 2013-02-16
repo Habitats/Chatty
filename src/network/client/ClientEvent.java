@@ -1,6 +1,6 @@
 package network.client;
 
-import chatty.ChatEvent;
+import msg.ChatEvent;
 import network.NetworkEvent;
 
 public class ClientEvent extends NetworkEvent {
@@ -15,8 +15,7 @@ public class ClientEvent extends NetworkEvent {
 		COMMAND, //
 		CHAT_EVENT, //
 		;
-		String msg;
-		private final String prefix = "STATUS";
+		private String msg;
 
 		private ClientEvents() {
 		}
@@ -25,46 +24,40 @@ public class ClientEvent extends NetworkEvent {
 			this.msg = msg;
 		}
 
-		public String getMsg() {
+		public String getDefaultMessage() {
 			return msg;
-		}
-
-		public void setMsg(String msg) {
-			this.msg = msg;
-		}
-
-		public String getPrefix() {
-			return prefix;
 		}
 	}
 
 	private ClientEvents event;
 
 	public ClientEvent(ClientEvents event) {
-		this.event = event;
-		generateGeneralInfo();
+		this(event, null, null);
 	}
 
 	public ClientEvent(ClientEvents event, String msg) {
-		event.setMsg(msg);
-		this.event = event;
-		generateGeneralInfo();
+		this(event, null, msg);
 	}
 
 	public ClientEvent(ClientEvents event, Exception e) {
-		this.event = event;
-		super.e = e;
+		this(event, e, null);
 	}
 
 	public ClientEvent(ClientEvents event, Exception e, String msg) {
 		super.e = e;
-		event.setMsg(msg);
+		if (msg == null)
+			msg = event.getDefaultMessage();
+		if(e != null)
+			e.printStackTrace();
+		super.chatEvent = new ChatEvent(msg);
+		generateGeneralInfo();
 		this.event = event;
 	}
 
 	public ClientEvent(ClientEvents event, ChatEvent chatEvent) {
-		this.event = event;
 		super.chatEvent = chatEvent;
+		this.event = event;
+		generateGeneralInfo();
 	}
 
 	@Override

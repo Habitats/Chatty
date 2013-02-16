@@ -2,14 +2,18 @@ package network;
 
 import java.util.Date;
 
-import chatty.ChatEvent;
+import network.server.ServerEvent.ServerEvents;
+
+import msg.ChatEvent;
+
 
 public abstract class NetworkEvent {
 
 	private Date date;
 	public Exception e;
-	protected ChatEvent chatEvent;
-
+//	protected ChatEvent chatEvent;
+	public ChatEvent chatEvent;
+	
 	protected void generateGeneralInfo() {
 		date = new Date();
 	}
@@ -18,17 +22,16 @@ public abstract class NetworkEvent {
 		return date;
 	}
 
-	public void setObject(ChatEvent chatEvent) {
-		this.chatEvent = chatEvent;
-	}
-
 	public Exception getException() {
 		return e;
 	}
 
+	public abstract Object getEvent();
+
 	public ChatEvent getChatEvent() {
 		return chatEvent;
 	}
-
-	public abstract Object getEvent();
+	protected void setChatEvent(ChatEvent chatEvent) {
+		this.chatEvent = chatEvent;
+	}
 }
