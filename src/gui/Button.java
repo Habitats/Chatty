@@ -13,6 +13,7 @@ import chatty.Config;
 
 public  abstract class Button extends JLabel implements NetworkListener {
 
+	private static final long serialVersionUID = 1L;
 	private boolean active = false;
 	protected Dimension dim;
 	private ButtonMouseListener buttonMouseListener = new ButtonMouseListener(this);

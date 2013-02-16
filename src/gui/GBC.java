@@ -7,6 +7,8 @@ import chatty.Config;
 
 public class GBC extends GridBagConstraints {
 
+	private static final long serialVersionUID = 1L;
+
 	public enum Align {
 		LEFT, RIGHT, MID, TIGHT, BOTTOM, LEFT_BOTTOM, MID_BOTTOM, RIGHT_BOTTOM, ALONE, FULL_WIDTH, FULL_WIDTH_BOTTOM;
 	}

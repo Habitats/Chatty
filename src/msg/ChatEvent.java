@@ -6,6 +6,11 @@ import java.text.SimpleDateFormat;
 import chatty.User;
 
 public class ChatEvent implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public enum Receipient {
 		SERVER, //
 		PRIVATE, //

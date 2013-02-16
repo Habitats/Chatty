@@ -86,10 +86,6 @@ public class ServerConnection implements Runnable {
 		return server;
 	}
 
-	private void setServer(Server server) {
-		this.server = server;
-	}
-
 	private Socket getClientSocket() {
 		return clientSocket;
 	}

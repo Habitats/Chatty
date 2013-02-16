@@ -12,6 +12,11 @@ import chatty.Config;
 
 public class FeedWindow extends JTextPane implements MessageListener {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public FeedWindow(Dimension dim) {
 
 		setPreferredSize(dim);

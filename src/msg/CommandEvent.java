@@ -3,16 +3,12 @@ package msg;
 
 public class CommandEvent {
 
-	private String msg;
-	private String cmdAsString;
 	private ChatCommand cmd;
-	private String nickname;
 	private String[] msgArr;
 
 	private String raw;
 
 	private String returnMsg;
-	private Object objectFromServer;
 
 	public CommandEvent(String raw) {
 		this.raw = raw;

@@ -5,6 +5,10 @@ import java.awt.Choice;
 import java.awt.Dimension;
 
 public class OptionButton extends Button {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Choice type;
 	private int optionButtonWidth = 40;
 	private int optionButtonHeight = 20;
