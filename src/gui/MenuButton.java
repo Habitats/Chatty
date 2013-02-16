@@ -14,9 +14,6 @@ import network.server.ServerEvent.ServerEvents;
 
 public class MenuButton extends Button {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	public enum Type {
