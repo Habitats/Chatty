@@ -14,7 +14,6 @@ import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import chatty.Chatty;
 import chatty.Config;
 import chatty.Controller;
 

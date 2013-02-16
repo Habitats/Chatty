@@ -6,12 +6,9 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import msg.ChatEvent.Receipient;
-import network.NetworkEvent;
 import network.NetworkListener;
 import network.client.ClientEvent;
-import network.client.ClientEvent.ClientEvents;
 import network.server.ServerEvent;
-import network.server.ServerEvent.ServerEvents;
 import chatty.Config;
 import chatty.Controller;
 

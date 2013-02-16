@@ -1,7 +1,6 @@
 package gui;
 
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
 import javax.swing.BorderFactory;
 import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
@@ -44,24 +43,6 @@ public class FeedWindow extends JTextPane implements MessageListener {
 	@Override
 	public void clear() {
 		setText("");
+
 	}
-
-	@Override
-	public ChatEvent newChatEvent(ActionEvent ae) {
-		return null;
-	}
-
-	// private void initStyles() {
-	// StyleContext sc = new StyleContext();
-	// final DefaultStyledDocument doc = new DefaultStyledDocument(sc);
-	//
-	// Style error = sc.addStyle("error", null);
-	// error.addAttribute(StyleConstants.Foreground, Color.RED);
-	//
-	// Style normal = sc.addStyle("normal", null);
-	// normal.addAttribute(StyleConstants.Foreground, Color.BLACK);
-	//
-	// setStyledDocument(doc);
-	// }
-
 }

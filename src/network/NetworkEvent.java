@@ -2,8 +2,6 @@ package network;
 
 import java.util.Date;
 
-import network.server.ServerEvent.ServerEvents;
-
 import msg.ChatEvent;
 
 
