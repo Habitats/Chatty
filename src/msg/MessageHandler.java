@@ -109,7 +109,7 @@ public class MessageHandler implements NetworkListener {
 	public void fireChatEventToListeners(ChatEvent chatEvent) {
 		chatEvent = formatChatMessage(chatEvent);
 		for (MessageListener messageListener : messageListeners) {
-			if (chatEvent.getReceipient() == messageListener.getReceipient())
+			if (chatEvent.getReceipient() == messageListener.getReceipient() || messageListener.getReceipient() == Receipient.GLOBAL)
 				messageListener.onChatEvent(chatEvent);
 		}
 	}

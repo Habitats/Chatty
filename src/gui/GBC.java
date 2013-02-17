@@ -10,7 +10,7 @@ public class GBC extends GridBagConstraints {
 	private static final long serialVersionUID = 1L;
 
 	public enum Align {
-		LEFT, RIGHT, MID, TIGHT, BOTTOM, LEFT_BOTTOM, MID_BOTTOM, RIGHT_BOTTOM, ALONE, FULL_WIDTH, FULL_WIDTH_BOTTOM;
+		LEFT, RIGHT, MID, TIGHT, BOTTOM, LEFT_BOTTOM, MID_BOTTOM, RIGHT_BOTTOM, ALONE, FULL_WIDTH, FULL_WIDTH_BOTTOM, RIGHT_NO_TOP, LEFT_NO_TOP, MID_NO_TOP, ONLY_LEFT, ONLY_RIGHT, ONLY_TOP, ONLY_BOTTOM;
 	}
 
 	public GBC(int gridx, int gridy, Align align) {
@@ -32,6 +32,18 @@ public class GBC extends GridBagConstraints {
 				setInsets(b, b, b, b);
 			else if (align == Align.FULL_WIDTH_BOTTOM)
 				setInsets(b, b, b, b);
+			else if (align == Align.LEFT_NO_TOP || align == Align.MID_NO_TOP)
+				setInsets(0, b, 0, 0);
+			else if (align == Align.RIGHT_NO_TOP)
+				setInsets(0, b, 0, b);
+			else if (align == Align.ONLY_TOP)
+				setInsets(b, 0, 0, 0);
+			else if (align == Align.ONLY_LEFT)
+				setInsets(0, b, 0, 0);
+			else if (align == Align.ONLY_BOTTOM)
+				setInsets(0, 0, b, 0);
+			else if (align == Align.ONLY_RIGHT)
+				setInsets(0, 0, 0, b);
 		}
 		setFill(BOTH);
 	}

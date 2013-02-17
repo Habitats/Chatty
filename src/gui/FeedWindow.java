@@ -12,7 +12,7 @@ import msg.ChatEvent.Receipient;
 import msg.MessageListener;
 import chatty.Config;
 
-public class FeedWindow extends JTextPane implements MessageListener {
+public class FeedWindow extends JTextPane implements MessageListener, WindowButtonListener {
 
 	private JScrollPane scrollPane;
 	private Receipient rec;
@@ -22,8 +22,11 @@ public class FeedWindow extends JTextPane implements MessageListener {
 
 		setPreferredSize(dim);
 		setMinimumSize(dim);
+		setBounds(0, 0, dim.width, dim.width);
+		// setOpaque(false);
 
-//		setText("Welcome to " + Config.CHATTY_VER + " (excuse the name) -- a lightweight, easy to use, chat client!");
+		// setText("Welcome to " + Config.CHATTY_VER +
+		// " (excuse the name) -- a lightweight, easy to use, chat client!");
 		setText("Configuring " + Config.CHATTY_VER + "...");
 		// auto scroll
 		DefaultCaret caret = (DefaultCaret) getCaret();
@@ -38,6 +41,7 @@ public class FeedWindow extends JTextPane implements MessageListener {
 		scrollPane = new JScrollPane(this);
 		scrollPane.setBorder(BorderFactory.createEmptyBorder());
 		scrollPane.getVerticalScrollBar().setBackground(Themes.FOREGROUND);
+		scrollPane.setBounds(0, 0, dim.width, dim.height);
 	}
 
 	@Override
@@ -47,6 +51,12 @@ public class FeedWindow extends JTextPane implements MessageListener {
 		} catch (BadLocationException e) {
 		}
 		setCaretPosition(getDocument().getLength());
+	}
+
+	@Override
+	public void setVisible(boolean value) {
+		scrollPane.setVisible(value);
+		System.out.println(rec.name() + " is " + (value ? "visible" : "invisible"));
 	}
 
 	@Override

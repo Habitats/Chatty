@@ -28,7 +28,7 @@ public class ServerConnection implements Runnable {
 		getServer().getClientConnections().add(new ClientConnection(objectOutputStream, getClientSocket()));
 		ObjectInputStream objectInputStream = new ObjectInputStream(getClientSocket().getInputStream());
 
-		objectOutputStream.writeObject(new ChatEvent(getServer().getServerUser(), null, Receipient.QUERY, welcomeMsg));
+		objectOutputStream.writeObject(new ChatEvent(getServer().getServerUser(), null, Receipient.STATUS, welcomeMsg));
 		ChatEvent chatEvent;
 
 		try {
@@ -64,7 +64,7 @@ public class ServerConnection implements Runnable {
 
 	@Override
 	public void run() {
-		welcomeMsg = "SERVER: Welcome Human, I'm a server!";
+		welcomeMsg = "Welcome Human, I'm a server!";
 		try {
 			initConnection();
 		} catch (SocketException e) {

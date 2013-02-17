@@ -6,6 +6,8 @@ import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 import javax.swing.SwingConstants;
 
+import chatty.Config;
+
 import network.NetworkEvent;
 import network.NetworkEvent.NetworkEvents;
 
@@ -34,18 +36,14 @@ public class MenuButton extends Button {
 	private final ButtonHandler buttonHandler;
 
 	public MenuButton(final Type type, Dimension dim, ButtonHandler buttonHandler) {
+		setFont(Config.genFont(18, true));
 		this.buttonHandler = buttonHandler;
-		setBackground(Themes.BUTTON_COLOR_DEFAULT);
-		// font color
-		setForeground(Themes.FOREGROUND);
 		setText(type.getText().toUpperCase());
 		setType(type);
 
 		setPreferredSize(dim);
 		setMinimumSize(dim);
 
-		setOpaque(true);
-		setHorizontalAlignment(SwingConstants.CENTER);
 
 		addMouseListener(new ButtonMouseListener(this) {
 

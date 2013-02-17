@@ -11,6 +11,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import msg.ChatEvent.Receipient;
@@ -18,7 +19,7 @@ import chatty.Config;
 import chatty.Controller;
 
 public class MainFrame {
-	private int frameWidth = 1200;
+	private int frameWidth = 600;
 	private int frameHeight = 450;
 	private Controller controller;
 	private ButtonHandler buttonHandler;
@@ -33,6 +34,7 @@ public class MainFrame {
 	private FeedWindow feedWindow;
 	private FeedWindow feedStatus;
 	private FeedWindow feedQuery;
+	private FeedWindow feedGlobal;
 
 	public MainFrame(Controller controller) {
 		Themes.setTheme(Themes.GRAY);
@@ -96,16 +98,19 @@ public class MainFrame {
 		serverButton = new MenuButton(Type.SERVER, buttonDim, buttonHandler);
 		optionsButton = new MenuButton(Type.OPTIONS, buttonDim, buttonHandler);
 
-		feedWindow = new FeedWindow(new Dimension(frameWidth / 3, 200), Receipient.CHANNEL);
-		feedWindow.addMouseListener(new FeedMouseListener(this));
-
-		feedStatus = new FeedWindow(new Dimension(frameWidth / 3, 200), Receipient.STATUS);
-		feedStatus.addMouseListener(new FeedMouseListener(this));
-		
-		feedQuery = new FeedWindow(new Dimension(frameWidth / 3, 200), Receipient.QUERY);
-		feedQuery.addMouseListener(new FeedMouseListener(this));
+		feedWindow = new FeedWindow(new Dimension(frameWidth, 400), Receipient.CHANNEL);
+		feedStatus = new FeedWindow(new Dimension(frameWidth, 400), Receipient.STATUS);
+		feedQuery = new FeedWindow(new Dimension(frameWidth, 400), Receipient.QUERY);
+		feedGlobal = new FeedWindow(new Dimension(frameWidth, 400), Receipient.GLOBAL);
 
 		InputWindow inputWindow = new InputWindow(new Dimension(frameWidth, 20), controller.getMessageHandler());
+
+		WindowMenu windowMenu = new WindowMenu();
+		windowMenu.addWindowButtonListener(feedWindow);
+		windowMenu.addWindowButtonListener(feedQuery);
+		windowMenu.addWindowButtonListener(feedStatus);
+		windowMenu.addWindowButtonListener(feedGlobal);
+		windowMenu.setPreferredSize(new Dimension(frameWidth, 400));
 		// TODO: this isn't very pretty
 		inputWindow.addKeyListener(new KeyAdapter() {
 			@Override
@@ -114,6 +119,11 @@ public class MainFrame {
 				rightClickMenu.setVisible(false);
 			}
 		});
+		// JLabel contentBox = new JLabel();
+		// contentBox.setPreferredSize(new Dimension(frameWidth, 300));
+		JLayeredPane mainLayeredPane = buildLayeredPane();
+		mainLayeredPane.setOpaque(true);
+		mainLayeredPane.addMouseListener(new FeedMouseListener(this));
 
 		// sets focus to TEXT FIELD
 		inputWindow.requestFocus();
@@ -126,15 +136,23 @@ public class MainFrame {
 		mainPanel.setOpaque(false);
 		mainPanel.setBackground(Color.blue);
 
-		mainPanel.add(feedWindow.getScrollPane(), new GBC(0, 2, Align.LEFT).setSpan(menuSize / 3, 1).setWeight(0, 1));
-		mainPanel.add(feedQuery.getScrollPane(), new GBC(1, 2, Align.MID).setSpan(menuSize / 3, 1).setWeight(0, 1));
-		mainPanel.add(feedStatus.getScrollPane(), new GBC(2, 2, Align.RIGHT).setSpan(menuSize / 3, 1).setWeight(0, 1));
-
 		mainPanel.add(inputWindow, new GBC(0, 8, Align.FULL_WIDTH_BOTTOM).setSpan(menuSize, 2).setWeight(1, 0));
+		// mainPanel.add(contentBox, new GBC(0, 1,
+		// Align.FULL_WIDTH).setSpan(menuSize, 1).setWeight(1, 1));
+
+//		mainLayeredPane.setBackground(Color.cyan);
+		mainLayeredPane.add(feedWindow.getScrollPane(), new Integer(4));
+		mainLayeredPane.add(feedStatus.getScrollPane(), new Integer(2));
+		mainLayeredPane.add(feedQuery.getScrollPane(), new Integer(3));
+		mainLayeredPane.add(feedGlobal.getScrollPane(), new Integer(1));
+
+		mainPanel.add(mainLayeredPane, new GBC(0, 2, Align.FULL_WIDTH).setSpan(menuSize, 1).setWeight(1, 1));
 
 		mainPanel.add(clientButton, new GBC(0, 0, Align.LEFT).setSpan(1, 1).setWeight(1 / menuSize, 0));
 		mainPanel.add(serverButton, new GBC(1, 0, Align.MID).setSpan(1, 1).setWeight(1 / menuSize, 0));
 		mainPanel.add(optionsButton, new GBC(2, 0, Align.RIGHT).setSpan(1, 1).setWeight(1 / menuSize, 0));
+
+		mainPanel.add(windowMenu, new GBC(0, 1, Align.FULL_WIDTH).setSpan(menuSize, 1).setWeight(1, 0));
 
 		mainPanel.addKeyListener(new MyKeyListener());
 		mainPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
@@ -189,7 +207,11 @@ public class MainFrame {
 	public FeedWindow getFeedStatus() {
 		return feedStatus;
 	}
+
 	public FeedWindow getFeedQuery() {
 		return feedQuery;
+	}
+	public FeedWindow getFeedGlobal() {
+		return feedGlobal;
 	}
 }

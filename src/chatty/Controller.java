@@ -31,6 +31,7 @@ public class Controller implements ButtonListener {
 		messageHandler.addMessageListener(getGui().getFeedWindow());
 		messageHandler.addMessageListener(getGui().getFeedStatus());
 		messageHandler.addMessageListener(getGui().getFeedQuery());
+		messageHandler.addMessageListener(getGui().getFeedGlobal());
 	}
 
 	private void addNetworkListeners() {

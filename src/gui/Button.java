@@ -4,6 +4,7 @@ import gui.MenuButton.Type;
 
 import java.awt.Dimension;
 import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 
 import network.NetworkEvent;
 import network.NetworkListener;
@@ -22,6 +23,11 @@ public abstract class Button extends JLabel implements NetworkListener {
 		setPreferredSize(dim);
 		init();
 	}
+	
+	public Button(Dimension dim){
+		setPreferredSize(dim);
+		init();
+	}
 
 	public Button(String text) {
 		setText(text.toUpperCase());
@@ -34,8 +40,12 @@ public abstract class Button extends JLabel implements NetworkListener {
 	}
 
 	private void init() {
+		setBackground(Themes.BUTTON_COLOR_DEFAULT);
+		setOpaque(true);
+		setHorizontalAlignment(SwingConstants.CENTER);
+		// font color
+		setForeground(Themes.FOREGROUND);
 		addMouseListener(buttonMouseListener);
-		setFont(Config.genFont(18, true));
 	}
 
 	public boolean isActive() {
