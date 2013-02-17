@@ -20,7 +20,7 @@ public class Chatty {
 			String hostname = args[1];
 			chatty.test(instances, hostname);
 		} else {
-			chatty.test(2, null);
+			chatty.test(1, null);
 //			chatty.run();
 		}
 	}

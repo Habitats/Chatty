@@ -53,6 +53,7 @@ public class ChatEvent implements Serializable {
 	public ChatEvent(User from, String to, Receipient rec, String msg) {
 		this.from = from;
 		this.msg = msg;
+		this.to = to;
 		setRec(rec, to);
 		sendDate = System.currentTimeMillis();
 		formattedSendDate = new SimpleDateFormat("hh:mm:ss:SSSS").format(sendDate);

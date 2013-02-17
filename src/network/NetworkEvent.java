@@ -38,8 +38,8 @@ public class NetworkEvent {
 
 	private Date date;
 	private Exception e;
-	// protected ChatEvent chatEvent;
 	private ChatEvent chatEvent;
+	private NetworkEvents event;
 
 	private void generateGeneralInfo() {
 		date = new Date();
@@ -55,8 +55,8 @@ public class NetworkEvent {
 
 	public ChatEvent getChatEvent() {
 		return chatEvent;
+	}
 
-	private NetworkEvents event;
 
 	public NetworkEvent(NetworkEvents event) {
 		this(event, null, null);

@@ -13,6 +13,7 @@ import java.util.List;
 import chatty.User;
 
 import msg.ChatEvent;
+import msg.ChatEvent.Receipient;
 import network.NetworkEvent;
 import network.NetworkHandler;
 import network.ProgramState;
@@ -66,7 +67,7 @@ public class Server extends ProgramState implements Runnable {
 
 	@Override
 	public void run() {
-		getNetworkHandler().fireNetworkEvent(new NetworkEvent(NetworkEvents.START_SERVER,"Starting server..."));
+		getNetworkHandler().fireNetworkEvent(new NetworkEvent(NetworkEvents.START_SERVER, "Starting server..."));
 
 		// tries to open up a socket on PORT, returns if fail
 		if ((serverSocket = setUpServer(port)) == null)
@@ -169,9 +170,12 @@ public class Server extends ProgramState implements Runnable {
 					e.printStackTrace();
 				}
 		}
-		if(!success)
-			getNetworkHandler().fireNetworkEvent(new NetworkEvent(NetworkEvents.STATUS, new ChatEvent(serverUser, chatEvent.getFrom().getDisplayName(), "No such user: " + to)));
+		if (!success){
+			ChatEvent returnEvent =new ChatEvent(serverUser, chatEvent.getFrom().getDisplayName(), Receipient.QUERY, "No such user: " + to);
+			sendPrivateChatEvent(returnEvent);
+		}
 	}
+
 	public synchronized User getServerUser() {
 		return serverUser;
 	}
