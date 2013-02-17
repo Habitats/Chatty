@@ -1,16 +1,13 @@
 package gui;
 
-
 import gui.ButtonEvent.ButtonEvents;
 
 import java.awt.Dimension;
 import java.awt.event.MouseEvent;
 import javax.swing.SwingConstants;
 
-import network.client.ClientEvent;
-import network.client.ClientEvent.ClientEvents;
-import network.server.ServerEvent;
-import network.server.ServerEvent.ServerEvents;
+import network.NetworkEvent;
+import network.NetworkEvent.NetworkEvents;
 
 public class MenuButton extends Button {
 
@@ -65,21 +62,17 @@ public class MenuButton extends Button {
 	}
 
 	@Override
-	public void serverStatus(ServerEvent event) {
-		if (getType() == Type.SERVER) {
-			if (event.getEvent() == ServerEvents.START)
+	public void onStatusMessage(NetworkEvent event) {
+		if (getType() == Type.CLIENT) {
+			if (event.getEvent() == NetworkEvents.START_CLIENT)
 				setActive(true);
-			else if (event.getEvent() == network.server.ServerEvent.ServerEvents.SHUTDOWN)
+			else if (event.getEvent() == NetworkEvents.SHUTDOWN_CLIENT)
+				setActive(false);
+		} else if (getType() == Type.SERVER) {
+			if (event.getEvent() == NetworkEvents.START_SERVER)
+				setActive(true);
+			else if (event.getEvent() == NetworkEvents.SHUTDOWN_SERVER)
 				setActive(false);
 		}
-	}
-
-	@Override
-	public void clientStatus(ClientEvent event) {
-		if (getType() == Type.CLIENT)
-			if (event.getEvent() == ClientEvents.START)
-				setActive(true);
-			else if (event.getEvent() == ClientEvents.SHUTDOWN)
-				setActive(false);
 	}
 }

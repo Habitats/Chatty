@@ -11,9 +11,10 @@ import java.net.UnknownHostException;
 
 import msg.ChatEvent;
 import msg.ChatEvent.Receipient;
+import network.NetworkEvent;
 import network.NetworkHandler;
 import network.ProgramState;
-import network.client.ClientEvent.ClientEvents;
+import network.NetworkEvent.NetworkEvents;
 
 public class Client extends ProgramState implements Runnable {
 
@@ -35,15 +36,15 @@ public class Client extends ProgramState implements Runnable {
 
 	private Socket setUpConnection(int port, String hostname) {
 		Socket socket = null;
-		getNetworkHandler().fireClientEvent(new ClientEvent(ClientEvents.STATUS, "Connecting to " + hostname + " on " + port + "..."));
+		getNetworkHandler().fireNetworkEvent(new NetworkEvent(NetworkEvents.STATUS, "Connecting to " + hostname + " on " + port + "..."));
 		try {
 			socket = new Socket(hostname, port);
-			getNetworkHandler().fireClientEvent(new ClientEvent(ClientEvents.CONNECT));
+			getNetworkHandler().fireNetworkEvent(new NetworkEvent(NetworkEvents.CONNECT));
 			return socket;
 		} catch (UnknownHostException e) {
-			getNetworkHandler().fireClientEvent(new ClientEvent(ClientEvents.SHUTDOWN, e, "Unknown host: " + hostname + "!"));
+			getNetworkHandler().fireNetworkEvent(new NetworkEvent(NetworkEvents.SHUTDOWN_CLIENT, e, "Unknown host: " + hostname + "!"));
 		} catch (IOException e) {
-			getNetworkHandler().fireClientEvent(new ClientEvent(ClientEvents.SHUTDOWN, e, "Connection failed."));
+			getNetworkHandler().fireNetworkEvent(new NetworkEvent(NetworkEvents.SHUTDOWN_CLIENT, e, "Connection failed."));
 		}
 		return null;
 	}
@@ -59,7 +60,7 @@ public class Client extends ProgramState implements Runnable {
 			getObjectOutputStream().reset();
 			getObjectOutputStream().writeObject(new ChatEvent(getNetworkHandler().getController().getUser(), null, Receipient.SERVER, getNetworkHandler().getController().getUser().getUsername() + " says hi!"));
 			while (isRunning() && ((chatEvent = (ChatEvent) objectInputStream.readObject()) != null)) {
-				getNetworkHandler().fireClientEvent(new ClientEvent(ClientEvents.CHAT_EVENT, chatEvent));
+				getNetworkHandler().fireNetworkEvent(new NetworkEvent(NetworkEvents.CHAT_EVENT, chatEvent));
 			}
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
@@ -68,7 +69,7 @@ public class Client extends ProgramState implements Runnable {
 
 	@Override
 	public void run() {
-		getNetworkHandler().fireClientEvent(new ClientEvent(ClientEvents.START));
+		getNetworkHandler().fireNetworkEvent(new NetworkEvent(NetworkEvents.START_CLIENT, "Starting client..."));
 		setClient(true);
 		setServer(false);
 
@@ -83,12 +84,12 @@ public class Client extends ProgramState implements Runnable {
 			initConnection();
 			// initPrintStreamConnection();
 		} catch (SocketException e) {
-			getNetworkHandler().fireClientEvent(new ClientEvent(ClientEvents.DISCONNECT, e));
+			getNetworkHandler().fireNetworkEvent(new NetworkEvent(NetworkEvents.DISCONNECT));
 			return;
 		} catch (IOException e) {
-			getNetworkHandler().fireClientEvent(new ClientEvent(ClientEvents.CRASH, e));
+			getNetworkHandler().fireNetworkEvent(new NetworkEvent(NetworkEvents.DISCONNECT, "Error reading socket!"));
 		} finally {
-			getNetworkHandler().fireClientEvent(new ClientEvent(ClientEvents.SHUTDOWN));
+			getNetworkHandler().fireNetworkEvent(new NetworkEvent(NetworkEvents.SHUTDOWN_CLIENT, "Client shutting down!"));
 			kill();
 		}
 	}

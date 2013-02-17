@@ -7,23 +7,20 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.List;
 
-import chatty.User;
-
 import msg.ChatEvent;
 import msg.ChatEvent.Receipient;
-import network.server.ServerEvent.ServerEvents;
+import network.NetworkEvent;
+import network.NetworkEvent.NetworkEvents;
 
 public class ServerConnection implements Runnable {
 
 	private Socket clientSocket;
 	private Server server;
 	private String welcomeMsg;
-	private User serverUser;
 
 	public ServerConnection(Socket clientSocket, Server server) {
 		this.clientSocket = clientSocket;
 		this.server = server;
-		this.serverUser = new User("SERVER");
 	}
 
 	private void initConnection() throws IOException {
@@ -31,7 +28,7 @@ public class ServerConnection implements Runnable {
 		getServer().getClientConnections().add(new ClientConnection(objectOutputStream, getClientSocket()));
 		ObjectInputStream objectInputStream = new ObjectInputStream(getClientSocket().getInputStream());
 
-		objectOutputStream.writeObject(new ChatEvent(serverUser, null, Receipient.PRIVATE, welcomeMsg));
+		objectOutputStream.writeObject(new ChatEvent(getServer().getServerUser(), null, Receipient.QUERY, welcomeMsg));
 		ChatEvent chatEvent;
 
 		try {
@@ -42,19 +39,16 @@ public class ServerConnection implements Runnable {
 				List<ClientConnection> clientConnections = getServer().getClientConnections();
 				synchronized (clientConnections) {
 					for (ClientConnection clientConnection : clientConnections) {
-//						System.out.print("server port: " + clientConnection.getClientSocket().getPort());
-//						System.out.println("Socket info: " + clientConnection.getClientSocket());
-//						System.out.println(" - client port: " + chatEvent.getFrom().getActivePort());
 						if (clientConnection.getClientSocket() == clientSocket) {
 							clientConnection.setUser(chatEvent.getFrom());
 							break;
 						}
 					}
 				}
-				getServer().getNetworkHandler().fireServerEvent(new ServerEvent(ServerEvents.CHAT_EVENT, chatEvent));
-				if (chatEvent.getReceipient() == Receipient.GLOBAL) {
+				getServer().getNetworkHandler().fireNetworkEvent(new NetworkEvent(NetworkEvents.CHAT_EVENT, chatEvent));
+				if (chatEvent.getReceipient() == Receipient.CHANNEL) {
 					getServer().broadcastChatEventToClients(chatEvent);
-				} else if (chatEvent.getReceipient() == Receipient.PRIVATE) {
+				} else if (chatEvent.getReceipient() == Receipient.QUERY) {
 					getServer().sendPrivateChatEvent(chatEvent);
 				}
 				chatEvent = null;
@@ -74,12 +68,10 @@ public class ServerConnection implements Runnable {
 		try {
 			initConnection();
 		} catch (SocketException e) {
-			getServer().getNetworkHandler().fireServerEvent(new ServerEvent(ServerEvents.CLIENT_DROPPED));
+			getServer().getNetworkHandler().fireNetworkEvent(new NetworkEvent(NetworkEvents.CLIENT_DROPPED,"Socket closed, client dropped!"));
 		} catch (IOException e) {
-			getServer().getNetworkHandler().fireServerEvent(new ServerEvent(ServerEvents.CRASH, e));
+			getServer().getNetworkHandler().fireNetworkEvent(new NetworkEvent(NetworkEvents.CLIENT_DROPPED,"Error reading socket, client dropped!"));
 		}
-
-		System.out.println("END");
 	}
 
 	private Server getServer() {

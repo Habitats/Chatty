@@ -5,13 +5,12 @@ import gui.MenuButton.Type;
 import java.awt.Dimension;
 import javax.swing.JLabel;
 
+import network.NetworkEvent;
 import network.NetworkListener;
-import network.client.ClientEvent;
-import network.server.ServerEvent;
 
 import chatty.Config;
 
-public  abstract class Button extends JLabel implements NetworkListener {
+public abstract class Button extends JLabel implements NetworkListener {
 
 	private static final long serialVersionUID = 1L;
 	private boolean active = false;
@@ -59,20 +58,11 @@ public  abstract class Button extends JLabel implements NetworkListener {
 			setBackground(Themes.BUTTON_COLOR_DEFAULT);
 	}
 
-
 	@Override
-	public void serverStatus(ServerEvent event) {
+	public void onStatusMessage(NetworkEvent event) {
 	}
 
 	@Override
-	public void clientStatus(ClientEvent event) {
-	}
-
-	@Override
-	public void clientMessage(ClientEvent event) {
-	}
-
-	@Override
-	public void serverNormalMessage(ServerEvent event) {
+	public void onNormalMessage(NetworkEvent event) {
 	}
 }

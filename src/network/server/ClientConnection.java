@@ -8,23 +8,13 @@ import chatty.User;
 
 public class ClientConnection {
 
-	private PrintWriter outputStream;
 	private Socket clientSocket;
 	private ObjectOutputStream objectOutputStream;
 	private User user;
 
-	public ClientConnection(PrintWriter outputStream, Socket clientSocket) {
-		this.outputStream = outputStream;
-		this.clientSocket = clientSocket;
-	}
-
 	public ClientConnection(ObjectOutputStream objectOutputStream, Socket clientSocket) {
 		this.objectOutputStream = objectOutputStream;
 		this.clientSocket = clientSocket;
-	}
-
-	public PrintWriter getOutputStream() {
-		return outputStream;
 	}
 
 	public synchronized Socket getClientSocket() {

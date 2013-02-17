@@ -29,7 +29,7 @@ public class FeedMouseListener extends MouseAdapter {
 			}
 			else
 				type = RightClickType.DEFAULT;
-			gui.getRightClickMenu().setLocation(e.getX() + gui.getScrollPane().getX(), e.getY() + gui.getScrollPane().getY());
+			gui.getRightClickMenu().setLocation(e.getX() + gui.getFeedWindow().getScrollPane().getX(), e.getY() + gui.getFeedWindow().getScrollPane().getY());
 			gui.getRightClickMenu().open(type);
 		}
 	}

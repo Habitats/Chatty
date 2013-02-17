@@ -6,10 +6,7 @@ import java.util.ArrayList;
 import chatty.Controller;
 
 import network.client.Client;
-import network.client.ClientEvent;
-import network.client.ClientEvent.ClientEvents;
 import network.server.Server;
-import network.server.ServerEvent;
 
 public class NetworkHandler {
 
@@ -74,37 +71,20 @@ public class NetworkHandler {
 		networkListeners.add(listener);
 	}
 
-	synchronized public void fireServerEvent(ServerEvent event) {
+	synchronized public void fireNetworkEvent(NetworkEvent event) {
 		networkEvents.add(event);
 		for (NetworkListener listener : networkListeners) {
 			switch (event.getEvent()) {
 			case CHAT_EVENT:
-				listener.serverNormalMessage(event);
+				listener.onNormalMessage(event);
 				break;
 			default:
-				listener.serverStatus(event);
+				listener.onStatusMessage(event);
 				break;
 			}
 		}
 	}
 
-	synchronized public void fireClientEvent(ClientEvent event) {
-		if (event.getEvent() == ClientEvents.COMMAND)
-			getController().getMessageHandler().fireChatEventToListeners(event.getChatEvent());
-		else {
-			networkEvents.add(event);
-			for (NetworkListener listener : networkListeners) {
-				switch (event.getEvent()) {
-				case CHAT_EVENT:
-					listener.clientMessage(event);
-					break;
-				default:
-					listener.clientStatus(event);
-					break;
-				}
-			}
-		}
-	}
 
 	public boolean isRunning() {
 		if (programState != null)

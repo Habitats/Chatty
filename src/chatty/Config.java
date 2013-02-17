@@ -7,7 +7,7 @@ import java.io.IOException;
 
 public class Config {
 	// general settings
-	public static final String CHATTY_VER = "Chatty v0.5 - Work in progress";
+	public static final String CHATTY_VER = "Chatty v0.5";
 	public static final String APPLICATION_NAME = "Chatty";
 
 	// general GUI stuff

@@ -13,7 +13,8 @@ public class ChatEvent implements Serializable {
 
 	public enum Receipient {
 		SERVER, //
-		PRIVATE, //
+		QUERY, //
+		CHANNEL, //
 		GLOBAL, //
 		STATUS, //
 		;
@@ -31,6 +32,7 @@ public class ChatEvent implements Serializable {
 	private ChatCommand cmd;
 
 	private String returnMsg;
+	private String formattedMessage;
 
 	public ChatEvent(String msg) {
 		this(null, null, Receipient.STATUS, msg);
@@ -40,6 +42,14 @@ public class ChatEvent implements Serializable {
 		this(from, null, rec, msg);
 	}
 
+	public ChatEvent(User from, String to, String msg) {
+		this(from, to, null, msg);
+	}
+
+	public ChatEvent(User from, String msg) {
+		this(from, null, null, msg);
+	}
+
 	public ChatEvent(User from, String to, Receipient rec, String msg) {
 		this.from = from;
 		this.msg = msg;
@@ -47,21 +57,27 @@ public class ChatEvent implements Serializable {
 		sendDate = System.currentTimeMillis();
 		formattedSendDate = new SimpleDateFormat("hh:mm:ss:SSSS").format(sendDate);
 		msgArr = msg.split(" ");
-		if (rec == Receipient.STATUS)
-			this.from = new User("STATUS");
+
 		if (msgArr[0].startsWith("/")) {
 			cmd = ChatCommand.getCmd(msgArr[0]);
+			rec = Receipient.STATUS;
 		}
+	}
+
+	public void setRec(Receipient rec) {
+		setRec(rec, null);
 	}
 
 	public void setRec(Receipient rec, String to) {
 		this.rec = rec;
-		if (rec == Receipient.PRIVATE && cmd == ChatCommand.PRIV_MSG) {
+		if (rec == Receipient.QUERY && cmd == ChatCommand.PRIV_MSG) {
 			this.to = to;
 			String tmpMsg = msg;
 			msg = "";
 			for (int i = 2; i < tmpMsg.split(" ").length; i++)
 				msg += msgArr[i] + " ";
+		} else if (rec == Receipient.STATUS) {
+			this.from = new User("STATUS");
 		}
 	}
 
@@ -112,5 +128,13 @@ public class ChatEvent implements Serializable {
 
 	public String getTo() {
 		return to;
+	}
+
+	public void setFormattedMessage(String formattedMessage) {
+		this.formattedMessage = formattedMessage;
+	}
+	
+	public String getFormattedMessage() {
+		return formattedMessage;
 	}
 }

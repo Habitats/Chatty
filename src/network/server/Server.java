@@ -13,9 +13,10 @@ import java.util.List;
 import chatty.User;
 
 import msg.ChatEvent;
+import network.NetworkEvent;
 import network.NetworkHandler;
 import network.ProgramState;
-import network.server.ServerEvent.ServerEvents;
+import network.NetworkEvent.NetworkEvents;
 
 public class Server extends ProgramState implements Runnable {
 
@@ -29,10 +30,11 @@ public class Server extends ProgramState implements Runnable {
 	private Socket clientSocket;
 
 	private NetworkHandler networkHandler;
+	private User serverUser;
 
 	public Server(int port, NetworkHandler networkHandler) throws IOException {
 		setNetworkHandler(networkHandler);
-
+		this.serverUser = new User("SERVER");
 		super.port = port;
 	}
 
@@ -42,7 +44,7 @@ public class Server extends ProgramState implements Runnable {
 			serverSocket = new ServerSocket(port);
 			return serverSocket;
 		} catch (Exception e) {
-			getNetworkHandler().fireServerEvent(new ServerEvent(ServerEvents.SHUTDOWN, e, "Failed to setup server on port " + port + " failed. Exiting..."));
+			getNetworkHandler().fireNetworkEvent(new NetworkEvent(NetworkEvents.SHUTDOWN_SERVER, e, "Failed to setup server on port " + port + " failed. Exiting..."));
 			return null;
 		}
 	}
@@ -50,21 +52,21 @@ public class Server extends ProgramState implements Runnable {
 	private Socket listenForIncomingConnections(ServerSocket serverSocket) {
 		Socket socket = null;
 		try {
-			getNetworkHandler().fireServerEvent(new ServerEvent(ServerEvents.STATUS, "Listening for connections on port " + port + "..."));
+			getNetworkHandler().fireNetworkEvent(new NetworkEvent(NetworkEvents.STATUS, "Listening for connections on port " + port + "..."));
 			socket = serverSocket.accept();
 			return socket;
 		} catch (SocketException e) {
-			getNetworkHandler().fireServerEvent(new ServerEvent(ServerEvents.SHUTDOWN, e));
+			getNetworkHandler().fireNetworkEvent(new NetworkEvent(NetworkEvents.SHUTDOWN_SERVER, "Server shutting down!"));
 			return null;
 		} catch (NullPointerException | IOException e) {
-			getNetworkHandler().fireServerEvent(new ServerEvent(ServerEvents.CRASH, e));
+			getNetworkHandler().fireNetworkEvent(new NetworkEvent(NetworkEvents.CRASH, e));
 			return null;
 		}
 	}
 
 	@Override
 	public void run() {
-		getNetworkHandler().fireServerEvent(new ServerEvent(ServerEvents.START));
+		getNetworkHandler().fireNetworkEvent(new NetworkEvent(NetworkEvents.START_SERVER,"Starting server..."));
 
 		// tries to open up a socket on PORT, returns if fail
 		if ((serverSocket = setUpServer(port)) == null)
@@ -83,13 +85,9 @@ public class Server extends ProgramState implements Runnable {
 			connectWithClient(clientSocket);
 			String clientIp = clientSocket.getRemoteSocketAddress().toString().split("[/:]")[1];
 			String localPort = clientSocket.getRemoteSocketAddress().toString().split("[/:]")[2];
-			getNetworkHandler().fireServerEvent(new ServerEvent(ServerEvents.CLIENT_CONNECT, clientIp + " connected on local port " + localPort + "!"));
+			getNetworkHandler().fireNetworkEvent(new NetworkEvent(NetworkEvents.CLIENT_CONNECT, clientIp + " connected on local port " + localPort + "!"));
 			setRunning(true);
 		}
-//		
-//		setRunning(false);
-//		getNetworkHandler().fireServerEvent(new ServerEvent(ServerEvents.SHUTDOWN));
-//		kill();
 	}
 
 	private void connectWithClient(final Socket clientSocket) {
@@ -108,12 +106,6 @@ public class Server extends ProgramState implements Runnable {
 	public synchronized void broadcastChatEventToClients(ChatEvent chatEvent) {
 		ObjectOutputStream currentObjectOutputStream;
 		for (ClientConnection clientConnection : clientConnections) {
-			// System.out.println("getuser: " + clientConnection.getUser());
-			// System.out.println("getusername: " +
-			// clientConnection.getUser().getUsername());
-			// System.out.println("getfrom:" + chatEvent.getFrom());
-			// System.out.println("getfromusername: " +
-			// chatEvent.getFrom().getUsername());
 			if (!clientConnection.getUser().getUsername().equals(chatEvent.getFrom().getUsername())) {
 				currentObjectOutputStream = clientConnection.getObjectOutputStream();
 				try {
@@ -127,7 +119,7 @@ public class Server extends ProgramState implements Runnable {
 	}
 
 	public synchronized void broadcastChatEventToAll(ChatEvent chatEvent) {
-		getNetworkHandler().fireServerEvent(new ServerEvent(ServerEvents.CHAT_EVENT, chatEvent));
+		getNetworkHandler().fireNetworkEvent(new NetworkEvent(NetworkEvents.CHAT_EVENT, chatEvent));
 		broadcastChatEventToClients(chatEvent);
 	}
 
@@ -165,15 +157,22 @@ public class Server extends ProgramState implements Runnable {
 
 	public synchronized void sendPrivateChatEvent(ChatEvent chatEvent) {
 		String to = chatEvent.getTo();
+		boolean success = false;
 		for (ClientConnection clientConnection : clientConnections) {
 			// if clientConnection is the RECEIVER or SENDER
-			if (clientConnection.getUser().getDisplayName().equals(to))
+			if (clientConnection.getUser().getDisplayName().toLowerCase().equals(to.toLowerCase()))
 				try {
 					clientConnection.getObjectOutputStream().reset();
 					clientConnection.getObjectOutputStream().writeObject(chatEvent);
+					success = true;
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 		}
+		if(!success)
+			getNetworkHandler().fireNetworkEvent(new NetworkEvent(NetworkEvents.STATUS, new ChatEvent(serverUser, chatEvent.getFrom().getDisplayName(), "No such user: " + to)));
+	}
+	public synchronized User getServerUser() {
+		return serverUser;
 	}
 }

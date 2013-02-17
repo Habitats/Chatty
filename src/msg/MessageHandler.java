@@ -6,9 +6,8 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import msg.ChatEvent.Receipient;
+import network.NetworkEvent;
 import network.NetworkListener;
-import network.client.ClientEvent;
-import network.server.ServerEvent;
 import chatty.Config;
 import chatty.Controller;
 
@@ -22,33 +21,42 @@ public class MessageHandler implements NetworkListener {
 	public MessageHandler(Controller controller) {
 		this.controller = controller;
 		enableTimeStamp = true;
-		enableDeltaTime = true;
+		enableDeltaTime = false;
 	}
 
 	private ChatEvent formatChatMessage(ChatEvent chatEvent) {
 		String deltaTime = "";
 		String timeStamp = "";
-		String nick = chatEvent.getFrom().getDisplayName() + Config.SEP;
+		String nick = chatEvent.getFrom().getDisplayName();
 
 		if (enableTimeStamp)
 			timeStamp = new SimpleDateFormat("hh:mm:ss").format(new Date()) + Config.SEP;
 		if (enableDeltaTime)
 			deltaTime = chatEvent.getDelay() + " ms" + Config.SEP;
+		if (chatEvent.getReceipient() == Receipient.QUERY)
+			nick = nick + " --> " + chatEvent.getTo() + Config.SEP;
+		else
+			nick += Config.SEP;
 
-		chatEvent.setMsg(timeStamp + nick + deltaTime + chatEvent.getMsg());
+		chatEvent.setFormattedMessage(timeStamp + nick + deltaTime + chatEvent.getMsg());
 		return chatEvent;
 	}
 
 	public void newChatEvent(ActionEvent ae) {
-		ChatEvent chatEvent = new ChatEvent(getController().getUser(), Receipient.GLOBAL, ae.getActionCommand());
+		ChatEvent chatEvent = new ChatEvent(getController().getUser(), ae.getActionCommand());
 		if (chatEvent.getMsgArr().length > 0) {
-			if (chatEvent.isCommand() && chatEvent.getCommand() == ChatCommand.PRIV_MSG) {
-				chatEvent.setRec(Receipient.PRIVATE, chatEvent.getMsgArr()[1]);
+			if (chatEvent.isCommand()) {
+				if (chatEvent.getCommand() == ChatCommand.PRIV_MSG) {
+					chatEvent.setRec(Receipient.QUERY, chatEvent.getMsgArr()[1]);
+					getController().sendChatEvent(chatEvent);
+				} else {
+					chatEvent.setRec(Receipient.STATUS);
+					issueLocalChatCommand(chatEvent);
+				}
+			} else {
+				chatEvent.setRec(Receipient.CHANNEL);
 				getController().sendChatEvent(chatEvent);
-			} else if (chatEvent.isCommand())
-				issueLocalChatCommand(chatEvent);
-			else
-				getController().sendChatEvent(chatEvent);
+			}
 		}
 	}
 
@@ -68,13 +76,13 @@ public class MessageHandler implements NetworkListener {
 		else if (chatEvent.getMsgArr().length == 2) {
 			switch (chatEvent.getCommand()) {
 			case CHANGE_NICK:
-				getController().setNick(chatEvent.getMsgArr()[1]);
+				chatEvent.setMsg(getController().setNick(chatEvent.getMsgArr()[1]));
 				break;
 			case LISTEN_PORT:
-				getController().setPort(chatEvent.getMsgArr()[1]);
+				chatEvent.setMsg(getController().setPort(chatEvent.getMsgArr()[1]));
 				break;
 			case CONNECT:
-				getController().setHostname(chatEvent.getMsgArr()[1]);
+				chatEvent.setMsg(getController().setHostname(chatEvent.getMsgArr()[1]));
 				getController().getNetworkHandler().restartClient();
 				break;
 			case DISCONNECT:
@@ -89,29 +97,20 @@ public class MessageHandler implements NetworkListener {
 	// network stuff
 
 	@Override
-	public void serverStatus(ServerEvent event) {
+	public void onStatusMessage(NetworkEvent event) {
 		fireChatEventToListeners(event.getChatEvent());
 	}
 
 	@Override
-	public void serverNormalMessage(ServerEvent event) {
+	public void onNormalMessage(NetworkEvent event) {
 		fireChatEventToListeners(event.getChatEvent());
 	}
-
-	@Override
-	public void clientStatus(ClientEvent event) {
-		fireChatEventToListeners(event.getChatEvent());
-	}
-
-	@Override
-	public void clientMessage(ClientEvent event) {
-		fireChatEventToListeners(event.getChatEvent());
-	}
-
+	
 	public void fireChatEventToListeners(ChatEvent chatEvent) {
 		chatEvent = formatChatMessage(chatEvent);
 		for (MessageListener messageListener : messageListeners) {
-			messageListener.onChatEvent(chatEvent);
+			if (chatEvent.getReceipient() == messageListener.getReceipient())
+				messageListener.onChatEvent(chatEvent);
 		}
 	}
 

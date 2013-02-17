@@ -29,6 +29,8 @@ public class Controller implements ButtonListener {
 
 	private void addMessaegeListeners() {
 		messageHandler.addMessageListener(getGui().getFeedWindow());
+		messageHandler.addMessageListener(getGui().getFeedStatus());
+		messageHandler.addMessageListener(getGui().getFeedQuery());
 	}
 
 	private void addNetworkListeners() {

@@ -13,12 +13,12 @@ import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import msg.ChatEvent.Receipient;
 import chatty.Config;
 import chatty.Controller;
 
 public class MainFrame {
-	private int frameWidth = 600;
+	private int frameWidth = 1200;
 	private int frameHeight = 450;
 	private Controller controller;
 	private ButtonHandler buttonHandler;
@@ -27,10 +27,12 @@ public class MainFrame {
 	private RightClickMenu rightClickMenu;
 	private MenuButton optionsButton;
 	private OptionsMenu optionsMenu;
-	private JScrollPane scrollPane;
-	private FeedWindow feedWindow;
 	private MenuButton clientButton;
 	private MenuButton serverButton;
+
+	private FeedWindow feedWindow;
+	private FeedWindow feedStatus;
+	private FeedWindow feedQuery;
 
 	public MainFrame(Controller controller) {
 		Themes.setTheme(Themes.GRAY);
@@ -94,12 +96,14 @@ public class MainFrame {
 		serverButton = new MenuButton(Type.SERVER, buttonDim, buttonHandler);
 		optionsButton = new MenuButton(Type.OPTIONS, buttonDim, buttonHandler);
 
-		feedWindow = new FeedWindow(new Dimension(frameWidth, 200));
-		scrollPane = new JScrollPane(feedWindow);
-		scrollPane.setBorder(BorderFactory.createEmptyBorder());
-		scrollPane.getVerticalScrollBar().setBackground(Themes.FOREGROUND);
-
+		feedWindow = new FeedWindow(new Dimension(frameWidth / 3, 200), Receipient.CHANNEL);
 		feedWindow.addMouseListener(new FeedMouseListener(this));
+
+		feedStatus = new FeedWindow(new Dimension(frameWidth / 3, 200), Receipient.STATUS);
+		feedStatus.addMouseListener(new FeedMouseListener(this));
+		
+		feedQuery = new FeedWindow(new Dimension(frameWidth / 3, 200), Receipient.QUERY);
+		feedQuery.addMouseListener(new FeedMouseListener(this));
 
 		InputWindow inputWindow = new InputWindow(new Dimension(frameWidth, 20), controller.getMessageHandler());
 		// TODO: this isn't very pretty
@@ -121,7 +125,11 @@ public class MainFrame {
 
 		mainPanel.setOpaque(false);
 		mainPanel.setBackground(Color.blue);
-		mainPanel.add(scrollPane, new GBC(0, 2, Align.FULL_WIDTH).setSpan(menuSize, 1).setWeight(0, 1));
+
+		mainPanel.add(feedWindow.getScrollPane(), new GBC(0, 2, Align.LEFT).setSpan(menuSize / 3, 1).setWeight(0, 1));
+		mainPanel.add(feedQuery.getScrollPane(), new GBC(1, 2, Align.MID).setSpan(menuSize / 3, 1).setWeight(0, 1));
+		mainPanel.add(feedStatus.getScrollPane(), new GBC(2, 2, Align.RIGHT).setSpan(menuSize / 3, 1).setWeight(0, 1));
+
 		mainPanel.add(inputWindow, new GBC(0, 8, Align.FULL_WIDTH_BOTTOM).setSpan(menuSize, 2).setWeight(1, 0));
 
 		mainPanel.add(clientButton, new GBC(0, 0, Align.LEFT).setSpan(1, 1).setWeight(1 / menuSize, 0));
@@ -166,19 +174,22 @@ public class MainFrame {
 		return rightClickMenu;
 	}
 
-	public JScrollPane getScrollPane() {
-		return scrollPane;
-	}
-
-	public FeedWindow getFeedWindow() {
-		return feedWindow;
-	}
-
 	public MenuButton getClientButton() {
 		return clientButton;
 	}
 
 	public MenuButton getServerButton() {
 		return serverButton;
+	}
+
+	public FeedWindow getFeedWindow() {
+		return feedWindow;
+	}
+
+	public FeedWindow getFeedStatus() {
+		return feedStatus;
+	}
+	public FeedWindow getFeedQuery() {
+		return feedQuery;
 	}
 }
