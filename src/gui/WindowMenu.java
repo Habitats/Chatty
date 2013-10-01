@@ -6,11 +6,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.util.ArrayList;
-import gui.Button;
-
 import javax.swing.JPanel;
 
-import msg.ChatEvent;
 import msg.ChatEvent.Receipient;
 
 public class WindowMenu extends JPanel {

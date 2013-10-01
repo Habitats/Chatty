@@ -11,7 +11,7 @@ public class NetworkEvent {
 		START_CLIENT, //
 		START_SERVER, //
 		SHUTDOWN_SERVER, //
-		SHUTDOWN_CLIENT,//
+		SHUTDOWN_CLIENT, //
 		DISCONNECT("Disconnected!"), //
 		CRASH("Fatal error, disconnecting..."), //
 		CONNECT("Connected!"), //
@@ -56,7 +56,6 @@ public class NetworkEvent {
 	public ChatEvent getChatEvent() {
 		return chatEvent;
 	}
-
 
 	public NetworkEvent(NetworkEvents event) {
 		this(event, null, null);

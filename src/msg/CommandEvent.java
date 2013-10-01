@@ -1,6 +1,5 @@
 package msg;
 
-
 public class CommandEvent {
 
 	private ChatCommand cmd;
@@ -17,7 +16,7 @@ public class CommandEvent {
 			cmd = ChatCommand.getCmd(msgArr[0]);
 		}
 	}
-	
+
 	public boolean isCommand() {
 		return (cmd != null);
 	}

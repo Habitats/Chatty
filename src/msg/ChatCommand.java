@@ -13,7 +13,7 @@ public enum ChatCommand {
 
 	HELP("/help", "Available commands (prefix with /): nick, disconnect, query, quit, connect, port"), //
 
-	STATUS("/status","Stats...");
+	STATUS("/status", "Stats...");
 	;
 	private String cmdAsString;
 	private String help;

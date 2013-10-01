@@ -9,7 +9,7 @@ public class ButtonHandler {
 	public void addButtonListener(ButtonListener listener) {
 		buttonListeners.add(listener);
 	}
-	
+
 	public ArrayList<ButtonListener> getButtonListeners() {
 		return buttonListeners;
 	}

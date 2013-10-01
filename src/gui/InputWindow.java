@@ -10,7 +10,7 @@ import msg.MessageHandler;
 import chatty.Config;
 
 public class InputWindow extends JTextField {
-	
+
 	private static final long serialVersionUID = 1L;
 
 	public InputWindow(Dimension dim, MessageHandler messageHandler) {

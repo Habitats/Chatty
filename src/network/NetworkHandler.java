@@ -85,7 +85,6 @@ public class NetworkHandler {
 		}
 	}
 
-
 	public boolean isRunning() {
 		if (programState != null)
 			return programState.isRunning();

@@ -1,13 +1,12 @@
 package network;
 
-
 public interface NetworkListener {
 
 	// SERVER EVENTS
 
-//	public void onStatusMessage(ServerEvent event);
-//
-//	public void onNormalMessage(ServerEvent event);
+	// public void onStatusMessage(ServerEvent event);
+	//
+	// public void onNormalMessage(ServerEvent event);
 
 	// CLIENT EVENTS
 

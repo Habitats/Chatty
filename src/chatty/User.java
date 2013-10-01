@@ -4,8 +4,9 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-@SuppressWarnings("serial")
 public class User implements Serializable {
+
+	private static final long serialVersionUID = 1205180231433712773L;
 	private final String userName;
 	private String displayName;
 	private int activePort;

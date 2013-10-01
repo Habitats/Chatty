@@ -1,6 +1,5 @@
 package gui;
 
-
 import java.awt.Choice;
 import java.awt.Dimension;
 

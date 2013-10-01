@@ -13,7 +13,6 @@ import javax.swing.JPanel;
 
 public class OptionsMenu extends JPanel {
 
-
 	private static final long serialVersionUID = 1L;
 	private final MenuButton submitButton;
 	private final ButtonHandler buttonHandler;
@@ -64,7 +63,7 @@ public class OptionsMenu extends JPanel {
 		submitButton = new MenuButton(Type.SUBMIT, null, buttonHandler);
 		add(submitButton, new GBC(0, 3, Align.FULL_WIDTH_BOTTOM).setSpan(2, 1).setIpad(0, 5));
 	}
-	
+
 	public ArrayList<OptionsField> getOptionFields() {
 		return optionFields;
 	}

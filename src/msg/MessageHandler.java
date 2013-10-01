@@ -105,7 +105,7 @@ public class MessageHandler implements NetworkListener {
 	public void onNormalMessage(NetworkEvent event) {
 		fireChatEventToListeners(event.getChatEvent());
 	}
-	
+
 	public void fireChatEventToListeners(ChatEvent chatEvent) {
 		chatEvent = formatChatMessage(chatEvent);
 		for (MessageListener messageListener : messageListeners) {

@@ -31,5 +31,5 @@ public abstract class ProgramState {
 	public boolean isClient() {
 		return client;
 	}
-	
+
 }

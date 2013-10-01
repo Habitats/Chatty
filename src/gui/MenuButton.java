@@ -4,8 +4,6 @@ import gui.ButtonEvent.ButtonEvents;
 
 import java.awt.Dimension;
 import java.awt.event.MouseEvent;
-import javax.swing.SwingConstants;
-
 import chatty.Config;
 
 import network.NetworkEvent;
@@ -43,7 +41,6 @@ public class MenuButton extends Button {
 
 		setPreferredSize(dim);
 		setMinimumSize(dim);
-
 
 		addMouseListener(new ButtonMouseListener(this) {
 

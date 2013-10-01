@@ -10,7 +10,7 @@ import javax.swing.JTextField;
 import chatty.Config;
 
 public class OptionsField extends JTextField {
-	
+
 	private static final long serialVersionUID = 1L;
 	private final Option option;
 
@@ -29,6 +29,7 @@ public class OptionsField extends JTextField {
 	public String submit() {
 		return getText();
 	}
+
 	public Option getOption() {
 		return option;
 	}

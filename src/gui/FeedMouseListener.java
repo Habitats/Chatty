@@ -1,6 +1,5 @@
 package gui;
 
-
 import gui.RightClickMenu.RightClickType;
 
 import java.awt.event.MouseAdapter;
@@ -23,11 +22,10 @@ public class FeedMouseListener extends MouseAdapter {
 		if (SwingUtilities.isRightMouseButton(e)) {
 			// TODO: this is quite sloppy atm
 			RightClickType type;
-			if (clickedNick(e, gui.getController().getUser().getUsername())){
+			if (clickedNick(e, gui.getController().getUser().getUsername())) {
 				System.out.println("CLICKED NICK: " + gui.getController().getUser().getUsername());
 				type = RightClickType.NICK;
-			}
-			else
+			} else
 				type = RightClickType.DEFAULT;
 			gui.getRightClickMenu().setLocation(e.getX() + gui.getFeedWindow().getScrollPane().getX(), e.getY() + gui.getFeedWindow().getScrollPane().getY());
 			gui.getRightClickMenu().open(type);

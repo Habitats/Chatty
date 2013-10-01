@@ -170,8 +170,8 @@ public class Server extends ProgramState implements Runnable {
 					e.printStackTrace();
 				}
 		}
-		if (!success){
-			ChatEvent returnEvent =new ChatEvent(serverUser, chatEvent.getFrom().getDisplayName(), Receipient.QUERY, "No such user: " + to);
+		if (!success) {
+			ChatEvent returnEvent = new ChatEvent(serverUser, chatEvent.getFrom().getDisplayName(), Receipient.QUERY, "No such user: " + to);
 			sendPrivateChatEvent(returnEvent);
 		}
 	}

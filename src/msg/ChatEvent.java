@@ -6,10 +6,8 @@ import java.text.SimpleDateFormat;
 import chatty.User;
 
 public class ChatEvent implements Serializable {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
+	private static final long serialVersionUID = -2117726079856363734L;
 
 	public enum Receipient {
 		SERVER, //
@@ -134,7 +132,7 @@ public class ChatEvent implements Serializable {
 	public void setFormattedMessage(String formattedMessage) {
 		this.formattedMessage = formattedMessage;
 	}
-	
+
 	public String getFormattedMessage() {
 		return formattedMessage;
 	}

@@ -11,7 +11,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import msg.ChatEvent.Receipient;
@@ -140,7 +139,7 @@ public class MainFrame {
 		// mainPanel.add(contentBox, new GBC(0, 1,
 		// Align.FULL_WIDTH).setSpan(menuSize, 1).setWeight(1, 1));
 
-//		mainLayeredPane.setBackground(Color.cyan);
+		// mainLayeredPane.setBackground(Color.cyan);
 		mainLayeredPane.add(feedWindow.getScrollPane(), new Integer(4));
 		mainLayeredPane.add(feedStatus.getScrollPane(), new Integer(2));
 		mainLayeredPane.add(feedQuery.getScrollPane(), new Integer(3));
@@ -211,6 +210,7 @@ public class MainFrame {
 	public FeedWindow getFeedQuery() {
 		return feedQuery;
 	}
+
 	public FeedWindow getFeedGlobal() {
 		return feedGlobal;
 	}

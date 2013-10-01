@@ -9,8 +9,6 @@ import javax.swing.SwingConstants;
 import network.NetworkEvent;
 import network.NetworkListener;
 
-import chatty.Config;
-
 public abstract class Button extends JLabel implements NetworkListener {
 
 	private static final long serialVersionUID = 1L;
@@ -23,8 +21,8 @@ public abstract class Button extends JLabel implements NetworkListener {
 		setPreferredSize(dim);
 		init();
 	}
-	
-	public Button(Dimension dim){
+
+	public Button(Dimension dim) {
 		setPreferredSize(dim);
 		init();
 	}

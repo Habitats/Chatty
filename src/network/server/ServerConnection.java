@@ -68,9 +68,9 @@ public class ServerConnection implements Runnable {
 		try {
 			initConnection();
 		} catch (SocketException e) {
-			getServer().getNetworkHandler().fireNetworkEvent(new NetworkEvent(NetworkEvents.CLIENT_DROPPED,"Socket closed, client dropped!"));
+			getServer().getNetworkHandler().fireNetworkEvent(new NetworkEvent(NetworkEvents.CLIENT_DROPPED, "Socket closed, client dropped!"));
 		} catch (IOException e) {
-			getServer().getNetworkHandler().fireNetworkEvent(new NetworkEvent(NetworkEvents.CLIENT_DROPPED,"Error reading socket, client dropped!"));
+			getServer().getNetworkHandler().fireNetworkEvent(new NetworkEvent(NetworkEvents.CLIENT_DROPPED, "Error reading socket, client dropped!"));
 		}
 	}
 
